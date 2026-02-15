@@ -1,1 +1,1 @@
-# nsi-legend-of-grimrock
+# Nsi-legend-of-grimrock
