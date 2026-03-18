@@ -42,11 +42,6 @@ while running == True:
         if event.type == pygame.QUIT:
             running = False
             pygame.quit()
-coucou
-
-    
-
-    
 
 
 
