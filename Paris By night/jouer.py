@@ -1,9 +1,9 @@
 import pygame
 pygame.init()
-
+# x_max , x_min, y_max, y_min
 x=300 
 y=200
-speed=50
+speed=25
 
 
 #création de la classe contenant les caractéristiques des personnages
@@ -24,9 +24,13 @@ screen = pygame.display.set_mode((1080,720 ))
 running = True 
 clock = pygame.time.Clock()
 while running == True:
-    clock.tick(20)
+    clock.tick(60)
     for event in pygame.event.get():
-        screen.fill((201,158,89))
+        if event.type == pygame.QUIT:
+            running = False
+            pygame.quit()
+
+    screen.fill((201,158,89))
     
 
 
@@ -39,10 +43,6 @@ while running == True:
         x -= speed
     if touches[pygame.K_d] or touches[pygame.K_RIGHT]:
         x += speed
-    pygame.display.update()
+    
     pygame.draw.circle(screen,(255, 0, 0),(x,y),20) 
     pygame.display.update()
-
-    if event.type == pygame.QUIT:
-            running = False
-            pygame.quit()
