@@ -1,15 +1,25 @@
 import pygame
 import math 
+from camera import *
 pygame.init()
-# x_max , x_min, y_max, y_min
+width =1080
+height = 720
+x_max , x_min, y_max, y_min
 x=300 
 y=200
 speed=10
 
+personnage = Player()
+camera = Camera(personnage)
+follow = Follow(camera,personnage)
+border = Border(camera,personnage)
+auto = Auto(camera,personnage)
+camera.setmethod(follow)
+
 
 #création de la classe contenant les caractéristiques des personnages
 class personnage:
-    def __init__(self, nom, pv, pvmax, attaque):
+    def init(self, nom, pv, pvmax, attaque):
         self.nom = nom
         self.pv = pv
         self.pvmax = pvmax
@@ -20,7 +30,7 @@ Rat = personnage("Rat", 50, 50, 10)
 
 #création de la fenetre du jeu
 pygame.display.set_caption("Fenêtre d'accueil")
-screen = pygame.display.set_mode((720,720 ))
+screen = pygame.display.set_mode((width,height ))
 
 running = True 
 clock = pygame.time.Clock()
@@ -30,14 +40,12 @@ while running == True:
         if event.type == pygame.QUIT:
             running = False
             pygame.quit()
+screen.fill((201,158,89))
 
-    screen.fill((201,158,89))
-    
-# déplacement du personnage uniforme dans chaque directions
-
+déplacement du personnage uniforme dans chaque directions
     touches = pygame.key.get_pressed()
     if touches[pygame.K_z] or touches[pygame.K_UP]:
-        if (touches[pygame.K_d] or touches[pygame.K_RIGHT]) ^ (touches[pygame.K_q] or touches[pygame.K_LEFT]): # ^ = ou exclusif ( xor)
+        if (touches[pygame.K_d] or touches[pygame.K_RIGHT]) ^ (touches[pygame.K_q] or touches[pygame.K_LEFT]): # ^ = ou exclusif (xor)
             y -= speed/math.sqrt(2)
         else:
             y -= speed
@@ -57,14 +65,13 @@ while running == True:
         if (touches[pygame.K_z] or touches[pygame.K_UP]) ^ (touches[pygame.K_s] or touches[pygame.K_DOWN]):
             x += speed/math.sqrt(2)
         else : 
-            x += speed
+            x += speed 
 
 
 
 
     pygame.draw.circle(screen,(255, 0, 0),(x,y),20) 
+
+
+    pygame.draw.circle(screen,(255, 0, 0),(100,50),20) 
     pygame.display.update()
-
-
-def camera_(f):
-    pass
