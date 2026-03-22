@@ -4,7 +4,7 @@ from camera import *
 
  
 pygame.init()
-
+font = pygame.font.Font(None,40)
 width = 1080
 height = 720
 speed = 10
@@ -103,33 +103,57 @@ while running:
  
     # déplacement du personnage uniforme dans chaque directions
     touches = pygame.key.get_pressed()
-    if touches[pygame.K_z] or touches[pygame.K_UP]:
-        if (touches[pygame.K_d] or touches[pygame.K_RIGHT]) ^ (touches[pygame.K_q] or touches[pygame.K_LEFT]): # ^ = ou exclusif (xor)
-            player.rect.y -= speed / math.sqrt(2)
-        else:
-            player.rect.y -= speed
-    if touches[pygame.K_s] or touches[pygame.K_DOWN]:
-        if (touches[pygame.K_d] or touches[pygame.K_RIGHT]) ^ (touches[pygame.K_q] or touches[pygame.K_LEFT]):
-            player.rect.y += speed / math.sqrt(2)
-        else:
-            player.rect.y += speed
-    if touches[pygame.K_q] or touches[pygame.K_LEFT]:
-        if (touches[pygame.K_z] or touches[pygame.K_UP]) ^ (touches[pygame.K_s] or touches[pygame.K_DOWN]):
-            player.rect.x -= speed / math.sqrt(2)
-        else:
-            player.rect.x -= speed
-    if touches[pygame.K_d] or touches[pygame.K_RIGHT]:
-        if (touches[pygame.K_z] or touches[pygame.K_UP]) ^ (touches[pygame.K_s] or touches[pygame.K_DOWN]):
-            player.rect.x += speed / math.sqrt(2)
-        else:
-            player.rect.x += speed
- 
+    if player.pv > 0:
+        if touches[pygame.K_z] or touches[pygame.K_UP]:
+            if (touches[pygame.K_d] or touches[pygame.K_RIGHT]) ^ (touches[pygame.K_q] or touches[pygame.K_LEFT]): # ^ = ou exclusif (xor)
+                player.rect.y -= speed / math.sqrt(2)
+            else:
+                player.rect.y -= speed
+        if touches[pygame.K_s] or touches[pygame.K_DOWN]:
+            if (touches[pygame.K_d] or touches[pygame.K_RIGHT]) ^ (touches[pygame.K_q] or touches[pygame.K_LEFT]):
+                player.rect.y += speed / math.sqrt(2)
+            else:
+                player.rect.y += speed
+        if touches[pygame.K_q] or touches[pygame.K_LEFT]:
+            if (touches[pygame.K_z] or touches[pygame.K_UP]) ^ (touches[pygame.K_s] or touches[pygame.K_DOWN]):
+                player.rect.x -= speed / math.sqrt(2)
+            else:
+                player.rect.x -= speed
+        if touches[pygame.K_d] or touches[pygame.K_RIGHT]:
+            if (touches[pygame.K_z] or touches[pygame.K_UP]) ^ (touches[pygame.K_s] or touches[pygame.K_DOWN]):
+                player.rect.x += speed / math.sqrt(2)
+            else:
+                player.rect.x += speed
+    
     
     cam.scroll()
  
     # Dessin du joueur
     if player.pv > 0:
         player.draw(screen, cam.offset)
+
+    if player.pv <= 0:
+            # dimensions du bouton
+        bouton_w = 200
+        bouton_h = 60
+
+        # centré horizontalement, en dessous du joueur
+        bouton_x = width/2 - bouton_w/2
+        bouton_y = height/2 + 50  # 50px en dessous du centre (là où est le joueur)
+
+        bouton_rejouer = pygame.Rect(bouton_x, bouton_y, bouton_w, bouton_h)
+        pygame.draw.rect(screen, (139, 94, 44), bouton_rejouer)
+
+        texte = font.render("Rejouer", True, (245, 240, 220))
+        texte_x = bouton_x + bouton_w/2 - texte.get_width()/2   # centré dans le bouton
+        texte_y = bouton_y + bouton_h/2 - texte.get_height()/2  # centré dans le bouton
+        screen.blit(texte, (texte_x, texte_y))
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if bouton_rejouer.collidepoint(event.pos):
+                player.pv = 100 # trouver un moyen de le remplacer par "pvmax"
+        
+    
+
         
     Julien.draw(screen, cam.offset)
     # Exemple d'objet fixe dans le monde (cercle bleu)
@@ -140,3 +164,5 @@ while running:
     
 pygame.quit()
  
+
+
