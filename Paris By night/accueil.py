@@ -1,6 +1,7 @@
 import pygame
 pygame.init()
 import credits
+import sauvegarde
 
 # generer la fenetre du jeu 
 pygame.display.set_caption("caca")
@@ -14,12 +15,15 @@ running = True
 while running == True:
     for event in pygame.event.get():
         screen.fill((201,158,89))
+
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if etat == "menu" and bouton_credits.collidepoint(event.pos):
-                etat = "credits"
-        
-                if etat == "menu":
-                    # 
+            if etat == "menu":
+                if bouton_credits.collidepoint(event.pos):
+                    etat = "credits"
+                elif bouton_sauvegarde.collidepoint(event.pos):
+                    etat = "sauvegarde"
+
+    if etat == "menu":
                     # bouton
                     bouton_jouer = pygame.Rect(440,200,200,50)
                     pygame.draw.rect(screen,(139,94,44),bouton_jouer)
@@ -34,21 +38,28 @@ while running == True:
                     texte2 = font.render("Sauvegarde", True, (245,240,220))
                     texte3 = font.render("Credits", True, (245,240,220))
                     texte4 = font_titre.render("Paris By Night", True, (245,240,220))
-            
+
                     screen.blit(texte1,(503,210))
                     screen.blit(texte2,(460,310))
                     screen.blit(texte3,(492,410))
                     screen.blit(texte4,(355,10))
-            
-                elif etat == "credits":
-                    credits.afficher_credits(screen, font)
+                        
+    elif etat == "credits":
+        credits.afficher_credits(screen, font)
+                        
+    elif etat == "sauvegarde":
+        sauvegarde.afficher_sauvegarde(screen, font)
 
-                # mettre à jour l'écran
-                pygame.display.update()
-        
-                if event.type == pygame.QUIT:
-                    running = False
-                    pygame.quit()
+
+            
+
+    # mettre à jour l'écran
+    pygame.display.update()
+
+    if event.type == pygame.QUIT:
+        running = False
+        pygame.quit()
+
 
 
 
