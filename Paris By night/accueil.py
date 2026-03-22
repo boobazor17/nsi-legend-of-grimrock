@@ -15,14 +15,14 @@ while running == True:
         screen.fill((201,158,89))
 
         # bouton
-        bouton = pygame.Rect(440,200,200,50)
-        pygame.draw.rect(screen,(139,94,44),bouton)
+        bouton_jouer = pygame.Rect(440,200,200,50)
+        pygame.draw.rect(screen,(139,94,44),bouton_jouer)
     
-        bouton3 = pygame.Rect(440,300,200,50)
-        pygame.draw.rect(screen,(139,94,44),bouton3)
+        bouton_sauvegarde = pygame.Rect(440,300,200,50)
+        pygame.draw.rect(screen,(139,94,44),bouton_sauvegarde)
     
-        bouton2 = pygame.Rect(440,400,200,50)
-        pygame.draw.rect(screen,(139,94,44),bouton2)
+        bouton_credits = pygame.Rect(440,400,200,50)
+        pygame.draw.rect(screen,(139,94,44),bouton_credits)
     
         texte1 = font.render("Jouer", True, (245,240,220))
         texte2 = font.render("Sauvegarde", True, (245,240,220))
