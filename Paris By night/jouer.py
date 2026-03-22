@@ -1,6 +1,7 @@
 import pygame
 import math
 from camera import *
+
  
 pygame.init()
 
@@ -31,6 +32,7 @@ class Player:
     def __init__(self, x, y, radius=20):
         self.radius = radius
         self.rect = pygame.Rect(x - radius, y - radius, radius * 2, radius * 2)
+        self.pv = 100
 
     def draw(self, screen, offset):
         draw_x = self.rect.centerx - offset.x
@@ -58,12 +60,15 @@ class monstre:
         self.x = 0 #position de départ
         self.y = 0 #position de départ
 
+    def draw(self, screen, offset):
+        draw_x = self.x - offset.x
+        draw_y = self.y - offset.y
+        pygame.draw.circle(screen, (99, 69, 45), (int(draw_x), int(draw_y)), 20)
+
     def attaque_m(self,player):
-        # on calcule la vraie distance entre le monstre et le joueur
         dx = self.x - player.rect.centerx
         dy = self.y - player.rect.centery
-        player.pv = Fantome.pv 
-        distance_reelle = math.sqrt(int(dx**2 +dy**2)) # avec le théoreme de Pythagore on calcule la distance entre le monstre et le joueur
+        distance_reelle = math.sqrt(int(dx**2 + dy**2)) # avec le théoreme de Pythagore on calcule la distance entre le monstre et le joueur
         if self.distance_attaque >= distance_reelle:
             player.pv -= self.attaque    
 
@@ -71,7 +76,7 @@ class monstre:
         dx = self.x - player.rect.centerx
         dy = self.y - player.rect.centery
         player.pv = Fantome.pv 
-        distance_reelle = math.sqrt(int(dx**2 +dy**2))
+        distance_reelle = math.sqrt(int(dx**2 + dy**2))
         if self.distance >= distance_reelle:
             pass # le monstre se dirige vers le joueur
         else:
@@ -80,7 +85,7 @@ class monstre:
 Fantome = Personnage("Fantome", 100, 100, 20)
 Rat     = Personnage("Rat",     50,  50,  10)
 
-Julien = monstre("Julien",50 ,60 ,12 ,50 ,25)
+Julien = monstre("Julien" ,50 ,60 ,0.5 ,50 ,100)
 
 clock   = pygame.time.Clock()
 running = True
@@ -119,14 +124,19 @@ while running:
         else:
             player.rect.x += speed
  
+    
     cam.scroll()
  
     # Dessin du joueur
-    player.draw(screen, cam.offset)
- 
+    if player.pv > 0:
+        player.draw(screen, cam.offset)
+        
+    Julien.draw(screen, cam.offset)
     # Exemple d'objet fixe dans le monde (cercle bleu)
     pygame.draw.circle(screen, (0, 0, 255), (100 - int(cam.offset.x), 50 - int(cam.offset.y)), 20)
  
     pygame.display.update()
- 
+    
+    
 pygame.quit()
+ 
