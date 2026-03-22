@@ -1,5 +1,6 @@
 import pygame
 pygame.init()
+import credits
 
 # generer la fenetre du jeu 
 pygame.display.set_caption("caca")
