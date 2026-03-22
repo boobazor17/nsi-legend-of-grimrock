@@ -96,10 +96,10 @@ while running:
 
     Julien.attaque_m(player)
  
-    # Déplacement original — diagonal normalisé avec XOR
+    # déplacement du personnage uniforme dans chaque directions
     touches = pygame.key.get_pressed()
     if touches[pygame.K_z] or touches[pygame.K_UP]:
-        if (touches[pygame.K_d] or touches[pygame.K_RIGHT]) ^ (touches[pygame.K_q] or touches[pygame.K_LEFT]):
+        if (touches[pygame.K_d] or touches[pygame.K_RIGHT]) ^ (touches[pygame.K_q] or touches[pygame.K_LEFT]): # ^ = ou exclusif (xor)
             player.rect.y -= speed / math.sqrt(2)
         else:
             player.rect.y -= speed
