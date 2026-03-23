@@ -8,11 +8,11 @@ font = pygame.font.Font(None,40)
 width = 1080
 height = 720
 speed = 10
- 
+
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Fenêtre d'accueil")
  
-
+invicible  = 0 #permet d'être invincible après la réapparition
 
 # Classe Player — le cercle rouge est le personnage
 class Personnage:
@@ -33,6 +33,7 @@ class Player:
         self.radius = radius
         self.rect = pygame.Rect(x - radius, y - radius, radius * 2, radius * 2)
         self.pv = 100
+        self.pvmax = 100
 
     def draw(self, screen, offset):
         draw_x = self.rect.centerx - offset.x
@@ -75,17 +76,26 @@ class monstre:
     def deplacement(self,player):
         dx = self.x - player.rect.centerx
         dy = self.y - player.rect.centery
-        player.pv = Fantome.pv 
         distance_reelle = math.sqrt(int(dx**2 + dy**2))
-        if self.distance >= distance_reelle:
-            pass # le monstre se dirige vers le joueur
+        if self.distance >= distance_reelle :
+            if dx >= 70 or dx <= -70 :
+                if dx >= 50:
+                    self.x -= 3*speed//5
+                else:
+                    self.x += 3*speed//5
+            if dy >= 70 or dy <= -70:
+                if dy >= 70:
+                    self.y -= 3*speed//5
+                else:
+                    self.y += 3*speed//5
+
         else:
             pass # le monstre fait sa ronde
 
 Fantome = Personnage("Fantome", 100, 100, 20)
 Rat     = Personnage("Rat",     50,  50,  10)
 
-Julien = monstre("Julien" ,50 ,60 ,0.5 ,50 ,100)
+Julien = monstre("Julien" ,50 ,60 ,0.5 ,220 ,100)
 
 clock   = pygame.time.Clock()
 running = True
@@ -99,7 +109,7 @@ while running:
  
     screen.fill((201, 158, 89))
 
-    Julien.attaque_m(player)
+    
  
     # déplacement du personnage uniforme dans chaque directions
     touches = pygame.key.get_pressed()
@@ -124,10 +134,24 @@ while running:
                 player.rect.x += speed / math.sqrt(2)
             else:
                 player.rect.x += speed
-    
-    
+             
+    # création de la barre de vie , rectangle noir puis rectangle rouge représentant la vie
+    hpb_w = 200
+    hpb_h = 12
+    hpb_x = width/2 - hpb_w/2
+    hpb_y = height/2 + 4*height//9  # 1/18px au dessus du bas de l'écran 
+    barre_hp = pygame.Rect(hpb_x, hpb_y, hpb_w, hpb_h)
+    pygame.draw.rect(screen, (0, 0, 0), barre_hp )
+    hpb_w = 200 - 200 + player.pv*2
+    if  hpb_w > 200 :
+        hpb_w = 200
+    hpb_h = 12
+    hpb_x = width/2 - hpb_w/2
+    hpb_y = height/2 + 4*height//9  # 1/18px au dessus du bas de l'écran 
+    barre_hp2 = pygame.Rect(hpb_x, hpb_y, hpb_w, hpb_h)
+    pygame.draw.rect(screen, (255, 0, 0), barre_hp2 )
     cam.scroll()
- 
+
     # Dessin du joueur
     if player.pv > 0:
         player.draw(screen, cam.offset)
@@ -150,11 +174,19 @@ while running:
         screen.blit(texte, (texte_x, texte_y))
         if event.type == pygame.MOUSEBUTTONDOWN:
             if bouton_rejouer.collidepoint(event.pos):
-                player.pv = 100 # trouver un moyen de le remplacer par "pvmax"
+                player.pv = player.pvmax 
+                invicible = 120 #effet invicible après le respawn
+
+    invicible -= 1
+    if invicible >= 0:
+        player.pv = player.pvmax 
+
+        
         
     
 
-        
+    Julien.attaque_m(player)
+    Julien.deplacement(player)
     Julien.draw(screen, cam.offset)
     # Exemple d'objet fixe dans le monde (cercle bleu)
     pygame.draw.circle(screen, (0, 0, 255), (100 - int(cam.offset.x), 50 - int(cam.offset.y)), 20)
@@ -164,5 +196,3 @@ while running:
     
 pygame.quit()
  
-
-
