@@ -34,6 +34,8 @@ class Player:
         self.rect = pygame.Rect(x - radius, y - radius, radius * 2, radius * 2)
         self.pv = 100
         self.pvmax = 100
+        self.invincible_temps =  - 1000
+        self.duree_invincibilite = 2000
 
     def draw(self, screen, offset):
         draw_x = self.rect.centerx - offset.x
@@ -60,6 +62,8 @@ class monstre:
         self.distance_attaque = distance_attaque
         self.x = 0 #position de départ
         self.y = 0 #position de départ
+        self.attaque_dernier_temps = - 1000
+        self.attaque_cooldown = 400
 
     def draw(self, screen, offset):
         draw_x = self.x - offset.x
@@ -70,8 +74,12 @@ class monstre:
         dx = self.x - player.rect.centerx
         dy = self.y - player.rect.centery
         distance_reelle = math.sqrt(int(dx**2 + dy**2)) # avec le théoreme de Pythagore on calcule la distance entre le monstre et le joueur
-        if self.distance_attaque >= distance_reelle:
-            player.pv -= self.attaque    
+        temps =  pygame.time.get_ticks()
+
+        if self.distance_attaque >= distance_reelle and temps - self.attaque_dernier_temps >= self.attaque_cooldown :
+            self.attaque_dernier_temps = temps
+            if temps - player.invincible_temps >= player.duree_invincibilite:  
+                player.pv -= self.attaque    
 
     def deplacement(self,player):
         dx = self.x - player.rect.centerx
@@ -95,7 +103,7 @@ class monstre:
 Fantome = Personnage("Fantome", 100, 100, 20)
 Rat     = Personnage("Rat",     50,  50,  10)
 
-Julien = monstre("Julien" ,50 ,60 ,0.5 ,220 ,100)
+Julien = monstre("Julien" , 50, 60, 10, 220, 100)
 
 clock   = pygame.time.Clock()
 running = True
@@ -134,7 +142,7 @@ while running:
                 player.rect.x += speed / math.sqrt(2)
             else:
                 player.rect.x += speed
-             
+
     # création de la barre de vie , rectangle noir puis rectangle rouge représentant la vie
     hpb_w = 200
     hpb_h = 12
@@ -143,7 +151,7 @@ while running:
     barre_hp = pygame.Rect(hpb_x, hpb_y, hpb_w, hpb_h)
     pygame.draw.rect(screen, (0, 0, 0), barre_hp )
     hpb_w = 200 - 200 + player.pv*2
-    if  hpb_w > 200 :
+    if hpb_w > 200 :
         hpb_w = 200
     hpb_h = 12
     hpb_x = width/2 - hpb_w/2
@@ -175,15 +183,9 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if bouton_rejouer.collidepoint(event.pos):
                 player.pv = player.pvmax 
-                invicible = 120 #effet invicible après le respawn
-
-    invicible -= 1
-    if invicible >= 0:
-        player.pv = player.pvmax 
-
-        
-        
-    
+                temps =  pygame.time.get_ticks()
+                player.invincible_temps = temps
+                
 
     Julien.attaque_m(player)
     Julien.deplacement(player)
@@ -195,4 +197,3 @@ while running:
     
     
 pygame.quit()
- 
