@@ -15,8 +15,6 @@ etat = "menu"
 running = True
 while running == True:
     for event in pygame.event.get():
-        screen.fill((201,158,89))
-
         if event.type == pygame.MOUSEBUTTONDOWN:
             if etat == "menu":
                 if bouton_credits.collidepoint(event.pos):
@@ -26,6 +24,7 @@ while running == True:
                 elif bouton_jouer.collidepoint(event.pos):
                     etat = "jouer"
 
+    screen.fill((201,158,89))
     if etat == "menu":
                     # bouton
                     bouton_jouer = pygame.Rect(440,200,200,50)
@@ -37,16 +36,11 @@ while running == True:
                     bouton_credits = pygame.Rect(440,400,200,50)
                     pygame.draw.rect(screen,(139,94,44),bouton_credits)
                 
-                    texte1 = font.render("Jouer", True, (245,240,220))
-                    texte2 = font.render("Sauvegarde", True, (245,240,220))
-                    texte3 = font.render("Credits", True, (245,240,220))
-                    texte4 = font_titre.render("Paris By Night", True, (245,240,220))
-
-                    screen.blit(texte1,(503,210))
-                    screen.blit(texte2,(460,310))
-                    screen.blit(texte3,(492,410))
-                    screen.blit(texte4,(355,10))
-                        
+                    screen.blit(font.render("Jouer",      True, (245, 240, 220)), (503, 210))
+                    screen.blit(font.render("Sauvegarde", True, (245, 240, 220)), (460, 310))
+                    screen.blit(font.render("Credits",    True, (245, 240, 220)), (492, 410))
+                    screen.blit(font_titre.render("Paris By Night", True, (245, 240, 220)), (355, 10))
+                                        
     elif etat == "credits":
         credits.afficher_credits(screen, font)
                         
@@ -65,10 +59,3 @@ while running == True:
     if event.type == pygame.QUIT:
         running = False
         pygame.quit()
-
-
-
-
-
-
-
