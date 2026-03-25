@@ -2,7 +2,6 @@ import pygame
 import math
 from camera import *
 
- 
 pygame.init()
 font = pygame.font.Font(None,40)
 width = 1080
@@ -42,7 +41,6 @@ class Player:
         draw_y = self.rect.centery - offset.y
         pygame.draw.circle(screen, (255, 0, 0), (int(draw_x), int(draw_y)), self.radius)
 
-
 # Initialisation joueur + caméra
 player = Player(300, 200)
 cam    = Camera(player)
@@ -50,7 +48,6 @@ follow = Follow(cam, player)
 border = Border(cam, player)
 auto   = Auto(cam, player)
 cam.setmethod(follow)  # mode caméra actif (follow / border / auto)
-
 
 class monstre:
     def __init__(self,nom,pv,pvmax,attaque,distance,distance_attaque):
@@ -64,22 +61,46 @@ class monstre:
         self.y = 0 #position de départ
         self.attaque_dernier_temps = - 1000
         self.attaque_cooldown = 400
+        self.proj_x = self.x
+        self.proj_y = self.y
+        self.proj_actif = False
+        self.proj_vitesse = 5
+        self.proj_rayon = 8
 
     def draw(self, screen, offset):
         draw_x = self.x - offset.x
         draw_y = self.y - offset.y
         pygame.draw.circle(screen, (99, 69, 45), (int(draw_x), int(draw_y)), 20)
 
+        if self.proj_actif:
+            proj_draw_x = int(self.proj_x - offset.x)
+            proj_draw_y = int(self.proj_y - offset.y)
+            pygame.draw.circle(screen, (255, 165, 0), (proj_draw_x, proj_draw_y), self.proj_rayon)
+
     def attaque_m(self,player):
         dx = self.x - player.rect.centerx
         dy = self.y - player.rect.centery
         distance_reelle = math.sqrt(int(dx**2 + dy**2)) # avec le théoreme de Pythagore on calcule la distance entre le monstre et le joueur
         temps =  pygame.time.get_ticks()
-
         if self.distance_attaque >= distance_reelle and temps - self.attaque_dernier_temps >= self.attaque_cooldown :
             self.attaque_dernier_temps = temps
-            if temps - player.invincible_temps >= player.duree_invincibilite:  
-                player.pv -= self.attaque    
+            self.proj_x = self.x
+            self.proj_y = self.y
+            if temps - player.invincible_temps >= player.duree_invincibilite and player.pv >= 0:  
+                self.proj_actif = True
+                
+        if self.proj_actif:
+            ddx = player.rect.centerx - self.proj_x
+            ddy = player.rect.centery - self.proj_y
+            dist = math.sqrt(ddx**2 + ddy**2)
+            self.proj_x += (ddx / dist) * self.proj_vitesse
+            self.proj_y += (ddy / dist) * self.proj_vitesse 
+
+            if player.rect.collidepoint(self.proj_x,self.proj_y):
+                player.pv -= self.attaque
+                self.proj_actif = False    
+          
+                
 
     def deplacement(self,player):
         dx = self.x - player.rect.centerx
@@ -96,7 +117,6 @@ class monstre:
                     self.y -= 3*speed//5
                 else:
                     self.y += 3*speed//5
-
         else:
             pass # le monstre fait sa ronde
 
@@ -117,8 +137,6 @@ while running:
  
     screen.fill((201, 158, 89))
 
-    
- 
     # déplacement du personnage uniforme dans chaque directions
     touches = pygame.key.get_pressed()
     if player.pv > 0:
@@ -186,7 +204,6 @@ while running:
                 temps =  pygame.time.get_ticks()
                 player.invincible_temps = temps
                 
-
     Julien.attaque_m(player)
     Julien.deplacement(player)
     Julien.draw(screen, cam.offset)
@@ -194,6 +211,5 @@ while running:
     pygame.draw.circle(screen, (0, 0, 255), (100 - int(cam.offset.x), 50 - int(cam.offset.y)), 20)
  
     pygame.display.update()
-    
     
 pygame.quit()
