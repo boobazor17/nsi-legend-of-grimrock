@@ -2,6 +2,7 @@ import pygame
 pygame.init()
 import credits
 import sauvegarde
+import jouer
 
 # generer la fenetre du jeu 
 pygame.display.set_caption("caca")
@@ -22,6 +23,8 @@ while running == True:
                     etat = "credits"
                 elif bouton_sauvegarde.collidepoint(event.pos):
                     etat = "sauvegarde"
+                elif bouton_jouer.collidepoint(event.pos):
+                    etat = "jouer"
 
     if etat == "menu":
                     # bouton
@@ -49,6 +52,9 @@ while running == True:
                         
     elif etat == "sauvegarde":
         sauvegarde.afficher_sauvegarde(screen, font)
+
+    elif etat == "jouer":
+        jouer.lancer()
 
 
             
