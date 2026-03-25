@@ -91,16 +91,19 @@ def lancer():
              if temps - player.invincible_temps >= player.duree_invincibilite and player.pv >= 0:  
                  self.proj_actif = True
                  
-         if self.proj_actif:
-             ddx = player.rect.centerx - self.proj_x
-             ddy = player.rect.centery - self.proj_y
-             dist = math.sqrt(ddx**2 + ddy**2)
-             self.proj_x += (ddx / dist) * self.proj_vitesse
-             self.proj_y += (ddy / dist) * self.proj_vitesse 
- 
-             if player.rect.collidepoint(self.proj_x,self.proj_y):
-                 player.pv -= self.attaque
-                 self.proj_actif = False    
+          if self.proj_actif and temps - self.attaque_dernier_temps <= 1500:
+              ddx = player.rect.centerx - self.proj_x
+              ddy = player.rect.centery - self.proj_y
+              dist = math.sqrt(ddx**2 + ddy**2)
+              self.proj_x += (ddx / dist) * self.proj_vitesse
+              self.proj_y += (ddy / dist) * self.proj_vitesse 
+
+            if player.rect.collidepoint(self.proj_x,self.proj_y):
+                player.pv -= self.attaque
+                self.proj_actif = False    
+          else:
+              self.proj_actif = False # on detruit le projectile , on met le else après le deuxième bloc if car si la condition est False donc tout le bloc est ignoré, y compris le proj_actif = False. Le projectile reste donc actif indéfiniment. :(
+                
            
                  
  
