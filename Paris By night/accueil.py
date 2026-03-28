@@ -3,6 +3,7 @@ pygame.init()
 import credits
 import sauvegarde
 import jouer
+import assets 
 
 # generer la fenetre du jeu 
 pygame.display.set_caption("caca")
@@ -10,6 +11,9 @@ screen = pygame.display.set_mode((1080,720 ))
 
 font = pygame.font.Font(None,40)
 font_titre = pygame.font.Font(None,80)
+
+images = assets.charger_images()  
+tower_img = images["tower"] 
 
 etat = "menu"
 running = True
@@ -27,19 +31,33 @@ while running == True:
     screen.fill((201,158,89))
     if etat == "menu":
                     # bouton
-                    bouton_jouer = pygame.Rect(440,200,200,50)
-                    pygame.draw.rect(screen,(139,94,44),bouton_jouer)
+                    bouton_jouer = pygame.Rect(100,150,260,130)
+                    pygame.draw.rect(screen,("gold"),bouton_jouer)
+                    pygame.draw.rect(screen, ("goldenrod"), bouton_jouer, 14)
                 
-                    bouton_sauvegarde = pygame.Rect(440,300,200,50)
-                    pygame.draw.rect(screen,(139,94,44),bouton_sauvegarde)
+                    bouton_sauvegarde = pygame.Rect(100,325,260,130)
+                    pygame.draw.rect(screen,("gold"),bouton_sauvegarde)
+                    pygame.draw.rect(screen, ("goldenrod"), bouton_sauvegarde, 14)
                 
-                    bouton_credits = pygame.Rect(440,400,200,50)
-                    pygame.draw.rect(screen,(139,94,44),bouton_credits)
+                    bouton_credits = pygame.Rect(100,500,260,130)
+                    pygame.draw.rect(screen,("gold"),bouton_credits)
+                    pygame.draw.rect(screen, ("goldenrod"), bouton_credits, 14)
                 
-                    screen.blit(font.render("Jouer",      True, (245, 240, 220)), (503, 210))
-                    screen.blit(font.render("Sauvegarde", True, (245, 240, 220)), (460, 310))
-                    screen.blit(font.render("Credits",    True, (245, 240, 220)), (492, 410))
-                    screen.blit(font_titre.render("Paris By Night", True, (245, 240, 220)), (355, 10))
+                    texte1 = font.render("JOUER", True, ('MidnightBlue'))
+                    texte2 = font.render("SAUVEGARDE", True, ('MidnightBlue'))
+                    texte3 = font.render("CREDITS", True, ('MidnightBlue'))
+                    texte4a = font_titre.render("PARIS", True, ("lightsteelblue"))
+                    texte4b = font_titre.render("BY", True, ("lightsteelblue"))
+                    texte4c = font_titre.render("NIGHT", True, ("lightsteelblue"))
+                    
+                    screen.blit(tower_img, (380, 10))
+                    
+                    screen.blit(texte1,(185,200))
+                    screen.blit(texte2,(136,380))
+                    screen.blit(texte3,(173,555))
+                    screen.blit(texte4a, (400, 150))
+                    screen.blit(texte4b, (530, 320))
+                    screen.blit(texte4c, (400, 500))
                                         
     elif etat == "credits":
         credits.afficher_credits(screen, font)
@@ -52,7 +70,6 @@ while running == True:
 
 
             
-
     # mettre à jour l'écran
     pygame.display.update()
 
