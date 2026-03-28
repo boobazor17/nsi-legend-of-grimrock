@@ -1,0 +1,8 @@
+import pygame
+ 
+def charger_images():
+    tower = pygame.image.load("assets/tower.png").convert_alpha()
+    return {
+        "tower": tower
+    }
+ 
