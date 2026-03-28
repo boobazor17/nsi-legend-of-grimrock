@@ -24,7 +24,7 @@ def lancer():
     cam.setmethod(follow)  # mode caméra actif (follow / border / auto)
     
     
-    Julien = monstre("Julien" , 50, 60, 10, 220, 100)
+    ennemi1 = monstre("ennemi1" , 50, 60, 10, 220, 100)
     
     clock   = pygame.time.Clock()
     running = True
@@ -105,9 +105,9 @@ def lancer():
                     temps =  pygame.time.get_ticks()
                     player.invincible_temps = temps
                     
-        Julien.attaque_m(player)
-        Julien.deplacement(player)
-        Julien.draw(screen, cam.offset)
+        ennemi1.attaque_m(player)
+        ennemi1.deplacement(player)
+        ennemi1.draw(screen, cam.offset)
         # Exemple d'objet fixe dans le monde (cercle bleu)
         pygame.draw.circle(screen, (0, 0, 255), (100 - int(cam.offset.x), 50 - int(cam.offset.y)), 20)
     
