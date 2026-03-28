@@ -10,7 +10,7 @@ pygame.display.set_caption("caca")
 screen = pygame.display.set_mode((1080,720 ))
 
 font = pygame.font.Font(None,40)
-font_titre = pygame.font.Font(None,80)
+font_titre = pygame.font.Font(None,220)
 
 images = assets.charger_images()  
 tower_img = images["tower"] 
@@ -28,7 +28,7 @@ while running == True:
                 elif bouton_jouer.collidepoint(event.pos):
                     etat = "jouer"
 
-    screen.fill(("midnightblue"))
+    screen.fill(("Midnightblue"))
     if etat == "menu":
                     # bouton
                     bouton_jouer = pygame.Rect(100,150,260,130)
