@@ -28,7 +28,7 @@ while running == True:
                 elif bouton_jouer.collidepoint(event.pos):
                     etat = "jouer"
 
-    screen.fill((201,158,89))
+    screen.fill(("midnightblue"))
     if etat == "menu":
                     # bouton
                     bouton_jouer = pygame.Rect(100,150,260,130)
