@@ -20,6 +20,9 @@ class monstre:
             self.proj_actif = False
             self.proj_vitesse = 5
             self.proj_rayon = 8
+            # pour les déplacements automatiques du monstre
+            self.waypoints = [(self.x, self.y), (self.x +200, self.y), (self.x +200, self.y+ 200), (self.x, self.y+200)]  # un carré par défaut
+            self.waypoint_actuel = 0 
     
         def draw(self, screen, offset):
             draw_x = self.x - offset.x
@@ -74,8 +77,16 @@ class monstre:
                         self.y -= 3*speed//5
                     else:
                         self.y += 3*speed//5
-            else:
-                pass # le monstre fait sa ronde
+            else:  # ronde — on récupère le waypoint actuel
+                cible_x, cible_y = self.waypoints[self.waypoint_actuel]
+                distance_x= cible_x - self.x 
+                distance_y = cible_y - self.y 
+                distance_total = math.sqrt(distance_x**2 + distance_y**2)
+                if distance_total < 10 and distance_total > - 10 :
+                    self.waypoint_actuel = (self.waypoint_actuel + 1) % len(self.waypoints)
+                else:
+                    self.x += (distance_x / distance_total) * 2*speed//5  # normalisé !
+                    self.y += (distance_y / distance_total) * 2*speed//5
 
 """# Classe Player — le cercle rouge est le personnage
     class Personnage:
