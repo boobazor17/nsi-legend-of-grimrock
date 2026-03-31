@@ -38,8 +38,11 @@ class Follow(CamScroll):
         self.camera.offset_float.y += (self.player.rect.y - self.camera.offset_float.y + self.camera.CONST.y) / 20
         self.camera.offset.x = int(self.camera.offset_float.x)
         self.camera.offset.y = int(self.camera.offset_float.y)
- 
- 
+    
+    def appliquer(self, position):
+        return (int(position.x - self.camera.offset.x), 
+                int(position.y - self.camera.offset.y))
+    
 class Border(CamScroll):
     def __init__(self, camera, player):
         super().__init__(camera, player)
