@@ -1,6 +1,6 @@
 import pygame
 pygame.init()
-
+from camera import *
 
 
 class Player:
@@ -11,8 +11,15 @@ class Player:
             self.pvmax = 100
             self.invincible_temps =  - 1000
             self.duree_invincibilite = 2000
+            self.position = pygame.math.Vector2(x,y)
     
-        def draw(self, screen, offset):
-            draw_x = self.rect.centerx - offset.x
-            draw_y = self.rect.centery - offset.y
-            pygame.draw.circle(screen, (255, 0, 0), (int(draw_x), int(draw_y)), self.radius)
+        def draw(self, screen, follow):
+            pygame.draw.circle(screen, (255, 0, 0), follow.appliquer(self.position) , self.radius)
+
+        def attaque():
+             
+
+
+             # Personnages jouables — chacun a ses propres stats
+            Fantome = Player("Fantome", 100, 100, 20)
+            Rat     = Player("Rat",     50,  50,  10)
