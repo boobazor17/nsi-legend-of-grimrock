@@ -24,7 +24,7 @@ def lancer():
     cam.setmethod(follow)  # mode caméra actif (follow / border / auto)
     
     
-    ennemi1 = monstre("ennemi1" , 50, 60, 10, 220, 100)
+    ennemi1 = monstre(0,0,"ennemi1" , 50, 60, 10, 220, 100)
     
     clock   = pygame.time.Clock()
     running = True
@@ -43,25 +43,26 @@ def lancer():
         if player.pv > 0:
             if touches[pygame.K_z] or touches[pygame.K_UP]:
                 if (touches[pygame.K_d] or touches[pygame.K_RIGHT]) ^ (touches[pygame.K_q] or touches[pygame.K_LEFT]): # ^ = ou exclusif (xor)
-                    player.rect.y -= speed / math.sqrt(2)
+                    player.position.y -= speed / math.sqrt(2)
                 else:
-                    player.rect.y -= speed
+                    player.position.y -= speed
             if touches[pygame.K_s] or touches[pygame.K_DOWN]:
                 if (touches[pygame.K_d] or touches[pygame.K_RIGHT]) ^ (touches[pygame.K_q] or touches[pygame.K_LEFT]):
-                    player.rect.y += speed / math.sqrt(2)
+                    player.position.y += speed / math.sqrt(2)
                 else:
-                    player.rect.y += speed
+                    player.position.y += speed
             if touches[pygame.K_q] or touches[pygame.K_LEFT]:
                 if (touches[pygame.K_z] or touches[pygame.K_UP]) ^ (touches[pygame.K_s] or touches[pygame.K_DOWN]):
-                    player.rect.x -= speed / math.sqrt(2)
+                    player.position.x -= speed / math.sqrt(2)
                 else:
-                    player.rect.x -= speed
+                    player.position.x -= speed
             if touches[pygame.K_d] or touches[pygame.K_RIGHT]:
                 if (touches[pygame.K_z] or touches[pygame.K_UP]) ^ (touches[pygame.K_s] or touches[pygame.K_DOWN]):
-                    player.rect.x += speed / math.sqrt(2)
+                    player.position.x += speed / math.sqrt(2)
                 else:
-                    player.rect.x += speed
+                    player.position.x += speed
     
+        player.rect.center = player.position
         # création de la barre de vie , rectangle noir puis rectangle rouge représentant la vie
         hpb_w = 200
         hpb_h = 12
@@ -81,7 +82,7 @@ def lancer():
     
         # Dessin du joueur
         if player.pv > 0:
-            player.draw(screen, cam.offset)
+            player.draw(screen,follow)
     
         if player.pv <= 0:
                 # dimensions du bouton
@@ -107,7 +108,7 @@ def lancer():
                     
         ennemi1.attaque_m(player)
         ennemi1.deplacement(player)
-        ennemi1.draw(screen, cam.offset)
+        ennemi1.draw(screen, follow)
         # Exemple d'objet fixe dans le monde (cercle bleu)
         pygame.draw.circle(screen, (0, 0, 255), (100 - int(cam.offset.x), 50 - int(cam.offset.y)), 20)
     
