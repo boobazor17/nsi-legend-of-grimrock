@@ -3,7 +3,7 @@ pygame.init()
 import credits
 import sauvegarde
 import jouer
-import assets 
+import assetss
 
 # generer la fenetre du jeu 
 pygame.display.set_caption("caca")
@@ -12,7 +12,7 @@ screen = pygame.display.set_mode((1080,720 ))
 font = pygame.font.Font(None,40)
 font_titre = pygame.font.Font(None,220)
 
-images = assets.charger_images()  
+images = assetss.charger_images()  
 tower_img = images["tower"] 
 
 etat = "menu"
@@ -27,6 +27,9 @@ while running == True:
                     etat = "sauvegarde"
                 elif bouton_jouer.collidepoint(event.pos):
                     etat = "jouer"
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE and etat == "credits":
+                etat = "menu"
 
     screen.fill(("Midnightblue"))
     if etat == "menu":
@@ -61,14 +64,18 @@ while running == True:
                                         
     elif etat == "credits":
         credits.afficher_credits(screen, font)
+        
+        
                         
     elif etat == "sauvegarde":
         sauvegarde.afficher_sauvegarde(screen, font)
 
     elif etat == "jouer":
         jouer.lancer()
-
-
+       
+    if etat == "credits" or etat == "sauvegarde":
+        if event.type == pygame.QUIT:
+                etat = "menu"
             
     # mettre à jour l'écran
     pygame.display.update()
