@@ -48,13 +48,12 @@ class Vase(Object): # tout ce qui est physique
         self.ouvert = False
         
 
-    def interaction (self,player,screen, font, follow):
+    def interaction (self,player,screen, font, follow, inventaire):
         dx = self.position.x - player.rect.centerx
         dy = self.position.y - player.rect.centery
         distance_reelle = math.sqrt(int(dx**2 + dy**2))
         texte_x =  int(self.position.x - follow.camera.offset.x) 
         texte_y =  int(self.position.y - follow.camera.offset.y) - 50
-       
         texte = font.render("E", True, (255, 255, 255))
         if self.distance >= distance_reelle and not self.ouvert:
             pygame.draw.circle(screen,("gold"), (texte_x+10, texte_y+10), 20) # cercle doré autour du E pour indiquer que le joueur peut interagir avec le vase
@@ -65,14 +64,17 @@ class Vase(Object): # tout ce qui est physique
             self.image = pygame.transform.scale(self.image_originale, (int(self.width), int(self.height)))
             touches = pygame.key.get_pressed()
             if touches[pygame.K_e]:
+                    potion_vie = item("potion de soin", 50, 50, 20, (255, 0, 255), "assets/potion_vie.png")
                     self.ouvert = True
                     self.image = self.image_originale
-                    #inventaire.ajouter(item("potion de soin", 50, 50, 20))
+                    mon_inventaire = inventaire()  # Crée une instance
+                    mon_inventaire.ajouter(potion_vie) # Appelle la méthode sur l'instance car sinon appelle inventaire.ajouter sur la classe elle-même au lieu d'une instance de la classe.
+                    print (mon_inventaire.items[0].nom) 
         else:           
             self.image = self.image_originale
                         
 
-"""class item(Object): # tout ce qui est dans l'inventaire
+class item(Object): # tout ce qui est dans l'inventaire
     def __init__(self, nom, height, width, effet, couleur=(255,255,255), Image=None):
         super().__init__(0, 0, width, height, couleur, Image)  
         self.nom = nom
@@ -84,9 +86,11 @@ class Vase(Object): # tout ce qui est physique
 class inventaire:
     def __init__(self):
         self.items = []
+        
 
     def ajouter(self, nouvel_item):
         self.items.append(nouvel_item)
+        
 
     def draw(self, screen, ouvert):
         if not ouvert:
@@ -111,4 +115,4 @@ class inventaire:
 
                     
                     
-        """
+        
