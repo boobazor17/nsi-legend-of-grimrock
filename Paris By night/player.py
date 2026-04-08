@@ -33,9 +33,5 @@ class Player(Physique):
             Fantome = Player("Fantome", 100, 100, 20)
             Rat     = Player("Rat",     50,  50,  10)
 
-"""liste_personnages = ["Fantome", "Rat"]
-l=[]
-if len (l)==0:
-    for i in range (len(liste_personnages)):
-        l.append(Player(liste_personnages[i], 100, 100, 20))"""
+
         

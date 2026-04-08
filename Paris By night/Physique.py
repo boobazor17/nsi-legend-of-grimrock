@@ -2,6 +2,7 @@ import pygame
 import os  
 import math
 pygame.init()
+font = pygame.font.Font(None,40)
 
 class Physique:
     def __init__(self,x,y,width,height,):
@@ -38,30 +39,68 @@ class Object:
             self.image.fill(couleur)
     
     
-class Vase(Object):
+class Vase(Object): # tout ce qui est physique
     def __init__(self, x, y):
         super().__init__(x, y, 50, 50, (255, 0, 0), "assets/vase.png")
         self.position = pygame.math.Vector2(x,y)
-        self.distance = 1000
+        self.distance = 200
         self.ouvert = False
         
 
-    def interaction (self,player):
-        l =[]
-
+    def interaction (self,player,screen, font, follow):
         dx = self.position.x - player.rect.centerx
         dy = self.position.y - player.rect.centery
         distance_reelle = math.sqrt(int(dx**2 + dy**2))
+        texte_x =  int(self.position.x - follow.camera.offset.x) 
+        texte_y =  int(self.position.y - follow.camera.offset.y) - 50
+       
+        texte = font.render("E", True, (255, 255, 255))
         if self.distance >= distance_reelle and not self.ouvert:
-            
+            pygame.draw.circle(screen,("gold"), (texte_x+10, texte_y+10), 20) # cercle doré autour du E pour indiquer que le joueur peut interagir avec le vase
+            screen.blit(texte, (texte_x, texte_y))
             touches = pygame.key.get_pressed()
             if touches[pygame.K_e]:
                     self.ouvert = True
-                    l.append("potion de soin")
-                    print(l)
+                    #inventaire.ajouter(item("potion de soin", 50, 50, 20))
                         
 
+"""class item(Object): # tout ce qui est dans l'inventaire
+    def __init__(self, nom, height, width, effet, couleur=(255,255,255), Image=None):
+        super().__init__(0, 0, width, height, couleur, Image)  
+        self.nom = nom
+        self.effet = effet
 
+    # potion_de_soin = item("potion de soin", 50)
     
 
-        
+class inventaire:
+    def __init__(self):
+        self.items = []
+
+    def ajouter(self, nouvel_item):
+        self.items.append(nouvel_item)
+
+    def draw(self, screen, ouvert):
+        if not ouvert:
+            return
+        fond = pygame.Surface((400, 400), pygame.SRCALPHA)
+        fond.fill((0, 0, 0, 180))
+        screen.blit(fond, (340, 160))
+
+        # affiche les 16 cases même vides
+        for i in range(16):
+            col = i % 4
+            row = i // 4
+            case_x = 350 + col * 90
+            case_y = 170 + row * 90
+            pygame.draw.rect(screen, (100, 80, 60), (case_x, case_y, 80, 80))
+            pygame.draw.rect(screen, (60, 40, 20), (case_x, case_y, 80, 80), 2)  # bordure
+
+            # si un item occupe cette case
+            if i < len(self.items):
+                screen.blit(self.items[i].image, (case_x, case_y))
+
+
+                    
+                    
+        """

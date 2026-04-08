@@ -15,7 +15,8 @@ def lancer():
     width = 1080
     height = 720
     speed = 10
-    
+
+
     vase1 = Vase(200, 500)
     list_object =[
     vase1 ]
@@ -95,15 +96,15 @@ def lancer():
         if not paused and not inventory:
             player.position += player.velocity
             player.rect.center = player.position
-            for object in list_object:
-                pygame.draw.rect(screen, (255,0,0), (object.rect.x - int(cam.offset.x), object.rect.y - int(cam.offset.y), object.rect.width, object.rect.height), 2)
+            for object in list_object: # check tous les objets de la liste pour voir s'il y a une collision avec le joueur
+                pygame.draw.rect(screen, (255,0,0), (object.rect.x - int(cam.offset.x), object.rect.y - int(cam.offset.y), object.rect.width, object.rect.height), 2) #  dessine les hitbox des objets en rouge 
                 screen.blit(object.image, follow.appliquer(object.position))
             player.collisions(list_object) 
-            vase1.interaction(player)
+            vase1.interaction(player,screen, font, follow)
             cam.scroll()
         else:
             for object in list_object:
-                pygame.draw.rect(screen, (255,0,0), (object.rect.x - int(cam.offset.x), object.rect.y - int(cam.offset.y), object.rect.width, object.rect.height), 2) #  dessine les hitbox des objets 
+                pygame.draw.rect(screen, (255,0,0), (object.rect.x - int(cam.offset.x), object.rect.y - int(cam.offset.y), object.rect.width, object.rect.height), 2) #  dessine les hitbox des objets en rouge
                 screen.blit(object.image, follow.appliquer(object.position))
 
         # création de la barre de vie , rectangle noir puis rectangle rouge représentant la vie
@@ -177,14 +178,14 @@ def lancer():
         ennemi1.draw(screen, follow)
         
 
-        if inventory and player.pv > 0 :
-            hpb_w = 480
-            hpb_h = 240
+        if inventory and player.pv > 0 and not paused:
+            hpb_w = 500
+            hpb_h = 300
             hpb_x = width/2 - hpb_w/2
             hpb_y = height/2 - hpb_h/2
             t2 = pygame.time.get_ticks() # réinitialisation du timer pour éviter les appuis rapides qui font bug le menu pause
-            
+
             screen.blit(image_invent, (hpb_x, hpb_y )) # affichage de l'inventaire du joueur dans le menu inventaire
-            
+
         pygame.display.update()
     pygame.quit()
