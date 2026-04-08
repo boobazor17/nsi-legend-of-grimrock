@@ -100,7 +100,7 @@ def lancer():
                 pygame.draw.rect(screen, (255,0,0), (object.rect.x - int(cam.offset.x), object.rect.y - int(cam.offset.y), object.rect.width, object.rect.height), 2) #  dessine les hitbox des objets en rouge 
                 screen.blit(object.image, follow.appliquer(object.position))
             player.collisions(list_object) 
-            vase1.interaction(player,screen, font, follow)
+            vase1.interaction(player,screen, font, follow, inventaire)
             cam.scroll()
         else:
             for object in list_object:
