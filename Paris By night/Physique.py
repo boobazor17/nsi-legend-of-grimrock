@@ -41,7 +41,8 @@ class Object:
     
 class Vase(Object): # tout ce qui est physique
     def __init__(self, x, y):
-        super().__init__(x, y, 50, 50, (255, 0, 0), "assets/vase.png")
+        super().__init__(x, y, 50, 50, (255, 0, 0),"assets/vase.png")
+        self.image_originale = self.image
         self.position = pygame.math.Vector2(x,y)
         self.distance = 200
         self.ouvert = False
@@ -58,10 +59,17 @@ class Vase(Object): # tout ce qui est physique
         if self.distance >= distance_reelle and not self.ouvert:
             pygame.draw.circle(screen,("gold"), (texte_x+10, texte_y+10), 20) # cercle doré autour du E pour indiquer que le joueur peut interagir avec le vase
             screen.blit(texte, (texte_x, texte_y))
+            u = pygame.time.get_ticks()
+            self.width = 50 +  math.sin(u/200) * 2.5
+            self.height = 50 +  math.sin(u/200) * 2.5
+            self.image = pygame.transform.scale(self.image_originale, (int(self.width), int(self.height)))
             touches = pygame.key.get_pressed()
             if touches[pygame.K_e]:
                     self.ouvert = True
+                    self.image = self.image_originale
                     #inventaire.ajouter(item("potion de soin", 50, 50, 20))
+        else:           
+            self.image = self.image_originale
                         
 
 """class item(Object): # tout ce qui est dans l'inventaire
