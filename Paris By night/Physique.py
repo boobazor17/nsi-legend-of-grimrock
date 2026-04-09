@@ -92,25 +92,23 @@ class inventaire:
         self.items.append(nouvel_item)
         
 
-    def draw(self, screen, ouvert):
-        if not ouvert:
-            return
+    def draw(self, screen):
         fond = pygame.Surface((400, 400), pygame.SRCALPHA)
         fond.fill((0, 0, 0, 180))
         screen.blit(fond, (340, 160))
 
         # affiche les 16 cases même vides
-        for i in range(16):
-            col = i % 4
-            row = i // 4
-            case_x = 350 + col * 90
-            case_y = 170 + row * 90
-            pygame.draw.rect(screen, (100, 80, 60), (case_x, case_y, 80, 80))
-            pygame.draw.rect(screen, (60, 40, 20), (case_x, case_y, 80, 80), 2)  # bordure
+        for i in range(4):
+            for j in range(4):
+                case_x = 350 + j * 90  # j pour les colonnes, i pour les lignes
+                case_y = 170 + i * 90
+                pygame.draw.rect(screen, (100, 80, 60), (case_x, case_y, 80, 80))
+                pygame.draw.rect(screen, (60, 40, 20), (case_x, case_y, 80, 80), 2)  # bordure
 
             # si un item occupe cette case
             if i < len(self.items):
-                screen.blit(self.items[i].image, (case_x, case_y))
+                image = self.items[i].image
+                screen.blit(image, (case_x, case_y))
 
 
                     
