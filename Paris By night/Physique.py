@@ -46,9 +46,9 @@ class Vase(Object): # tout ce qui est physique
         self.position = pygame.math.Vector2(x,y)
         self.distance = 200
         self.ouvert = False
-        
 
-    def interaction (self,player,screen, font, follow, inventaire):
+
+    def interaction (self,player,screen, font, follow, mon_inventaire):
         dx = self.position.x - player.rect.centerx
         dy = self.position.y - player.rect.centery
         distance_reelle = math.sqrt(int(dx**2 + dy**2))
@@ -67,7 +67,7 @@ class Vase(Object): # tout ce qui est physique
                     potion_vie = item("potion de soin", 50, 50, 20, (255, 0, 255), "assets/potion_vie.png")
                     self.ouvert = True
                     self.image = self.image_originale
-                    mon_inventaire = inventaire()  # Crée une instance
+                    
                     mon_inventaire.ajouter(potion_vie) # Appelle la méthode sur l'instance car sinon appelle inventaire.ajouter sur la classe elle-même au lieu d'une instance de la classe.
                     print (mon_inventaire.items[0].nom) 
         else:           
@@ -93,23 +93,37 @@ class inventaire:
         
 
     def draw(self, screen):
-        fond = pygame.Surface((400, 400), pygame.SRCALPHA)
-        fond.fill((0, 0, 0, 180))
-        screen.blit(fond, (340, 160))
 
         # affiche les 16 cases même vides
         for i in range(4):
             for j in range(4):
-                case_x = 350 + j * 90  # j pour les colonnes, i pour les lignes
-                case_y = 170 + i * 90
-                pygame.draw.rect(screen, (100, 80, 60), (case_x, case_y, 80, 80))
-                pygame.draw.rect(screen, (60, 40, 20), (case_x, case_y, 80, 80), 2)  # bordure
+                index = i * 4 + j
+                case_x = 590 + j * 45  # j pour les colonnes, i pour les lignes
+                case_y = 280 + i * 45
+                pygame.draw.rect(screen, (100, 80, 60), (case_x, case_y, 42, 42))
+                pygame.draw.rect(screen, (60, 40, 20), (case_x, case_y, 42, 42), 2)  # bordure
 
-            # si un item occupe cette case
-            if i < len(self.items):
-                image = self.items[i].image
-                screen.blit(image, (case_x, case_y))
-
+            # mettre dans le même bloc à la suite car Quand Python sort du for j, case_x gardait la dernière valeur calculée soit j=3. C'est pour ça que l'image apparaîssait toujours à droite.
+                if index < len(self.items):
+                    image = self.items[i].image
+                    screen.blit(image, (case_x, case_y))
+                
+                    
+    def utiliser(self, pos_souris, player):
+        for i in range(4):
+            for j in range(4):
+                index = i * 4 + j #  permet de calculer l'index de l'item dans la liste à partir de sa position dans la grille (i, j)
+                case_x = 590 + j * 45
+                case_y = 280 + i * 45
+                case_rect = pygame.Rect(case_x, case_y, 42, 42)
+                if case_rect.collidepoint(pos_souris): # vérifie si la position de la souris est dans la case cliquée
+                    if index < len(self.items): #vérifie s'ilQuand Python sort du for j, case_x garde la dernière valeur calculée soit j=3. C'est pour ça que l'image apparaît toujours à droite.
+                        item_utilise = self.items[index]
+                        player.pv += item_utilise.effet
+                        if player.pv > player.pvmax:
+                            player.pv = player.pvmax
+                        self.items.pop(index)  
+                        return  
 
                     
                     
