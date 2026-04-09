@@ -172,7 +172,7 @@ def lancer():
         
                    
 
-        if not paused:
+        if not paused and ennemi1.pv > 0 :
             ennemi1.attaque_m(player)
             ennemi1.deplacement(player)
             ennemi1.dash(player)
