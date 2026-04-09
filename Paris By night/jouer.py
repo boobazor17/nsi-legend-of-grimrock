@@ -15,7 +15,8 @@ def lancer():
     width = 1080
     height = 720
     speed = 10
-
+    
+    
 
     vase1 = Vase(200, 500)
     list_object =[
@@ -97,7 +98,7 @@ def lancer():
             player.position += player.velocity
             player.rect.center = player.position
             for object in list_object: # check tous les objets de la liste pour voir s'il y a une collision avec le joueur
-                pygame.draw.rect(screen, (255,0,0), (object.rect.x - int(cam.offset.x), object.rect.y - int(cam.offset.y), object.rect.width, object.rect.height), 2) #  dessine les hitbox des objets en rouge 
+                # pygame.draw.rect(screen, (255,0,0), (object.rect.x - int(cam.offset.x), object.rect.y - int(cam.offset.y), object.rect.width, object.rect.height), 2) #  dessine les hitbox des objets en rouge 
                 screen.blit(object.image, follow.appliquer(object.position))
             player.collisions(list_object) 
             vase1.interaction(player,screen, font, follow, inventaire)
@@ -186,6 +187,8 @@ def lancer():
             t2 = pygame.time.get_ticks() # réinitialisation du timer pour éviter les appuis rapides qui font bug le menu pause
 
             screen.blit(image_invent, (hpb_x, hpb_y )) # affichage de l'inventaire du joueur dans le menu inventaire
+            mon_inventaire = inventaire()
+            mon_inventaire.draw(screen)
 
         pygame.display.update()
     pygame.quit()
