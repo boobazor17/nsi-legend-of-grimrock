@@ -35,7 +35,7 @@ def lancer():
 
     chemin = os.path.join(os.path.dirname(__file__), "assets/invent.png")
     image_invent = pygame.image.load(chemin).convert_alpha()
-    image_invent = pygame.transform.scale(image_invent, (480, 240))
+    image_invent = pygame.transform.scale(image_invent, (600, 300))
     
     ennemi1 = monstre(0,0,"ennemi1" , 50, 60, 10, 250, 130)
     
@@ -46,6 +46,7 @@ def lancer():
     paused = False
     t1 = 0
     t2 = 0
+    mon_inventaire = inventaire()
     while running:
         clock.tick(60)
     
@@ -66,6 +67,10 @@ def lancer():
                 if  t2 - 500 > 0:
                     inventory = not inventory
                     t2 = pygame.time.get_ticks()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if inventory:
+                    mon_inventaire.utiliser(event.pos, player)
+
 
 
         screen.fill((201, 158, 89))
@@ -101,7 +106,7 @@ def lancer():
                 # pygame.draw.rect(screen, (255,0,0), (object.rect.x - int(cam.offset.x), object.rect.y - int(cam.offset.y), object.rect.width, object.rect.height), 2) #  dessine les hitbox des objets en rouge 
                 screen.blit(object.image, follow.appliquer(object.position))
             player.collisions(list_object) 
-            vase1.interaction(player,screen, font, follow, inventaire)
+            vase1.interaction(player,screen, font, follow, mon_inventaire)
             cam.scroll()
         else:
             for object in list_object:
@@ -172,7 +177,7 @@ def lancer():
         
                    
 
-        if not paused and ennemi1.pv > 0 :
+        if not paused and ennemi1.pv > 0:
             ennemi1.attaque_m(player)
             ennemi1.deplacement(player)
             ennemi1.dash(player)
@@ -180,15 +185,14 @@ def lancer():
         
 
         if inventory and player.pv > 0 and not paused:
-            hpb_w = 500
+            hpb_w = 600
             hpb_h = 300
             hpb_x = width/2 - hpb_w/2
             hpb_y = height/2 - hpb_h/2
             t2 = pygame.time.get_ticks() # réinitialisation du timer pour éviter les appuis rapides qui font bug le menu pause
 
             screen.blit(image_invent, (hpb_x, hpb_y )) # affichage de l'inventaire du joueur dans le menu inventaire
-            mon_inventaire = inventaire()
             mon_inventaire.draw(screen)
-
+        
         pygame.display.update()
     pygame.quit()
