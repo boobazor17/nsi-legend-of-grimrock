@@ -38,7 +38,7 @@ def lancer():
     image_invent = pygame.transform.scale(image_invent, (600, 300))
     
     ennemi1 = monstre(0,0,"ennemi1" , 50, 60, 10, 250, 130)
-    
+    list_ennemi = [ennemi1]
     clock   = pygame.time.Clock()
     running = True
 
@@ -196,3 +196,5 @@ def lancer():
         
         pygame.display.update()
     pygame.quit()
+        
+
