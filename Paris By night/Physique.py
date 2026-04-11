@@ -65,10 +65,13 @@ class Vase(Object): # tout ce qui est physique
             touches = pygame.key.get_pressed()
             if touches[pygame.K_e]:
                     potion_vie = item("potion de soin", 50, 50, 20, (255, 0, 255), "assets/potion_vie.png")
+                    potion_degat = item("potion de dégats", 50, 50, -20, (255, 0, 255), "assets/potion_degat.png")
                     self.ouvert = True
+                    
                     self.image = self.image_originale
                     
                     mon_inventaire.ajouter(potion_vie) # Appelle la méthode sur l'instance car sinon appelle inventaire.ajouter sur la classe elle-même au lieu d'une instance de la classe.
+                    mon_inventaire.ajouter(potion_degat)
                     print (mon_inventaire.items[0].nom) 
         else:           
             self.image = self.image_originale
@@ -79,6 +82,7 @@ class item(Object): # tout ce qui est dans l'inventaire
         super().__init__(0, 0, width, height, couleur, Image)  
         self.nom = nom
         self.effet = effet
+                    
 
     # potion_de_soin = item("potion de soin", 50)
     
@@ -105,7 +109,7 @@ class inventaire:
 
             # mettre dans le même bloc à la suite car Quand Python sort du for j, case_x gardait la dernière valeur calculée soit j=3. C'est pour ça que l'image apparaîssait toujours à droite.
                 if index < len(self.items):
-                    image = self.items[i].image
+                    image = self.items[index].image
                     screen.blit(image, (case_x, case_y))
                 
                     
@@ -117,14 +121,13 @@ class inventaire:
                 case_y = 280 + i * 45
                 case_rect = pygame.Rect(case_x, case_y, 42, 42)
                 if case_rect.collidepoint(pos_souris): # vérifie si la position de la souris est dans la case cliquée
-                    if index < len(self.items): #vérifie s'ilQuand Python sort du for j, case_x garde la dernière valeur calculée soit j=3. C'est pour ça que l'image apparaît toujours à droite.
+                    if index < len(self.items): #vérifie s'il Quand Python sort du for j, case_x garde la dernière valeur calculée soit j=3. C'est pour ça que l'image apparaît toujours à droite.
                         item_utilise = self.items[index]
                         player.pv += item_utilise.effet
                         if player.pv > player.pvmax:
                             player.pv = player.pvmax
                         self.items.pop(index)  
                         return  
-
                     
                     
         
