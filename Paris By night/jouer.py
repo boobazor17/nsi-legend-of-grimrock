@@ -4,6 +4,7 @@ from camera import *
 from monstre import *
 from player import *
 from Physique import *
+import equipe
 import os
 
 
@@ -16,7 +17,7 @@ def lancer():
     height = 720
     speed = 10
     
-    
+    liste_equipe = [equipe.liste_ts[0],equipe.liste_ts[1],equipe.liste_ts[2],equipe.liste_ts[3]] #définit une équipe de base que l'on pourra modifier par la suite
 
     vase1 = Vase(200, 500)
     list_object =[
@@ -196,5 +197,8 @@ def lancer():
         
         pygame.display.update()
     pygame.quit()
+        
+
+
         
 
