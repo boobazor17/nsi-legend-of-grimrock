@@ -112,6 +112,7 @@ class inventaire:
                     image = self.items[index].image
                     screen.blit(image, (case_x, case_y))
                 
+
                     
     def utiliser(self, pos_souris, player):
         for i in range(4):
@@ -129,5 +130,3 @@ class inventaire:
                         self.items.pop(index)  
                         return  
                     
-                    
-        
