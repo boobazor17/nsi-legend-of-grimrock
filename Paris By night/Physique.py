@@ -1,6 +1,7 @@
 import pygame 
 import os  
 import math
+from camera import *
 pygame.init()
 font = pygame.font.Font(None,40)
 
@@ -129,4 +130,33 @@ class inventaire:
                             player.pv = player.pvmax
                         self.items.pop(index)  
                         return  
+                    
+
+                    
+class projectile:                
+        def __init__(self,x,y,proj_vitesse,proj_rayon,proj_vitesse_x,proj_vitesse_y,proj_degat):
+            self.position_proj = pygame.math.Vector2(x,y)
+            self.proj_actif = False
+            self.proj_vitesse = proj_vitesse
+            self.proj_rayon = proj_rayon
+            self.proj_vitesse_x = proj_vitesse_x
+            self.proj_vitesse_y = proj_vitesse_y 
+            self.proj_degat = proj_degat
+            self.temps_lancement = -100
+             
+        def lancer(self,origine,cible):
+            self.proj_actif = True
+            self.position_proj = origine.copy()
+            ddx=  cible.rect.centerx - self.position_proj.x
+            ddy=  cible.rect.centery - self.position_proj.y
+            dist = math.sqrt(ddx**2 + ddy**2)
+            self.proj_vitesse_x = (ddx / dist) * self.proj_vitesse
+            self.proj_vitesse_y = (ddy / dist) * self.proj_vitesse
+            self.position_proj += (self.proj_vitesse_x, self.proj_vitesse_y)
+
+        def collisions(self,cible):    
+            if self.proj_actif == True:
+                if cible.rect.collidepoint(self.position_proj):
+                    cible.pv -= self.proj_degat
+                    self.proj_actif = False
                     
