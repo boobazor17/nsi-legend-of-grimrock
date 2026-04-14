@@ -2,7 +2,9 @@ import pygame
 import math
 from camera import *
 pygame.init()
-from Physique import Physique
+from Physique import Physique  
+from Physique import projectile
+
 
 speed = 10
 class monstre(Physique):
@@ -16,21 +18,18 @@ class monstre(Physique):
             self.distance_attaque = distance_attaque
             self.attaque_dernier_temps = - 1000
             self.attaque_cooldown = 400
-            self.position_proj = pygame.math.Vector2(x,y)
-            self.proj_actif = False
-            self.proj_vitesse = 5
-            self.proj_rayon = 8
             self.waypoints = [self.position.copy(), self.position+(200,0), self.position+(200,200), self.position+(0,200)]  # un carré par défaut
             self.waypoint_actuel = 0
+            self.proj = projectile(x, y, 5, 8, 0, 0, 10) # initialisation du projectile (position(x,y)  vitesse , rayon, vitesse_x, vitesse_y, degat)
     
         def draw(self, screen, follow):
             if self.pv > 0:
                 pygame.draw.circle(screen, (99, 69, 45), follow.appliquer(self.position), 20)
 
-            if self.proj_actif:
-                pygame.draw.circle(screen, (255, 165, 0), follow.appliquer(self.position_proj), self.proj_rayon)
+            if self.proj.proj_actif:
+                pygame.draw.circle(screen, (255, 165, 0), follow.appliquer(self.proj.position_proj), self.proj.proj_rayon)
     
-        def attaque_m(self,player):
+        def attaque_m(self,player,list_object):
             if self.pv > 0:
                 dx = self.position.x - player.rect.centerx
                 dy = self.position.y - player.rect.centery
@@ -39,20 +38,17 @@ class monstre(Physique):
                 if self.distance_attaque >= distance_reelle and temps - self.attaque_dernier_temps >= self.attaque_cooldown :
                     self.attaque_dernier_temps = temps
                     if temps - player.invincible_temps >= player.duree_invincibilite and player.pv >= 0:  
-                        self.proj_actif = True
-                        self.position_proj = self.position.copy()
-                        ddx = player.rect.centerx - self.position_proj.x
-                        ddy = player.rect.centery - self.position_proj.y
-                        dist = math.sqrt(ddx**2 + ddy**2)
-                        self.proj_vitesse_x = (ddx / dist) * self.proj_vitesse
-                        self.proj_vitesse_y = (ddy / dist) * self.proj_vitesse 
-                if self.proj_actif and temps - self.attaque_dernier_temps <= 1500:
-                    self.position_proj += (self.proj_vitesse_x, self.proj_vitesse_y)
-                    if player.rect.collidepoint(self.position_proj):
-                        player.pv -= self.attaque
-                        self.proj_actif = False
+                        self.proj.lancer(self.position,player)
+                        self.proj.position_proj += (self.proj.proj_vitesse_x, self.proj.proj_vitesse_y)
+                    else :
+                        for object in list_object: # check tous les objets de la liste pour voir s'il y a une collision avec le projectile
+                            if object.rect.collidepoint(self.proj.position_proj):    
+                                self.proj.proj_actif = False
+                if self.proj.proj_actif and temps - self.attaque_dernier_temps <= 1500:
+                    self.proj.position_proj += (self.proj.proj_vitesse_x, self.proj.proj_vitesse_y)
+                    self.proj.collisions(player)            
                 else:
-                    self.proj_actif = False # on detruit le projectile , on met le else après le deuxième bloc if car si la condition est False donc tout le bloc est ignoré, y compris le proj_actif = False. Le projectile reste donc actif indéfiniment. :(
+                    self.proj.proj_actif = False # on detruit le projectile , on met le else après le deuxième bloc if car si la condition est False donc tout le bloc est ignoré, y compris le proj_actif = False. Le projectile reste donc actif indéfiniment. :(
                     
             
                     
@@ -63,16 +59,13 @@ class monstre(Physique):
                 dy = self.position.y - player.rect.centery
                 distance_reelle = math.sqrt(int(dx**2 + dy**2))
                 if self.distance >= distance_reelle and player.pv > 0:
-                    if dx >= 70 or dx <= -70 :
-                        if dx >= 50:
-                            self.position.x -= 3*speed//5
-                        else:
-                            self.position.x += 3*speed//5
-                    if dy >= 70 or dy <= -70:
-                        if dy >= 70:
-                            self.position.y -= 3*speed//5
-                        else:
-                            self.position.y += 3*speed//5
+                    if distance_reelle == 0:
+                        distance_reelle = 1  # pour éviter la division par zéro
+                    if distance_reelle > 70:
+                            # Déplacement normalisé : dx/distance_reelle donne la direction (entre -1 et 1) et on multiplie par la vitesse pour garder une vitesse constante quelle que soit la direction
+                            self.position.x -= (dx / distance_reelle) * 3*speed/5  # normalisé
+                       
+                            self.position.y -= (dy / distance_reelle) * 3*speed/5  # normalisé
                 else:  # ronde — on récupère le waypoint actuel
                     cible_x, cible_y = self.waypoints[self.waypoint_actuel]
                     distance_x = cible_x - self.position.x 
@@ -99,5 +92,7 @@ class monstre(Physique):
                         self.position.x = player.rect.centerx + (10 if dx >= 0 else -10)
                         self.position.y = player.rect.centery + (10 if dy >= 0 else -10)
                         player.pv -= 3 * self.attaque
+
+
 
 
