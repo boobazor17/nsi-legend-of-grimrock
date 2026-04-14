@@ -16,8 +16,6 @@ def lancer():
     width = 1080
     height = 720
     speed = 10
-    
-    liste_equipe = [equipe.liste_ts[0],equipe.liste_ts[1],equipe.liste_ts[2],equipe.liste_ts[3]] #définit une équipe de base que l'on pourra modifier par la suite
 
     vase1 = Vase(200, 500)
     list_object =[
@@ -26,6 +24,17 @@ def lancer():
     screen = pygame.display.set_mode((width, height))
     pygame.display.set_caption("Fenêtre d'accueil")
     
+    fantome_perso1 = equipe.equipe(0,0,"fantome",100,100,20,100,"assets/personnage log/fantome.png")
+                    
+    rat_perso2 =  equipe.equipe(0,0,"rat", 100, 20,20,20,"assets/personnage log/rat.png")
+                    
+    pigeon_perso3 = equipe.equipe(0,0,"nom",100,20,20,20,"assets/personnage log/pigeon.png")
+                
+    perso4 = equipe.equipe(0,0,"nom", 100, 20,20,20,"assets/personnage log/pigeon.png")
+
+    liste_ts = [fantome_perso1,rat_perso2,pigeon_perso3,perso4 ]
+
+    liste_equipe = liste_ts[:4] #définit une équipe de base que l'on pourra modifier par la suite
     # Initialisation joueur + caméra
     player = Player(300, 200)
     cam    = Camera(player)
@@ -41,15 +50,16 @@ def lancer():
     ennemi1 = monstre(0,0,"ennemi1" , 50, 60, 10, 250, 130)
     list_ennemi = [ennemi1]
     clock   = pygame.time.Clock()
-    running = True
+    running = True # variable pour la boucle de jeu
 
     inventory = False
     paused = False
     t1 = 0
     t2 = 0
     mon_inventaire = inventaire()
-    while running:
-        clock.tick(60)
+
+    while running: # boucle du jeu boucle infinie while true 
+        clock.tick(60) # permet d'actualiser 60 fois le jeu par seconde (60 fps)
     
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -99,7 +109,14 @@ def lancer():
                     player.velocity.x= speed / math.sqrt(2)
                 else:
                     player.velocity.x = speed
- 
+
+        # effet assombri lorsque le joueur est dans son inventaire a retravailler
+        if inventory and player.pv and not paused> 0: 
+            overlay = pygame.Surface((width, height))
+            overlay.set_alpha(150)  # 0 = invisible, 255 = opaque
+            overlay.fill((171, 128, 59))  
+            screen.blit(overlay, (0, 0))
+
         if not paused and not inventory:
             player.position += player.velocity
             player.rect.center = player.position
@@ -179,11 +196,14 @@ def lancer():
                    
 
         if not paused and ennemi1.pv > 0:
-            ennemi1.attaque_m(player)
+            ennemi1.attaque_m(player,list_object)
             ennemi1.deplacement(player)
             ennemi1.dash(player)
         ennemi1.draw(screen, follow)
-        
+
+        if not paused and player.pv > 0 and not inventory:
+            equipe.afficher_equipe(liste_equipe,screen)
+            equipe.afficher_pv (liste_equipe,screen)
 
         if inventory and player.pv > 0 and not paused:
             hpb_w = 600
@@ -194,9 +214,10 @@ def lancer():
 
             screen.blit(image_invent, (hpb_x, hpb_y )) # affichage de l'inventaire du joueur dans le menu inventaire
             mon_inventaire.draw(screen)
-        
+            
         pygame.display.update()
     pygame.quit()
+        
         
 
 
