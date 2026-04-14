@@ -1,15 +1,21 @@
 import pygame
+import os
 pygame.init()
+width = 1080
+height = 720
 
 class equipe :
-    def __init__(self,x,y,nom,pv,pvmax,attaque,distance_attaque):
+    def __init__(self,x,y,nom,pv,pvmax,attaque,distance_attaque, Image=None):
                 self.position = pygame.math.Vector2(x,y)
                 self.nom = nom
                 self.pv = pv
                 self.pvmax = pvmax
                 self.attaque = attaque
                 self.distance_attaque = distance_attaque
-                
+                if Image: # s'il y a une image
+                    chemin = os.path.join(os.path.dirname(__file__), Image) #os.path.dirname(__file__) récupère le dossier où se trouve physique.py, puis os.path.join colle le chemin de l'image dessus
+                    self.image = pygame.image.load(chemin).convert_alpha()
+                    self.image = pygame.transform.scale(self.image, (100, 100))
 
 
     taille_equipe = 4
@@ -34,19 +40,42 @@ class equipe :
     else:
         print("Déjà choisi !") """
     
-    def changer_equipe(taille_equipe,liste_ts,liste_equipe):
+    def changer_equipe(self,taille_equipe,liste_ts,liste_equipe):
             pass
 
+def afficher_equipe(liste_equipe,screen):
+            hpb_w = 1/5 * width
+            hpb_h = 1/5* width
+            hpb_x = width - hpb_w -20 
+            hpb_y = height - hpb_h -20
+            barre_perso = pygame.Rect(hpb_x, hpb_y, hpb_w, hpb_h)
+            pygame.draw.rect(screen, (59, 55, 55), barre_perso )
+            for i in range(2):
+                for j in range(2):
+                    index = i * 2 + j
+                    case_x = hpb_x + j * 100 + 10  # j pour les colonnes, i pour les lignes
+                    case_y = hpb_y + i * 100 + 10
+                    pygame.draw.rect(screen, (100, 80, 60), (case_x, case_y, 100,100))
+                    pygame.draw.rect(screen, (60, 40, 20), (case_x, case_y, 100,100), 2)  # bordure
+                    if index < len(liste_equipe):
+                        image = liste_equipe[index].image
+                        screen.blit(image, (case_x, case_y-20))
 
-fantome_perso1 = equipe(0,0,"fantome",100,100,20,100)
-                
-rat_perso2 =  equipe(0,0,"rat", 100, 20,20,20)
-                
-pigeon_perso3 = equipe(0,0,"nom",100,20,20,20)
-            
-perso4 = equipe(0,0,"nom", 100, 20,20,20)
 
-liste_ts = [fantome_perso1,rat_perso2,pigeon_perso3,perso4 ]
+def afficher_pv (liste_equipe,screen):
+    for i in range(2):
+        for j in range(2):
+            hpb_x = 4/5 *width 
+            hpb_y = 2/5* width + 40
+            index = i * 2 + j
+            case_x = hpb_x + j * 50 + 10  # j pour les colonnes, i pour les lignes
+            case_y = hpb_y + i * 100 + 100 
+            if index < len(liste_equipe):
+                pv = liste_equipe[index].pv
+                pvmax = liste_equipe[index].pvmax
+                pygame.draw.rect(screen, (0, 0, 0), (case_x, case_y, 10, 10)) 
+                if pv > 0:
+                    pygame.draw.rect(screen, (200, 0, 0), (case_x, case_y, 20 * (pv/pvmax),10))  # bordure
 
 
                 
