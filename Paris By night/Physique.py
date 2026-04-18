@@ -91,13 +91,17 @@ class item(Object): # tout ce qui est dans l'inventaire
 class inventaire:
     def __init__(self):
         self.items = []
-        
+        self.item_utilise = None
+        self.perso_choisi = None
+        self.index = None
+        self.x=None
+        self.y = None
 
     def ajouter(self, nouvel_item):
         self.items.append(nouvel_item)
         
 
-    def draw(self, screen):
+    def draw(self, screen,liste_equipe):
 
         # affiche les 16 cases même vides
         for i in range(4):
@@ -112,26 +116,51 @@ class inventaire:
                 if index < len(self.items):
                     image = self.items[index].image
                     screen.blit(image, (case_x, case_y))
-                
 
+        for i in range(len(liste_equipe)):
+            case_xx = 270 
+            case_jj = 240 + i*55
+            image = liste_equipe[i].image
+            screen.blit(image, (case_xx, case_jj))
+            
+        if self.index is not None:
+            overlay = pygame.Surface((50, 50))
+            overlay.set_alpha(100)  # 0 = invisible, 255 = opaque
+            overlay.fill((50, 50, 50))  
+            screen.blit(overlay, (self.x, self.y+10))
                     
-    def utiliser(self, pos_souris, player):
-        for i in range(4):
-            for j in range(4):
-                index = i * 4 + j #  permet de calculer l'index de l'item dans la liste à partir de sa position dans la grille (i, j)
-                case_x = 590 + j * 45
-                case_y = 280 + i * 45
-                case_rect = pygame.Rect(case_x, case_y, 42, 42)
-                if case_rect.collidepoint(pos_souris): # vérifie si la position de la souris est dans la case cliquée
-                    if index < len(self.items): #vérifie s'il Quand Python sort du for j, case_x garde la dernière valeur calculée soit j=3. C'est pour ça que l'image apparaît toujours à droite.
-                        item_utilise = self.items[index]
-                        player.pv += item_utilise.effet
-                        if player.pv > player.pvmax:
-                            player.pv = player.pvmax
-                        self.items.pop(index)  
-                        return  
-                    
+    def utiliser(self, pos_souris,liste_equipe):
+        if self.item_utilise is None:
+                    for i in range(4):
+                        for j in range(4):
+                            index = i * 4 + j #  permet de calculer l'index de l'item dans la liste à partir de sa position dans la grille (i, j)
+                            case_x = 590 + j * 45
+                            case_y = 270 + i * 45
+                            case_rect = pygame.Rect(case_x, case_y, 42, 42)
+                            if case_rect.collidepoint(pos_souris): # vérifie si la position de la souris est dans la case cliquée
+                                    if index < len(self.items): #vérifie s'il Quand Python sort du for j, case_x garde la dernière valeur calculée soit j=3. C'est pour ça que l'image apparaît toujours à droite.
+                                        self.item_utilise = self.items[index]
+                                        self.index = index
+                                        self.x= case_x
+                                        self.y = case_y
 
+        else:
+                    for elem in range(len(liste_equipe)):
+                        case_xx = 270 
+                        case_jj = 240 + elem*55
+                        elem_rect= pygame.Rect(case_xx, case_jj, 100, 100)
+                        if elem_rect.collidepoint(pos_souris):
+                            self.perso_choisi = liste_equipe[elem]                 
+        if self.perso_choisi and self.item_utilise:
+            self.perso_choisi.pv += self.item_utilise.effet
+            if self.perso_choisi.pv > self.perso_choisi.pvmax:
+                self.perso_choisi.pv = self.perso_choisi.pvmax
+            self.items.pop(self.index) 
+            self.perso_choisi = None   
+            self.item_utilise = None
+            self.index = None
+            self.c = None
+            self.t = None
                     
 class projectile:                
         def __init__(self,x,y,proj_vitesse,proj_rayon,proj_vitesse_x,proj_vitesse_y,proj_degat):
@@ -154,9 +183,10 @@ class projectile:
             self.proj_vitesse_y = (ddy / dist) * self.proj_vitesse
             self.position_proj += (self.proj_vitesse_x, self.proj_vitesse_y)
 
-        def collisions(self,cible):    
+        def collisions(self,cible,liste_equipe):    
             if self.proj_actif == True:
                 if cible.rect.collidepoint(self.position_proj):
-                    cible.pv -= self.proj_degat
+                    cible.recevoir_degat(self.proj_degat, liste_equipe)
                     self.proj_actif = False
+
                     
