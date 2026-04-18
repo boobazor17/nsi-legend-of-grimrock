@@ -29,7 +29,7 @@ class monstre(Physique):
             if self.proj.proj_actif:
                 pygame.draw.circle(screen, (255, 165, 0), follow.appliquer(self.proj.position_proj), self.proj.proj_rayon)
     
-        def attaque_m(self,player,list_object):
+        def attaque_m(self,player,list_object,liste_equipe):
             if self.pv > 0:
                 dx = self.position.x - player.rect.centerx
                 dy = self.position.y - player.rect.centery
@@ -46,7 +46,7 @@ class monstre(Physique):
                                 self.proj.proj_actif = False
                 if self.proj.proj_actif and temps - self.attaque_dernier_temps <= 1500:
                     self.proj.position_proj += (self.proj.proj_vitesse_x, self.proj.proj_vitesse_y)
-                    self.proj.collisions(player)            
+                    self.proj.collisions(player,liste_equipe)            
                 else:
                     self.proj.proj_actif = False # on detruit le projectile , on met le else après le deuxième bloc if car si la condition est False donc tout le bloc est ignoré, y compris le proj_actif = False. Le projectile reste donc actif indéfiniment. :(
                     
@@ -78,7 +78,7 @@ class monstre(Physique):
                         self.position.y += (distance_y / distance_total) * 2*speed/5
 
 
-        def dash(self,player):
+        def dash(self,player,liste_equipe,degat):
             if self.pv > 0 :
                 temps =  pygame.time.get_ticks() 
                 
@@ -91,7 +91,9 @@ class monstre(Physique):
                         self.attaque_dernier_temps = temps
                         self.position.x = player.rect.centerx + (10 if dx >= 0 else -10)
                         self.position.y = player.rect.centery + (10 if dy >= 0 else -10)
-                        player.pv -= 3 * self.attaque
+                        player.recevoir_degat(degat, liste_equipe)
+
+
 
 
 
