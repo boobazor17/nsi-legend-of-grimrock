@@ -1,5 +1,3 @@
-from tkinter import Image
-
 import pygame
 pygame.init()
 from camera import *
@@ -25,13 +23,24 @@ class Player(Physique):
                 pygame.draw.circle(screen, (190, 65, 65), (x, y), self.radius)
                 
 
-        def attaque():
-             
+        def attaque(self):
+            if self.pv > 0:
+                if pygame.key.get_pressed()[pygame.K_z]:
+                     pass
+
 
 
              # Personnages jouables — chacun a ses propres stats
             Fantome = Player("Fantome", 100, 100, 20)
             Rat     = Player("Rat",     50,  50,  10)
 
+        def recevoir_degat(self, degat, liste_equipe):
+            for elem in liste_equipe:
+                if elem.pv > 0 :
+                     elem.pv -= degat
+                     break
+            if all(elem.pv <=0 for elem in liste_equipe):
+                self.pv = 0
+        
 
         
