@@ -71,7 +71,9 @@ def lancer():
                     t1 = pygame.time.get_ticks()
             elif event.type == pygame.MOUSEBUTTONDOWN and player.pv <= 0:
                 if bouton_rejouer.collidepoint(event.pos):
-                    player.pv = player.pvmax
+                    player.pv = player.pvmax 
+                    for elem in liste_equipe:
+                         elem.pv = elem.pvmax
                     player.invincible_temps = pygame.time.get_ticks()
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_f:
                 t2 = pygame.time.get_ticks() 
@@ -80,7 +82,7 @@ def lancer():
                     t2 = pygame.time.get_ticks()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if inventory:
-                    mon_inventaire.utiliser(event.pos, player)
+                    mon_inventaire.utiliser(event.pos,liste_equipe)
 
 
 
@@ -196,9 +198,9 @@ def lancer():
                    
 
         if not paused and ennemi1.pv > 0:
-            ennemi1.attaque_m(player,list_object)
+            ennemi1.attaque_m(player,list_object,liste_equipe)
             ennemi1.deplacement(player)
-            ennemi1.dash(player)
+            ennemi1.dash(player,liste_equipe,8)
         ennemi1.draw(screen, follow)
 
         if not paused and player.pv > 0 and not inventory:
@@ -213,10 +215,11 @@ def lancer():
             t2 = pygame.time.get_ticks() # réinitialisation du timer pour éviter les appuis rapides qui font bug le menu pause
 
             screen.blit(image_invent, (hpb_x, hpb_y )) # affichage de l'inventaire du joueur dans le menu inventaire
-            mon_inventaire.draw(screen)
+            mon_inventaire.draw(screen, liste_equipe)
             
         pygame.display.update()
     pygame.quit()
+    
         
 
 
