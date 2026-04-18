@@ -68,14 +68,11 @@ def afficher_pv (liste_equipe,screen):
             hpb_x = 4/5 *width 
             hpb_y = 2/5* width + 40
             index = i * 2 + j
-            case_x = hpb_x + j * 50 + 10  # j pour les colonnes, i pour les lignes
+            case_x = hpb_x + j * 100 + 10  # j pour les colonnes, i pour les lignes
             case_y = hpb_y + i * 100 + 100 
             if index < len(liste_equipe):
                 pv = liste_equipe[index].pv
                 pvmax = liste_equipe[index].pvmax
-                pygame.draw.rect(screen, (0, 0, 0), (case_x, case_y, 10, 10)) 
+                pygame.draw.rect(screen, (0, 0, 0), (case_x, case_y, 20, 10)) 
                 if pv > 0:
-                    pygame.draw.rect(screen, (200, 0, 0), (case_x, case_y, 20 * (pv/pvmax),10))  # bordure
-
-
-                
+                    pygame.draw.rect(screen, (200, 0, 0), ((case_x-5), case_y, 70 * (pv/pvmax),10))  # bordure
