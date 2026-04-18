@@ -26,11 +26,11 @@ def lancer():
     
     fantome_perso1 = equipe.equipe(0,0,"fantome",100,100,20,100,"assets/personnage log/fantome.png")
                     
-    rat_perso2 =  equipe.equipe(0,0,"rat", 100, 20,20,20,"assets/personnage log/rat.png")
+    rat_perso2 =  equipe.equipe(0,0,"rat", 50, 50,20,20,"assets/personnage log/rat.png")
                     
-    pigeon_perso3 = equipe.equipe(0,0,"nom",100,20,20,20,"assets/personnage log/pigeon.png")
+    pigeon_perso3 = equipe.equipe(0,0,"nom",100,100,20,20,"assets/personnage log/pigeon.png")
                 
-    perso4 = equipe.equipe(0,0,"nom", 100, 20,20,20,"assets/personnage log/pigeon.png")
+    perso4 = equipe.equipe(0,0,"nom", 100, 100,20,20,"assets/personnage log/pigeon.png")
 
     liste_ts = [fantome_perso1,rat_perso2,pigeon_perso3,perso4 ]
 
@@ -217,6 +217,9 @@ def lancer():
             
         pygame.display.update()
     pygame.quit()
+        
+
+
         
         
 
