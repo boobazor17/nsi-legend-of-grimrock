@@ -18,7 +18,6 @@ class equipe :
                     self.image = pygame.transform.scale(self.image, (100, 100))
 
 
-    taille_equipe = 4
 
     """ def personnage():
      for i in range(4):  # pour des équipes de 4
@@ -73,6 +72,6 @@ def afficher_pv (liste_equipe,screen):
             if index < len(liste_equipe):
                 pv = liste_equipe[index].pv
                 pvmax = liste_equipe[index].pvmax
-                pygame.draw.rect(screen, (0, 0, 0), (case_x, case_y, 20, 10)) 
+                pygame.draw.rect(screen, (0, 0, 0), ((case_x-5), case_y, 70, 10)) 
                 if pv > 0:
                     pygame.draw.rect(screen, (200, 0, 0), ((case_x-5), case_y, 70 * (pv/pvmax),10))  # bordure
