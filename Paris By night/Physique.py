@@ -189,4 +189,8 @@ class projectile:
                     cible.recevoir_degat(self.proj_degat, liste_equipe)
                     self.proj_actif = False
 
-                    
+class mur(Object):
+    def __init__(self,x,y,width,height):
+        super().__init__(x,y,width,height,(100, 80, 60),Image=None)
+        self.image_originale = self.image
+        self.position = pygame.math.Vector2(x,y)                    
