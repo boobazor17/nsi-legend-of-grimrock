@@ -173,7 +173,7 @@ class projectile:
             self.proj_degat = proj_degat
             self.temps_lancement = -100
             try:
-                self.sound_lancer = pygame.mixer.Sound("assets/sound/rocksane.mp3")
+                self.sound_lancer = pygame.mixer.Sound("assets/sounds/rocksane.mp3")
                 self.sound_lancer.set_volume(0.5)  # Volume entre 0.0 et 1.0
             except Exception as e:
                 self.sound_lancer = None
