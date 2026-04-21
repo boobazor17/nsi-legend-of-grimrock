@@ -6,6 +6,7 @@ from Physique import Physique
 from Physique import projectile
 
 
+
 speed = 10
 class monstre(Physique):
         def __init__(self,x,y,nom,pv,pvmax,attaque,distance,distance_attaque):
@@ -28,6 +29,7 @@ class monstre(Physique):
 
             if self.proj.proj_actif:
                 pygame.draw.circle(screen, (255, 165, 0), follow.appliquer(self.proj.position_proj), self.proj.proj_rayon)
+                
     
         def attaque_m(self,player,list_object,liste_equipe):
             if self.pv > 0:
