@@ -163,7 +163,7 @@ class inventaire:
             self.t = None
                     
 class projectile:                
-        def __init__(self,x,y,proj_vitesse,proj_rayon,proj_vitesse_x,proj_vitesse_y,proj_degat):
+        def __init__(self,x,y,proj_vitesse,proj_rayon,proj_vitesse_x,proj_vitesse_y,proj_degat,sound_lancer=None,sound_toucher=None):
             self.position_proj = pygame.math.Vector2(x,y)
             self.proj_actif = False
             self.proj_vitesse = proj_vitesse
@@ -172,6 +172,11 @@ class projectile:
             self.proj_vitesse_y = proj_vitesse_y 
             self.proj_degat = proj_degat
             self.temps_lancement = -100
+            try:
+                self.sound_lancer = pygame.mixer.Sound("assets/sound/rocksane.mp3")
+                self.sound_lancer.set_volume(0.5)  # Volume entre 0.0 et 1.0
+            except Exception as e:
+                self.sound_lancer = None
              
         def lancer(self,origine,cible):
             self.proj_actif = True
@@ -182,15 +187,19 @@ class projectile:
             self.proj_vitesse_x = (ddx / dist) * self.proj_vitesse
             self.proj_vitesse_y = (ddy / dist) * self.proj_vitesse
             self.position_proj += (self.proj_vitesse_x, self.proj_vitesse_y)
+            if self.sound_lancer is not None:
+                self.sound_lancer.play()
 
         def collisions(self,cible,liste_equipe):    
             if self.proj_actif == True:
                 if cible.rect.collidepoint(self.position_proj):
                     cible.recevoir_degat(self.proj_degat, liste_equipe)
                     self.proj_actif = False
+                    
 
 class mur(Object):
     def __init__(self,x,y,width,height):
         super().__init__(x,y,width,height,(100, 80, 60),Image=None)
         self.image_originale = self.image
         self.position = pygame.math.Vector2(x,y)                    
+
