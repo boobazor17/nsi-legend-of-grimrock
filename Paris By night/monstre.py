@@ -22,12 +22,13 @@ class monstre(Physique):
             self.waypoints = [self.position.copy(), self.position+(200,0), self.position+(200,200), self.position+(0,200)]  # un carré par défaut
             self.waypoint_actuel = 0
             self.proj = projectile(x, y, 5, 8, 0, 0, 10) # initialisation du projectile (position(x,y)  vitesse , rayon, vitesse_x, vitesse_y, degat)
+            self.rect = pygame.Rect(x, y, 40, 40)
     
         def draw(self, screen, follow):
             if self.pv > 0:
                 pygame.draw.circle(screen, (99, 69, 45), follow.appliquer(self.position), 20)
 
-            if self.proj.proj_actif:
+            if self.proj.proj_actif and self.pv > 0:
                 pygame.draw.circle(screen, (255, 165, 0), follow.appliquer(self.proj.position_proj), self.proj.proj_rayon)
                 
     
@@ -39,7 +40,7 @@ class monstre(Physique):
                 temps =  pygame.time.get_ticks()
                 if self.distance_attaque >= distance_reelle and temps - self.attaque_dernier_temps >= self.attaque_cooldown :
                     self.attaque_dernier_temps = temps
-                    if temps - player.invincible_temps >= player.duree_invincibilite and player.pv >= 0:  
+                    if temps - player.invincible_temps >= player.duree_invincibilite and player.pv > 0:  
                         self.proj.lancer(self.position,player)
                         self.proj.position_proj += (self.proj.proj_vitesse_x, self.proj.proj_vitesse_y)
                     else :
@@ -78,6 +79,7 @@ class monstre(Physique):
                     else:
                         self.position.x += (distance_x / distance_total) * 2*speed/5  # normalisé 
                         self.position.y += (distance_y / distance_total) * 2*speed/5
+            self.rect.center = self.position
 
 
         def dash(self,player,liste_equipe,degat):
@@ -94,6 +96,16 @@ class monstre(Physique):
                         self.position.x = player.rect.centerx + (10 if dx >= 0 else -10)
                         self.position.y = player.rect.centery + (10 if dy >= 0 else -10)
                         player.recevoir_degat(degat, liste_equipe)
+
+
+
+        def liste(self,list_ennemi):            # pour supprimer les ennemis morts de la liste des ennemis
+            for i in range (len(list_ennemi)):
+                if list_ennemi[i].pv <= 0:
+                    list_ennemi.pop(i)
+
+
+
 
 
 
