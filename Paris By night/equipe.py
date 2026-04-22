@@ -5,17 +5,49 @@ width = 1080
 height = 720
 
 class equipe :
-    def __init__(self,x,y,nom,pv,pvmax,attaque,distance_attaque, Image=None):
+    def __init__(self,x,y,nom,pv,pvmax,degat_attaque,distance_attaque,attaque,Image=None):
                 self.position = pygame.math.Vector2(x,y)
                 self.nom = nom
                 self.pv = pv
                 self.pvmax = pvmax
-                self.attaque = attaque
+                self.degat_attaque = degat_attaque
                 self.distance_attaque = distance_attaque
+                self.attaque = attaque
                 if Image: # s'il y a une image
                     chemin = os.path.join(os.path.dirname(__file__), Image) #os.path.dirname(__file__) récupère le dossier où se trouve physique.py, puis os.path.join colle le chemin de l'image dessus
                     self.image = pygame.image.load(chemin).convert_alpha()
                     self.image = pygame.transform.scale(self.image, (100, 100))
+    
+    
+    def ajouter_attaque(self, attaque):
+        self.attaque.utiliser(attaque)
+
+    
+
+class attaque:
+    def __init__(self,nom,degat,portée,rayon,ralentissement,temps_recharge, ): 
+        self.nom = nom
+        self.degat = degat
+        self.portée= portée
+        self.rayon= rayon
+        self.ralentissement= ralentissement
+        self.temps_recharge= temps_recharge
+    
+    
+    def utiliser(self, attaquant):
+        '''ici on vérifierait la distance entre l'attaquant et la cible, et si elle est 
+        inférieure ou égale à la portée de l'attaque, on infligerait les dégâts à la cible 
+        plus les effets eventuels (ralentissement, etc.)'''
+        pass
+
+
+
+
+
+
+
+
+
 
 
 
