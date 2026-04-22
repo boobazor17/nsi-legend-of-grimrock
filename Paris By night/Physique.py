@@ -181,8 +181,13 @@ class projectile:
         def lancer(self,origine,cible):
             self.proj_actif = True
             self.position_proj = origine.copy()
-            ddx=  cible.rect.centerx - self.position_proj.x
-            ddy=  cible.rect.centery - self.position_proj.y
+            if hasattr(cible, 'rect'):
+                ddx = cible.rect.centerx - self.position_proj.x
+                ddy = cible.rect.centery - self.position_proj.y
+            else:
+                ddx = cible.position.x - self.position_proj.x
+                ddy = cible.position.y - self.position_proj.y
+           
             dist = math.sqrt(ddx**2 + ddy**2)
             self.proj_vitesse_x = (ddx / dist) * self.proj_vitesse
             self.proj_vitesse_y = (ddy / dist) * self.proj_vitesse
@@ -192,14 +197,20 @@ class projectile:
 
         def collisions(self,cible,liste_equipe):    
             if self.proj_actif == True:
-                if cible.rect.collidepoint(self.position_proj):
-                    cible.recevoir_degat(self.proj_degat, liste_equipe)
-                    self.proj_actif = False
-                    
+                if type(cible).__name__ == "Player":
+                    if cible.rect.collidepoint(self.position_proj):
+                        cible.recevoir_degat(self.proj_degat, liste_equipe)
+                        self.proj_actif = False
+                else:
+                    if cible.rect.collidepoint(self.position_proj):
+                        cible.pv -=self.proj_degat     
+                        self.proj_actif = False
 
 class mur(Object):
     def __init__(self,x,y,width,height):
         super().__init__(x,y,width,height,(100, 80, 60),Image=None)
         self.image_originale = self.image
         self.position = pygame.math.Vector2(x,y)                    
+
+               
 
