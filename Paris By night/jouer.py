@@ -25,17 +25,17 @@ def lancer():
     pygame.display.set_caption("Fenêtre d'accueil")
     
     # personage
-    fantome_perso1 = equipe.equipe(0,0,"fantome",100,100,20,100,"assets/personnage log/fantome.png")             
-    rat_perso2 =  equipe.equipe(0,0,"rat", 50, 50,20,20,"assets/personnage log/rat.png")       
-    pigeon_perso3 = equipe.equipe(0,0,"nom",100,100,20,20,"assets/personnage log/pigeon.png")         
-    perso4 = equipe.equipe(0,0,"nom", 100, 100,20,20,"assets/personnage log/pigeon.png")
+    fantome_perso1 = equipe.equipe(0,0,"fantome",100,100,20,100,10,"assets/personnage log/fantome.png")             
+    rat_perso2 =  equipe.equipe(0,0,"rat", 50, 50,20,20,10,"assets/personnage log/rat.png")       
+    pigeon_perso3 = equipe.equipe(0,0,"nom",100,100,20,20,10,"assets/personnage log/pigeon.png")         
+    perso4 = equipe.equipe(0,0,"nom", 100, 100,20,20,10,"assets/personnage log/pigeon.png")
     
     liste_ts = [fantome_perso1,rat_perso2,pigeon_perso3,perso4 ]
     liste_equipe = liste_ts[:4] #définit une équipe de base que l'on pourra modifier par la suite
    
      #attaque
-    attaque_cac = equipe.attaque("cac", 20, 20, 0, 0, 10)
-    attaque_distance = equipe.attaque("distance", 10, 100, 0, 0, 10)
+    attaque_cac = equipe.attaque("cac", 20, 200, 0, 0, 10)
+    attaque_distance = equipe.attaque("distance", 10, 300, 0, 0, 10)
    
     fantome_perso1.ajouter_attaque(attaque_cac)
     rat_perso2.ajouter_attaque(attaque_distance)
@@ -55,7 +55,7 @@ def lancer():
     image_invent = pygame.image.load(chemin).convert_alpha()
     image_invent = pygame.transform.scale(image_invent, (600, 300))
     
-    ennemi1 = monstre(0,0,"ennemi1" , 50, 60, 10, 250, 130)
+    ennemi1 = monstre(0,0,"ennemi1" , 100, 100, 10, 250, 130)
     list_ennemi = [ennemi1]
     clock   = pygame.time.Clock()
     running = True # variable pour la boucle de jeu
@@ -91,6 +91,8 @@ def lancer():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if inventory:
                     mon_inventaire.utiliser(event.pos,liste_equipe)
+                if not inventory and not paused:
+                    equipe.regarde_clique(event.pos,liste_equipe,list_ennemi,player,list_object) #event.pos = pos_souris
 
 
 
@@ -211,6 +213,15 @@ def lancer():
             ennemi1.dash(player,liste_equipe,8)
         ennemi1.draw(screen, follow)
 
+        
+        for elem in liste_equipe:
+            if elem.attaque.nom == "distance" and elem.attaque.proj :
+                elem.attaque.update(liste_equipe, list_object, pygame.time.get_ticks())
+                elem.attaque.draw_proj(screen, follow)
+
+        ennemi1.liste(list_ennemi)
+
+
         if not paused and player.pv > 0 and not inventory:
             equipe.afficher_equipe(liste_equipe,screen)
             equipe.afficher_pv (liste_equipe,screen)
@@ -227,6 +238,16 @@ def lancer():
             
         pygame.display.update()
     pygame.quit()
+        
+
+
+        
+        
+
+
+        
+
+
         
 
 
