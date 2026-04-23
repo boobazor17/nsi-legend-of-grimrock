@@ -35,7 +35,7 @@ class attaque:
         self.ralentissement= ralentissement
         self.temps_recharge= temps_recharge
         self.attaque_dernier_temps = -1000
-        self.proj = projectile(0, 0, 5, 8, 0, 0, 10) # (x,y) = (0,0)
+        self.proj = projectile(0, 0, 1.5, 8, 0, 0, 10) # (x,y) = (0,0)
         self.monstre = None
     
     
@@ -64,9 +64,9 @@ class attaque:
     def update(self, liste_equipe,list_object,temps):
             if self.nom == "distance" and self.proj.proj_actif:
                 if self.monstre is not None :
-                    if self.proj.proj_actif and temps - self.attaque_dernier_temps <= 1500:
+                    if temps - self.attaque_dernier_temps <= 1500:
                         self.proj.position_proj += (self.proj.proj_vitesse_x, self.proj.proj_vitesse_y)
-                        self.proj.collisions(self.monstre,liste_equipe)  
+                        self.proj.collisions(self.monstre,liste_equipe)          
                     else:
                         self.proj.proj_actif = False 
                 for object in list_object: # check tous les objets de la liste pour voir s'il y a une collision avec le projectile
@@ -107,10 +107,11 @@ def regarde_clique(pos_souris,liste_equipe,list_ennemi,player,list_object):
                     index = i*2 + j
                     case_x = hpb_x + j * 100 + 10  # j pour les colonnes, i pour les lignes
                     case_y = hpb_y + i * 100 + 10
-                    case_rect = pygame.Rect(case_x-5, case_y-5, 50, 50)
+                    case_rect = pygame.Rect(case_x, case_y, 100, 100)
                     if case_rect.collidepoint(pos_souris):
                         attaquant = liste_equipe[index]
                         attaquant.attaque.utiliser(attaquant,list_ennemi,player,list_object,liste_equipe)
+                        return case_rect
 
 
     
@@ -150,4 +151,6 @@ def afficher_pv (liste_equipe,screen):
                 pygame.draw.rect(screen, (0, 0, 0), ((case_x-5), case_y, 70, 10)) 
                 if pv > 0:
                     pygame.draw.rect(screen, (200, 0, 0), ((case_x-5), case_y, 70 * (pv/pvmax),10))  # bordure
+
+
 
