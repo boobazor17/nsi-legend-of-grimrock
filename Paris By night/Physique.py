@@ -188,9 +188,9 @@ class projectile:
                 ddx = cible.position.x - self.position_proj.x
                 ddy = cible.position.y - self.position_proj.y
            
-            dist = math.sqrt(ddx**2 + ddy**2)
-            self.proj_vitesse_x = (ddx / dist) * self.proj_vitesse
-            self.proj_vitesse_y = (ddy / dist) * self.proj_vitesse
+            distance = math.sqrt(ddx**2 + ddy**2)
+            self.proj_vitesse_x = (ddx / distance) * self.proj_vitesse
+            self.proj_vitesse_y = (ddy / distance) * self.proj_vitesse
             self.position_proj += (self.proj_vitesse_x, self.proj_vitesse_y)
             if self.sound_lancer is not None:
                 self.sound_lancer.play()
@@ -210,7 +210,32 @@ class mur(Object):
     def __init__(self,x,y,width,height):
         super().__init__(x,y,width,height,(100, 80, 60),Image=None)
         self.image_originale = self.image
-        self.position = pygame.math.Vector2(x,y)                    
+        self.position = pygame.math.Vector2(x,y)       
+
+class porte(Object):             
+    def __init__(self,x,y,width,height,distance_interaction):
+        super().__init__(x,y,width,height,(150, 75, 0),Image=None)
+        self.image_originale = self.image
+        self.position = pygame.math.Vector2(x,y) 
+        self.ouvert = False
+        self.distance_interaction =  distance_interaction
+
+    def interaction(self, player,screen,follow):
+        ddx = player.rect.centerx - self.position_proj.x
+        ddy = player.rect.centery - self.position_proj.y
+        distance = math.sqrt(ddx**2 + ddy**2)
+        texte_x =  int(self.position.x - follow.camera.offset.x) 
+        texte_y =  int(self.position.y - follow.camera.offset.y) - 50
+        texte = font.render("E", True, (255, 255, 255))
+        if distance <= self.distance_interaction and not self.ouvert:
+            pygame.draw.circle(screen,("gold"), (texte_x+10, texte_y+10), 20) # cercle doré autour du E pour indiquer que le joueur peut interagir avec le vase
+            screen.blit(texte, (texte_x, texte_y))
+            if pygame.key.get_pressed()[pygame.K_e] :
+                self.ouvert = True
+    
+               
+
+             
 
                
 
