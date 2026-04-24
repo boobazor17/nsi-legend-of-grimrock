@@ -35,7 +35,7 @@ class attaque:
         self.ralentissement= ralentissement
         self.temps_recharge= temps_recharge
         self.attaque_dernier_temps = -1000
-        self.proj = projectile(0, 0, 2, 8, 0, 0, 10) # (x,y) = (0,0)
+        self.proj = projectile(0, 0, 2, 8, 0, 0, 10,400) # (x,y) = (0,0)
         self.monstre = None
         self.case_rect = None
     
@@ -61,22 +61,30 @@ class attaque:
                         if attaquant.pv >= 0: 
                             self.proj.lancer(pygame.math.Vector2(player.position), monstre)
                             self.case_rect = case_rect
+            elif self.nom == "mage" :
+                if l[0][0] <= self.portée and temps - self.attaque_dernier_temps >= self.temps_recharge :
+                        self.attaque_dernier_temps = temps
+                        if attaquant.pv >= 0: 
+                            self.proj.lancer(pygame.math.Vector2(player.position), monstre)
+                            self.case_rect = case_rect
 
 
 
-    def update(self, liste_equipe,list_object,temps,screen):
-            if self.nom == "distance":
+    def update(self, liste_equipe,list_object,temps,screen,list_ennemi):
+            if self.nom == "distance" or self.nom == "mage":
                 if self.proj.proj_actif:
                     if self.monstre is not None :
                         if temps - self.attaque_dernier_temps <= 1500:
-                            self.proj.position_proj += (self.proj.proj_vitesse_x, self.proj.proj_vitesse_y)
-                            self.proj.collisions(self.monstre,liste_equipe)
-                            overlay = pygame.Surface((100, 100))
-                            overlay.set_alpha(100)  # 0 = invisible, 255 = opaque
-                            overlay.fill((50, 50, 50))  
-                            screen.blit(overlay, (self.case_rect.x, self.case_rect.y))          
+                                self.proj.position_proj += (self.proj.proj_vitesse_x, self.proj.proj_vitesse_y)
+                                self.proj.collisions(self.monstre,liste_equipe)
+                                if self.nom == "mage":
+                                   self.proj.collisions_zone(list_ennemi,screen)
+                                overlay = pygame.Surface((100, 100))
+                                overlay.set_alpha(100)  # 0 = invisible, 255 = opaque
+                                overlay.fill((50, 50, 50))  
+                                screen.blit(overlay, (self.case_rect.x, self.case_rect.y))          
                         else:
-                            self.proj.proj_actif = False 
+                                self.proj.proj_actif = False 
                     for object in list_object: # check tous les objets de la liste pour voir s'il y a une collision avec le projectile
                         if object.rect.collidepoint(self.proj.position_proj):    
                                     self.proj.proj_actif = False       
@@ -84,7 +92,8 @@ class attaque:
                     overlay = pygame.Surface((100, 100))
                     overlay.set_alpha(100)  # 0 = invisible, 255 = opaque
                     overlay.fill((50, 50, 50))  
-                    screen.blit(overlay, (self.case_rect.x, self.case_rect.y))    
+                    screen.blit(overlay, (self.case_rect.x, self.case_rect.y))   
+                 
 
     def draw_proj(self,screen,follow):
         if  self.proj.proj_actif:
@@ -166,6 +175,4 @@ def afficher_pv (liste_equipe,screen):
                 pygame.draw.rect(screen, (0, 0, 0), ((case_x-5), case_y, 70, 10)) 
                 if pv > 0:
                     pygame.draw.rect(screen, (200, 0, 0), ((case_x-5), case_y, 70 * (pv/pvmax),10))  # bordure
-
-
 
