@@ -37,9 +37,9 @@ def lancer():
     attaque_cac = equipe.attaque("cac", 20, 200, 0, 0, 1000)
     attaque_distance = equipe.attaque("distance", 10, 300, 0, 0, 1000) 
     attaque_distance1 = equipe.attaque("distance", 10, 300, 0, 0, 1000) # on créer 2 instances séparés pour pas qu'elle partage la même mémoire.
-    attaque_mage = equipe.attaque("mage",30,200,10,0,10000)
+    attaque_mage = equipe.attaque("mage",30,200,10,0,5000)
    
-    fantome_perso1.ajouter_attaque(attaque_cac)
+    fantome_perso1.ajouter_attaque(attaque_mage)
     rat_perso2.ajouter_attaque(attaque_distance)
     pigeon_perso3.ajouter_attaque(attaque_cac)
     perso4.ajouter_attaque(attaque_distance1)      
@@ -58,7 +58,9 @@ def lancer():
     image_invent = pygame.transform.scale(image_invent, (600, 300))
     
     ennemi1 = monstre(0,0,"ennemi1" , 100, 100, 10, 250, 130)
-    list_ennemi = [ennemi1]
+    ennemi2 = monstre(200,-10,"ennemi1" , 100, 100, 10, 250, 130)
+    
+    list_ennemi = [ennemi1,ennemi2]
     clock   = pygame.time.Clock()
     running = True # variable pour la boucle de jeu
 
@@ -210,18 +212,20 @@ def lancer():
                    
 
         if not paused and ennemi1.pv > 0:
-            ennemi1.attaque_m(player,list_object,liste_equipe)
-            ennemi1.deplacement(player)
-            ennemi1.dash(player,liste_equipe,8)
-        ennemi1.draw(screen, follow)
+            for monstree in list_ennemi:
+                monstree.attaque_m(player,list_object,liste_equipe)
+                monstree.deplacement(player)
+                monstree.dash(player,liste_equipe,8)
+        for monstree in list_ennemi:
+            monstree.draw(screen, follow)
 
         if not paused and player.pv > 0 and not inventory:
             equipe.afficher_equipe(liste_equipe,screen)
             equipe.afficher_pv (liste_equipe,screen)
         
         for elem in liste_equipe:
-            if elem.attaque.nom == "distance" and elem.attaque.proj :
-                elem.attaque.update(liste_equipe, list_object, pygame.time.get_ticks(),screen)
+            if elem.attaque.nom == "distance" or elem.attaque.nom == "mage" and elem.attaque.proj :
+                elem.attaque.update(liste_equipe, list_object, pygame.time.get_ticks(),screen,list_ennemi)
                 elem.attaque.draw_proj(screen, follow)
 
         ennemi1.liste(list_ennemi)
@@ -238,4 +242,4 @@ def lancer():
             
         pygame.display.update()
     pygame.quit()
-        
+
