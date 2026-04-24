@@ -163,7 +163,7 @@ class inventaire:
             self.t = None
                     
 class projectile:                
-        def __init__(self,x,y,proj_vitesse,proj_rayon,proj_vitesse_x,proj_vitesse_y,proj_degat,sound_lancer=None,sound_toucher=None):
+        def __init__(self,x,y,proj_vitesse,proj_rayon,proj_vitesse_x,proj_vitesse_y,proj_degat,zone,sound_lancer=None,sound_toucher=None):
             self.position_proj = pygame.math.Vector2(x,y)
             self.proj_actif = False
             self.proj_vitesse = proj_vitesse
@@ -171,6 +171,7 @@ class projectile:
             self.proj_vitesse_x = proj_vitesse_x
             self.proj_vitesse_y = proj_vitesse_y 
             self.proj_degat = proj_degat
+            self.zone = zone
             self.temps_lancement = -100
             try:
                 self.sound_lancer = pygame.mixer.Sound("assets/sounds/rocksane.mp3")
@@ -205,6 +206,27 @@ class projectile:
                     if cible.rect.collidepoint(self.position_proj):
                         cible.pv -=self.proj_degat     
                         self.proj_actif = False
+                        print (cible.pv)
+
+        def collisions_zone(self,list_ennemi,screen):
+            print (1)
+            l = []
+            if len(list_ennemi) != 0:
+                for monstre in list_ennemi:
+                    if monstre.rect.collidepoint(self.position_proj):
+                        self.proj_actif = False
+                        dx = monstre.position.x - self.position_proj.x
+                        dy = monstre.position.y - self.position_proj.y
+                        distance_reelle = math.sqrt(int(dx**2 + dy**2))
+                        print (distance_reelle)
+                        if distance_reelle <= self.zone:
+                            l.append( monstre)
+            for i in range (len(l)):
+                l[i].pv -=self.proj_degat 
+                print (l[i].pv)
+
+            pygame.draw.circle(screen, (190, 65, 65), (self.position_proj.x, self.position_proj.y ), self.zone)
+
 
 class mur(Object):
     def __init__(self,x,y,width,height):
@@ -232,9 +254,6 @@ class porte(Object):
             screen.blit(texte, (texte_x, texte_y))
             if pygame.key.get_pressed()[pygame.K_e] :
                 self.ouvert = True
-    
-               
-
              
 
                
