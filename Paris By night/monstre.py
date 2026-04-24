@@ -21,7 +21,7 @@ class monstre(Physique):
             self.attaque_cooldown = 400
             self.waypoints = [self.position.copy(), self.position+(200,0), self.position+(200,200), self.position+(0,200)]  # un carré par défaut
             self.waypoint_actuel = 0
-            self.proj = projectile(x, y, 5, 8, 0, 0, 10) # initialisation du projectile (position(x,y)  vitesse , rayon, vitesse_x, vitesse_y, degat)
+            self.proj = projectile(x, y, 5, 8, 0, 0, 10,0) # initialisation du projectile (position(x,y)  vitesse , rayon, vitesse_x, vitesse_y, degat)
             self.rect = pygame.Rect(x, y, 40, 40)
     
         def draw(self, screen, follow):
@@ -42,7 +42,6 @@ class monstre(Physique):
                     self.attaque_dernier_temps = temps
                     if temps - player.invincible_temps >= player.duree_invincibilite and player.pv > 0:  
                         self.proj.lancer(self.position,player)
-                        self.proj.position_proj += (self.proj.proj_vitesse_x, self.proj.proj_vitesse_y)
                     else :
                         for object in list_object: # check tous les objets de la liste pour voir s'il y a une collision avec le projectile
                             if object.rect.collidepoint(self.proj.position_proj):    
@@ -103,6 +102,11 @@ class monstre(Physique):
             for i in range (len(list_ennemi)):
                 if list_ennemi[i].pv <= 0:
                     list_ennemi.pop(i)
+
+
+
+
+
 
 
 
