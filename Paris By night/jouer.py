@@ -34,13 +34,15 @@ def lancer():
     liste_equipe = liste_ts[:4] #définit une équipe de base que l'on pourra modifier par la suite
    
      #attaque
-    attaque_cac = equipe.attaque("cac", 20, 200, 0, 0, 10)
-    attaque_distance = equipe.attaque("distance", 10, 300, 0, 0, 10)
+    attaque_cac = equipe.attaque("cac", 20, 200, 0, 0, 1000)
+    attaque_distance = equipe.attaque("distance", 10, 300, 0, 0, 1000) 
+    attaque_distance1 = equipe.attaque("distance", 10, 300, 0, 0, 1000) # on créer 2 instances séparés pour pas qu'elle partage la même mémoire.
+    attaque_mage = equipe.attaque("mage",30,200,10,0,10000)
    
     fantome_perso1.ajouter_attaque(attaque_cac)
     rat_perso2.ajouter_attaque(attaque_distance)
     pigeon_perso3.ajouter_attaque(attaque_cac)
-    perso4.ajouter_attaque(attaque_distance)      
+    perso4.ajouter_attaque(attaque_distance1)      
 
 
     # Initialisation joueur + caméra
@@ -213,18 +215,16 @@ def lancer():
             ennemi1.dash(player,liste_equipe,8)
         ennemi1.draw(screen, follow)
 
-        
-        for elem in liste_equipe:
-            if elem.attaque.nom == "distance" and elem.attaque.proj :
-                elem.attaque.update(liste_equipe, list_object, pygame.time.get_ticks())
-                elem.attaque.draw_proj(screen, follow)
-
-        ennemi1.liste(list_ennemi)
-
-
         if not paused and player.pv > 0 and not inventory:
             equipe.afficher_equipe(liste_equipe,screen)
             equipe.afficher_pv (liste_equipe,screen)
+        
+        for elem in liste_equipe:
+            if elem.attaque.nom == "distance" and elem.attaque.proj :
+                elem.attaque.update(liste_equipe, list_object, pygame.time.get_ticks(),screen)
+                elem.attaque.draw_proj(screen, follow)
+
+        ennemi1.liste(list_ennemi)
 
         if inventory and player.pv > 0 and not paused:
             hpb_w = 600
@@ -238,6 +238,26 @@ def lancer():
             
         pygame.display.update()
     pygame.quit()
+        
+
+
+        
+        
+
+
+        
+
+
+        
+
+
+        
+        
+
+
+        
+
+
         
 
 
