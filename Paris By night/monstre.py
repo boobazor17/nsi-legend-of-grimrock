@@ -10,6 +10,8 @@ from Physique import projectile
 speed = 10
 class monstre(Physique):
         def __init__(self,x,y,nom,pv,pvmax,attaque,distance,distance_attaque):
+            super().__init__(x,y,40,40)
+            print(type(self.position))
             self.position = pygame.math.Vector2(x,y)
             self.nom = nom
             self.pv = pv
@@ -55,7 +57,9 @@ class monstre(Physique):
             
                     
     
-        def deplacement(self,player):
+        def deplacement(self,player,l):
+            self.velocity.x = 0
+            self.velocity.y = 0
             if self.pv > 0:
                 dx = self.position.x - player.rect.centerx
                 dy = self.position.y - player.rect.centery
@@ -65,9 +69,10 @@ class monstre(Physique):
                         distance_reelle = 1  # pour éviter la division par zéro
                     if distance_reelle > 70:
                             # Déplacement normalisé : dx/distance_reelle donne la direction (entre -1 et 1) et on multiplie par la vitesse pour garder une vitesse constante quelle que soit la direction
-                            self.position.x -= (dx / distance_reelle) * 3*speed/5  # normalisé
+                            self.velocity.x -= (dx / distance_reelle) * 2*speed/3  # normalisé
                        
-                            self.position.y -= (dy / distance_reelle) * 3*speed/5  # normalisé
+                            self.velocity.y -= (dy / distance_reelle) * 2*speed/3  # normalisé
+
                 else:  # ronde — on récupère le waypoint actuel
                     cible_x, cible_y = self.waypoints[self.waypoint_actuel]
                     distance_x = cible_x - self.position.x 
@@ -76,9 +81,14 @@ class monstre(Physique):
                     if distance_total < 10 and distance_total > - 10 :
                         self.waypoint_actuel = (self.waypoint_actuel + 1) % len(self.waypoints)
                     else:
-                        self.position.x += (distance_x / distance_total) * 2*speed/5  # normalisé 
-                        self.position.y += (distance_y / distance_total) * 2*speed/5
+                        self.velocity.x += (distance_x / distance_total) * 2*speed/5  # normalisé 
+                        self.velocity.y += (distance_y / distance_total) * 2*speed/5
+            self.position.x += self.velocity.x
             self.rect.center = self.position
+            self.collisions(l)  # faire en sorte que le système de collisions marche
+            self.position.y += self.velocity.y
+            self.rect.center = self.position
+            self.collisions(l)  # faire en sorte que le système de collisions marche
 
 
         def dash(self,player,liste_equipe,degat):
@@ -99,18 +109,7 @@ class monstre(Physique):
 
 
         def liste(self,list_ennemi):            # pour supprimer les ennemis morts de la liste des ennemis
-            for i in range (len(list_ennemi)):
-                if list_ennemi[i].pv <= 0:
-                    list_ennemi.pop(i)
-
-
-
-
-
-
-
-
-
+                    list_ennemi[:] = [monstreee for monstreee in list_ennemi if monstreee.pv >0] # notation slice pour modifier la liste originale , pop l'index créait des bug car on manipule un index qui n'existe plus 
 
 
 
