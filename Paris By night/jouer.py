@@ -18,8 +18,9 @@ def lancer():
     speed = 10
 
     vase1 = Vase(200, 500)
+    mur = Mur(200, 600,500,200)
     list_object =[
-    vase1 ]
+    vase1,mur ]
     
     screen = pygame.display.set_mode((width, height))
     pygame.display.set_caption("Fenêtre d'accueil")
@@ -209,15 +210,17 @@ def lancer():
             pass
         
         
-                   
+               
 
-        if not paused and ennemi1.pv > 0:
+        if not paused :
             for monstree in list_ennemi:
-                monstree.attaque_m(player,list_object,liste_equipe)
-                monstree.deplacement(player)
-                monstree.dash(player,liste_equipe,8)
-        for monstree in list_ennemi:
-            monstree.draw(screen, follow)
+                if  monstree.pv > 0:
+                    l = [m for m in list_ennemi if m != monstree]
+                    monstree.deplacement(player, l)
+                    monstree.attaque_m(player,list_object,liste_equipe)
+                    monstree.dash(player,liste_equipe,8)
+            for monstree in list_ennemi:
+                monstree.draw(screen, follow)
 
         if not paused and player.pv > 0 and not inventory:
             equipe.afficher_equipe(liste_equipe,screen)
@@ -242,3 +245,4 @@ def lancer():
             
         pygame.display.update()
     pygame.quit()
+        
