@@ -16,15 +16,18 @@ class Physique:
             if self.rect.colliderect(object.rect):
                 if self.velocity.x > 0: # collision à droite
                     self.rect.right = object.rect.left
-                if self.velocity.x < 0: # collision à gauche
+                    self.velocity.x = 0
+                elif self.velocity.x < 0: # collision à gauche
                     self.rect.left = object.rect.right
-                if self.velocity.y > 0: # collision en bas
+                    self.velocity.x = 0
+                elif self.velocity.y > 0: # collision en bas
                     self.rect.bottom = object.rect.top
-                if self.velocity.y < 0: # collision en haut
+                    self.velocity.y = 0
+                elif self.velocity.y < 0: # collision en haut
                     self.rect.top = object.rect.bottom
+                    self.velocity.y = 0
 
-            self.position = self.rect.center
-
+            self.position = pygame.math.Vector2(self.rect.center)        # pygame.math.Vector2(self.rect.center) convertit ce tuple en Vector2 qui a les attributs x et y contrairement a rect.center qui est un tuple. 
 
 class Object:
     def __init__(self,x,y,width,height,couleur,Image=None):
@@ -241,9 +244,9 @@ class projectile:
             
 
 
-class mur(Object):
+class Mur(Object):
     def __init__(self,x,y,width,height):
-        super().__init__(x,y,width,height,(100, 80, 60),Image=None)
+        super().__init__(x,y,width,height,(100, 80, 60),"assets/murr.png")
         self.image_originale = self.image
         self.position = pygame.math.Vector2(x,y)       
 
@@ -256,8 +259,8 @@ class porte(Object):
         self.distance_interaction =  distance_interaction
 
     def interaction(self, player,screen,follow):
-        ddx = player.rect.centerx - self.position_proj.x
-        ddy = player.rect.centery - self.position_proj.y
+        ddx = player.rect.centerx - self.position.x
+        ddy = player.rect.centery - self.position.y
         distance = math.sqrt(ddx**2 + ddy**2)
         texte_x =  int(self.position.x - follow.camera.offset.x) 
         texte_y =  int(self.position.y - follow.camera.offset.y) - 50
