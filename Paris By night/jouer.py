@@ -225,7 +225,7 @@ def lancer():
         
         for elem in liste_equipe:
             if elem.attaque.nom == "distance" or elem.attaque.nom == "mage" and elem.attaque.proj :
-                elem.attaque.update(liste_equipe, list_object, pygame.time.get_ticks(),screen,list_ennemi)
+                elem.attaque.update(liste_equipe, list_object, pygame.time.get_ticks(),screen,list_ennemi,follow)
                 elem.attaque.draw_proj(screen, follow)
 
         ennemi1.liste(list_ennemi)
@@ -242,4 +242,3 @@ def lancer():
             
         pygame.display.update()
     pygame.quit()
-
