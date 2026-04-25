@@ -208,24 +208,37 @@ class projectile:
                         self.proj_actif = False
                         print (cible.pv)
 
-        def collisions_zone(self,list_ennemi,screen):
+        def collisions_zone(self,list_ennemi,screen,follow):
             print (1)
             l = []
             if len(list_ennemi) != 0:
                 for monstre in list_ennemi:
+                    dx = monstre.position.x - self.position_proj.x
+                    dy = monstre.position.y - self.position_proj.y
+                    distance_reelle = math.sqrt(int(dx**2 + dy**2))
+                    print (distance_reelle)
                     if monstre.rect.collidepoint(self.position_proj):
                         self.proj_actif = False
+                        pygame.draw.circle(screen, (190, 65, 65), (follow.appliquer(self.position_proj) ), self.zone)
+                        if distance_reelle <= self.zone:
+                            l.append(monstre)
+
+            if self.proj_actif is False:
+                if len(list_ennemi) != 0:
+                    for monstre in list_ennemi:
                         dx = monstre.position.x - self.position_proj.x
                         dy = monstre.position.y - self.position_proj.y
                         distance_reelle = math.sqrt(int(dx**2 + dy**2))
-                        print (distance_reelle)
+                        pygame.draw.circle(screen, (190, 65, 65), (follow.appliquer(self.position_proj) ), self.zone)
                         if distance_reelle <= self.zone:
-                            l.append( monstre)
+                            l.append(monstre)
+
+                        
             for i in range (len(l)):
                 l[i].pv -=self.proj_degat 
                 print (l[i].pv)
-
-            pygame.draw.circle(screen, (190, 65, 65), (self.position_proj.x, self.position_proj.y ), self.zone)
+        
+            
 
 
 class mur(Object):
@@ -254,7 +267,6 @@ class porte(Object):
             screen.blit(texte, (texte_x, texte_y))
             if pygame.key.get_pressed()[pygame.K_e] :
                 self.ouvert = True
-             
-
+    
                
 
