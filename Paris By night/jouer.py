@@ -233,7 +233,9 @@ def lancer():
             if elem.attaque.nom == "distance" or elem.attaque.nom == "mage" and elem.attaque.proj :
                 elem.attaque.update(liste_equipe, list_object, pygame.time.get_ticks(),screen,list_ennemi,follow)
                 elem.attaque.draw_proj(screen, follow)
-
+            elif elem.attaque.nom == "cac" and elem.attaque.cac.cac_actif:
+                elem.attaque.update(liste_equipe, list_object, pygame.time.get_ticks(),screen,list_ennemi,follow)
+                elem.attaque.draw_proj(screen, follow)  
         ennemi1.liste(list_ennemi)
 
         if inventory and player.pv > 0 and not paused:
