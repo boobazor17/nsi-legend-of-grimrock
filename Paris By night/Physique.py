@@ -242,6 +242,44 @@ class projectile:
                 print (l[i].pv)
         
             
+class Cac:
+    def __init__(self,x,y,cac_hauteur,cac_largeur,cac_degat,zone,sound_lancer=None,sound_toucher=None):
+        self.position_cac = pygame.math.Vector2(x,y)
+        self.cac_actif = False
+        self.cac_hauteur = cac_hauteur
+        self.cac_largeur = cac_largeur
+        self.cac_degat = cac_degat
+        self.zone = zone
+        self.cac_rect = None
+        try:
+            self.sound_lancer = pygame.mixer.Sound("assets/sounds/rocksane.mp3") # à remplacer par le son de l'attaque cac
+            self.sound_lancer.set_volume(0.5)  # Volume entre 0.0 et 1.0
+        except Exception as e:
+            self.sound_lancer = None  
+
+    def lancer(self,origine):
+        self.cac_actif = True
+        self.position_cac = origine.copy()
+        print(1)
+        if self.sound_lancer is not None:
+            self.sound_lancer.play()
+        rectangle = pygame.Rect(self.position_cac.x, self.position_cac.y, self.cac_largeur, self.cac_hauteur)
+        self.cac_rect = rectangle
+
+    def collisions(self,cible,list_ennemi,liste_equipe):
+        if self.cac_actif == True:
+            if type(cible).__name__ == "Player":
+                if cible.rect.colliderect(self.cac_rect):
+                    cible.recevoir_degat(self.cac_degat, liste_equipe)
+                    self.cac_actif = False        
+            else : 
+                for monstre in list_ennemi :
+                    if monstre.rect.colliderect(self.cac_rect):
+                        monstre.pv -=self.cac_degat     
+                        self.cac_actif = False
+                        print (monstre.pv)
+
+
 
 
 class Mur(Object):
@@ -271,5 +309,4 @@ class porte(Object):
             if pygame.key.get_pressed()[pygame.K_e] :
                 self.ouvert = True
     
-               
-
+                         
