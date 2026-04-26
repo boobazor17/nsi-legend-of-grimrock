@@ -203,7 +203,18 @@ def lancer():
             menu_pause = pygame.Rect(hpb_x, hpb_y, hpb_w, hpb_h)
             pygame.draw.rect(screen, (128, 94, 40), menu_pause)
             screen.blit(texte, (texte_x, texte_y))
+            
+            bouton_quitter = pygame.Rect(440,350,200,70)
+            pygame.draw.rect(screen,(201, 158, 89),bouton_quitter)
+            texte = font.render("quitter", True, ('white'))
+            screen.blit(texte,(490,370))
+                        
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if bouton_quitter.collidepoint(event.pos):
+                    return "menu"
+                    paused = False 
 
+        
         # Ton code de jeu ici, mais seulement si pas en pause
         if not paused:
             # bouger les sprites, mettre à jour le jeu...
