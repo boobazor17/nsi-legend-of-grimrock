@@ -2,6 +2,7 @@ import pygame
 import os
 import math
 from Physique import projectile
+from Physique import Cac
 pygame.init()
 width = 1080
 height = 720
@@ -36,9 +37,9 @@ class attaque:
         self.temps_recharge= temps_recharge
         self.attaque_dernier_temps = -1000
         self.proj = projectile(0, 0, 2, 8, 0, 0, 10,200) # (x,y) = (0,0)
-        self.monstre = None
-        self.case_rect = None
-    
+        self.monstre = None                           
+        self.case_rect = None     
+        self.cac = Cac(0, 0, 50, 50, 10, 100)
     
     def utiliser(self, attaquant,list_ennemi,player,list_object,liste_equipe,case_rect):
         l =[]
@@ -53,13 +54,18 @@ class attaque:
             self.monstre =  monstre
             temps =  pygame.time.get_ticks() 
             if self.nom == "cac":
-                if l[0][0] <= self.portée:
-                    monstre.pv -= self.degat
+                print("attaque cac")
+                if l[0][0] <= self.portée and temps - self.attaque_dernier_temps >= self.temps_recharge :
+                    self.attaque_dernier_temps = temps
+                    if attaquant.pv >= 0:
+                        self.cac.lancer(pygame.math.Vector2(player.position))
+                        self.case_rect = case_rect
+
             elif self.nom == "distance":
                 if l[0][0] <= self.portée and temps - self.attaque_dernier_temps >= self.temps_recharge :
                         self.attaque_dernier_temps = temps
                         if attaquant.pv >= 0: 
-                            self.proj.lancer(pygame.math.Vector2(player.position), monstre)
+                            self.proj.lancer(pygame.math.Vector2(player.position),monstre)
                             self.case_rect = case_rect
             elif self.nom == "mage" :
                 if l[0][0] <= self.portée and temps - self.attaque_dernier_temps >= self.temps_recharge :
@@ -94,13 +100,33 @@ class attaque:
                     overlay.set_alpha(100)  # 0 = invisible, 255 = opaque
                     overlay.fill((50, 50, 50))  
                     screen.blit(overlay, (self.case_rect.x, self.case_rect.y))   
-                 
+            elif self.nom == "cac":
+                if self.cac.cac_actif:
+                    print(self.cac.cac_actif)
+                    if self.monstre is not None:
+                        if temps - self.attaque_dernier_temps <= 500:
+                            self.cac.collisions(self.monstre,list_ennemi,liste_equipe)
+                            overlay = pygame.Surface((100, 100))
+                            overlay.set_alpha(100)  # 0 = invisible, 255 = opaque
+                            overlay.fill((50, 50, 50))  
+                            screen.blit(overlay, (self.case_rect.x, self.case_rect.y))          
+                        else : 
+                            self.cac.cac_actif = False
+
+
+                           
 
     def draw_proj(self,screen,follow):
         if  self.proj.proj_actif:
             pygame.draw.circle(screen, (255, 0, 0), follow.appliquer(self.proj.position_proj), self.proj.proj_rayon)
-        
-
+        if self.cac.cac_actif :
+            x, y = follow.appliquer(self.cac.position_cac) #on récupère les coordonnées écran de la position du cac en appliquant l'offset de caméra
+            pygame.draw.rect(screen, (255, 0, 0), (x, y, self.cac.cac_largeur, self.cac.cac_hauteur)) #on dessine le rectangle de l'attaque corps à corps en rouge pour le visualiser
+   
+            #on fait ça en 2 lignes pour éviter un problème de tuple.
+   
+   
+   
     """ def personnage():
      for i in range(4):  # pour des équipes de 4
         print("Choisis un personnage :")
