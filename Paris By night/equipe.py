@@ -58,7 +58,7 @@ class attaque:
                 if l[0][0] <= self.portée and temps - self.attaque_dernier_temps >= self.temps_recharge :
                     self.attaque_dernier_temps = temps
                     if attaquant.pv >= 0:
-                        self.cac.lancer(pygame.math.Vector2(player.position))
+                        self.cac.lancer(pygame.math.Vector2(player.position), monstre)
                         self.case_rect = case_rect
 
             elif self.nom == "distance":
@@ -109,7 +109,7 @@ class attaque:
                             overlay = pygame.Surface((100, 100))
                             overlay.set_alpha(100)  # 0 = invisible, 255 = opaque
                             overlay.fill((50, 50, 50))  
-                            screen.blit(overlay, (self.case_rect.x, self.case_rect.y))          
+                            screen.blit(overlay, (self.case_rect.x, self.case_rect.y))        
                         else : 
                             self.cac.cac_actif = False
 
@@ -119,11 +119,14 @@ class attaque:
     def draw_proj(self,screen,follow):
         if  self.proj.proj_actif:
             pygame.draw.circle(screen, (255, 0, 0), follow.appliquer(self.proj.position_proj), self.proj.proj_rayon)
-        if self.cac.cac_actif :
-            x, y = follow.appliquer(self.cac.position_cac) #on récupère les coordonnées écran de la position du cac en appliquant l'offset de caméra
-            pygame.draw.rect(screen, (255, 0, 0), (x, y, self.cac.cac_largeur, self.cac.cac_hauteur)) #on dessine le rectangle de l'attaque corps à corps en rouge pour le visualiser
+        if  self.cac.cac_rect  :
+            pygame.draw.rect(screen, (255, 0, 0), (
+                self.cac.cac_rect.x - follow.camera.offset.x,
+                self.cac.cac_rect.y - follow.camera.offset.y,
+                self.cac.cac_largeur,
+                self.cac.cac_hauteur
+            ))
    
-            #on fait ça en 2 lignes pour éviter un problème de tuple.
    
    
    
@@ -202,3 +205,4 @@ def afficher_pv (liste_equipe,screen):
                 pygame.draw.rect(screen, (0, 0, 0), ((case_x-5), case_y, 70, 10)) 
                 if pv > 0:
                     pygame.draw.rect(screen, (200, 0, 0), ((case_x-5), case_y, 70 * (pv/pvmax),10))  # bordure
+
