@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="16" tileheight="16" infinite="0" nextlayerid="3" nextobjectid="13">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="16" tileheight="16" infinite="0" nextlayerid="3" nextobjectid="20">
  <tileset firstgid="1" source="Plateforme.tsx"/>
  <tileset firstgid="2561" source="mur.tsx"/>
- <tileset firstgid="2849" source="icons.tsx"/>
  <layer id="1" name="Calque de Tuiles 1" width="50" height="50">
   <data encoding="csv">
 1135,1135,1391,1391,1327,1327,1392,1392,1328,1391,1391,1327,1391,1392,1391,1327,1392,1392,1328,1391,1392,1391,1392,1392,1391,1391,1391,1391,1391,1391,1391,1391,1392,1392,1391,1391,1391,1391,1392,1391,1391,1392,1392,1328,1391,1391,1327,1391,1392,1391,
@@ -70,9 +69,9 @@
    </properties>
    <point/>
   </object>
-  <object id="10" gid="2849" x="351.492" y="304.815" width="40" height="40"/>
   <object id="12" x="604.845" y="198.496">
    <properties>
+    <property name="nom" value="ennemi1"/>
     <property name="obj_type" value="ennemi"/>
    </properties>
    <point/>
