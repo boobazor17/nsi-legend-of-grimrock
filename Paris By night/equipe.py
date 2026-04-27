@@ -16,6 +16,10 @@ class equipe :
                 self.degat_attaque = degat_attaque
                 self.distance_attaque = distance_attaque
                 self.attaque = None 
+                self.mana = 100
+                self.manamax = 100
+                self.mana_regen = 2        # points récupérés par seconde
+                self.dernier_regen = 0     # timestamp du dernier tick de regen
                 if Image: # s'il y a une image
                     chemin = os.path.join(os.path.dirname(__file__), Image) #os.path.dirname(__file__) récupère le dossier où se trouve physique.py, puis os.path.join colle le chemin de l'image dessus
                     self.image = pygame.image.load(chemin).convert_alpha()
@@ -24,6 +28,12 @@ class equipe :
     
     def ajouter_attaque(self, attaque):
         self.attaque = attaque
+
+    def regenerer_mana(self):
+        temps = pygame.time.get_ticks()
+        if temps - self.dernier_regen >= 1000:  # toutes les secondes
+            self.mana = min(self.mana + self.mana_regen, self.manamax)
+            self.dernier_regen = temps
 
     
 
@@ -40,9 +50,14 @@ class attaque:
         self.monstre = None                           
         self.case_rect = None     
         self.cac = Cac(0, 0, 50, 50, 10, 100)
+        self.cout_mana = {"cac": 0, "distance": 10, "mage": 25}.get(nom, 0)
     
+    COUT_MANA = {"cac": 0, "distance": 10, "mage": 25}
+
     def utiliser(self, attaquant,list_ennemi,player,list_object,liste_equipe,case_rect):
         l =[]
+        if attaquant.mana < self.cout_mana:
+            return  # pas assez de mana, on annul
         if len(list_ennemi) != 0:
             for monstre in list_ennemi:
                 dx = monstre.position.x - player.rect.centerx
@@ -60,6 +75,7 @@ class attaque:
                     if attaquant.pv >= 0:
                         self.cac.lancer(pygame.math.Vector2(player.position), monstre)
                         self.case_rect = case_rect
+                        attaquant.mana -= self.cout_mana
 
             elif self.nom == "distance":
                 if l[0][0] <= self.portée and temps - self.attaque_dernier_temps >= self.temps_recharge :
@@ -67,12 +83,14 @@ class attaque:
                         if attaquant.pv >= 0: 
                             self.proj.lancer(pygame.math.Vector2(player.position),monstre)
                             self.case_rect = case_rect
+                            attaquant.mana -= self.cout_mana
             elif self.nom == "mage" :
                 if l[0][0] <= self.portée and temps - self.attaque_dernier_temps >= self.temps_recharge :
                         self.attaque_dernier_temps = temps
                         if attaquant.pv >= 0: 
                             self.proj.lancer(pygame.math.Vector2(player.position), monstre)
                             self.case_rect = case_rect
+                            attaquant.mana -= self.cout_mana
 
 
 
@@ -205,3 +223,6 @@ def afficher_pv (liste_equipe,screen):
                 pygame.draw.rect(screen, (0, 0, 0), ((case_x-5), case_y, 70, 10)) 
                 if pv > 0:
                     pygame.draw.rect(screen, (200, 0, 0), ((case_x-5), case_y, 70 * (pv/pvmax),10))  # bordure
+                if liste_equipe[index].mana > 0:
+                    pygame.draw.rect(screen, (0, 0, 0), ((case_x-5), case_y + 12, 70, 6))  # fond noir
+                    pygame.draw.rect(screen, (0, 0, 139), ((case_x-5), case_y + 12, 70 * (liste_equipe[index].mana / liste_equipe[index].manamax), 6))
