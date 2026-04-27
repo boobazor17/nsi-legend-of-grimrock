@@ -61,7 +61,7 @@ def lancer():
     ennemi1 = monstre(0,0,"ennemi1" , 100, 100, 10, 250, 130)
     ennemi2 = monstre(200,-10,"ennemi1" , 100, 100, 10, 250, 130)
     
-    list_ennemi = [ennemi1,ennemi2]
+    list_ennemi = [ennemi1]
     clock   = pygame.time.Clock()
     running = True # variable pour la boucle de jeu
 
@@ -126,6 +126,8 @@ def lancer():
                     player.velocity.x= speed / math.sqrt(2)
                 else:
                     player.velocity.x = speed
+        if player.velocity.length() > 0:
+            player.direction = player.velocity.normalize()
 
         # effet assombri lorsque le joueur est dans son inventaire a retravailler
         if inventory and player.pv and not paused> 0: 
@@ -135,12 +137,15 @@ def lancer():
             screen.blit(overlay, (0, 0))
 
         if not paused and not inventory:
-            player.position += player.velocity
+            player.position.x += player.velocity.x
             player.rect.center = player.position
+            player.collisions_x(list_object)
+            player.position.y += player.velocity.y
+            player.rect.center = player.position
+            player.collisions_y(list_object)
             for object in list_object: # check tous les objets de la liste pour voir s'il y a une collision avec le joueur
                 # pygame.draw.rect(screen, (255,0,0), (object.rect.x - int(cam.offset.x), object.rect.y - int(cam.offset.y), object.rect.width, object.rect.height), 2) #  dessine les hitbox des objets en rouge 
                 screen.blit(object.image, follow.appliquer(object.position))
-            player.collisions(list_object) 
             vase1.interaction(player,screen, font, follow, mon_inventaire)
             cam.scroll()
         else:
@@ -230,13 +235,16 @@ def lancer():
             equipe.afficher_pv (liste_equipe,screen)
         
         for elem in liste_equipe:
+            temps = pygame.time.get_ticks()
             if elem.attaque.nom == "distance" or elem.attaque.nom == "mage" and elem.attaque.proj :
-                elem.attaque.update(liste_equipe, list_object, pygame.time.get_ticks(),screen,list_ennemi,follow)
+                elem.attaque.update(liste_equipe, list_object, temps,screen,list_ennemi,follow)
                 elem.attaque.draw_proj(screen, follow)
             elif elem.attaque.nom == "cac" and elem.attaque.cac.cac_actif:
-                elem.attaque.update(liste_equipe, list_object, pygame.time.get_ticks(),screen,list_ennemi,follow)
+                elem.attaque.update(liste_equipe, list_object, temps,screen,list_ennemi,follow)
+            if temps - elem.attaque.attaque_dernier_temps < 150 :
                 elem.attaque.draw_proj(screen, follow)  
         ennemi1.liste(list_ennemi)
+
 
         if inventory and player.pv > 0 and not paused:
             hpb_w = 600
