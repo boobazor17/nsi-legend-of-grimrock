@@ -4,10 +4,10 @@ from camera import *
 pygame.init()
 from Physique import Physique  
 from Physique import projectile
+import time
 
 
 
-speed = 10
 class monstre(Physique):
         def __init__(self,x,y,nom,pv,pvmax,attaque,distance,distance_attaque):
             super().__init__(x,y,40,40)
@@ -25,7 +25,13 @@ class monstre(Physique):
             self.waypoint_actuel = 0
             self.proj = projectile(x, y, 5, 8, 0, 0, 10,0) # initialisation du projectile (position(x,y)  vitesse , rayon, vitesse_x, vitesse_y, degat)
             self.rect = pygame.Rect(x, y, 40, 40)
-    
+            self.speed = 10
+            self.dash_actif = False
+            self.dash_debut = 0
+            self.dash_duree = 350  # 3 secondes
+            self.acceleration_dash = 40
+            
+
         def draw(self, screen, follow):
             if self.pv > 0:
                 pygame.draw.circle(screen, (99, 69, 45), follow.appliquer(self.position), 20)
@@ -69,9 +75,9 @@ class monstre(Physique):
                         distance_reelle = 1  # pour éviter la division par zéro
                     if distance_reelle > 70:
                             # Déplacement normalisé : dx/distance_reelle donne la direction (entre -1 et 1) et on multiplie par la vitesse pour garder une vitesse constante quelle que soit la direction
-                            self.velocity.x -= (dx / distance_reelle) * 2*speed/3  # normalisé
+                            self.velocity.x -= (dx / distance_reelle) * 2*self.speed/3  # normalisé
                        
-                            self.velocity.y -= (dy / distance_reelle) * 2*speed/3  # normalisé
+                            self.velocity.y -= (dy / distance_reelle) * 2*self.speed/3  # normalisé
 
                 else:  # ronde — on récupère le waypoint actuel
                     cible_x, cible_y = self.waypoints[self.waypoint_actuel]
@@ -81,8 +87,8 @@ class monstre(Physique):
                     if distance_total < 10 and distance_total > - 10 :
                         self.waypoint_actuel = (self.waypoint_actuel + 1) % len(self.waypoints)
                     else:
-                        self.velocity.x += (distance_x / distance_total) * 2*speed/5  # normalisé 
-                        self.velocity.y += (distance_y / distance_total) * 2*speed/5
+                        self.velocity.x += (distance_x / distance_total) * 2*self.speed/5  # normalisé 
+                        self.velocity.y += (distance_y / distance_total) * 2*self.speed/5
             self.position.x += self.velocity.x
             self.rect.center = self.position
             self.collisions_x(l)  # faire en sorte que le système de collisions marche
@@ -94,25 +100,36 @@ class monstre(Physique):
 
 
         def dash(self,player,liste_equipe,degat):
-            if self.pv > 0 :
+                if self.pv <= 0 :   #plus optimal que de faire un if à chaque fois dans les fonctions de déplacement et d'attaque, on sort directement de la fonction si le monstre est mort
+                    return
                 temps =  pygame.time.get_ticks() 
                 
                 dx = self.position.x - player.rect.centerx
                 dy = self.position.y - player.rect.centery
                 distance_reelle = math.sqrt(int(dx**2 + dy**2))
-                if self.distance >= distance_reelle and player.pv > 0:
-                    
-                    if (dx >= 70 or dx <= -70) and (dy >= 70 or dy <= -70) and temps - self.attaque_dernier_temps >= self.attaque_cooldown + 2000:
-                        self.attaque_dernier_temps = temps
-                        self.position.x = player.rect.centerx + (10 if dx >= 0 else -10)
-                        self.position.y = player.rect.centery + (10 if dy >= 0 else -10)
-                        player.recevoir_degat(degat, liste_equipe)
+                if  player.pv > 0 and distance_reelle < 200 and temps - self.attaque_dernier_temps >= self.attaque_cooldown + 2000:
+
+                    '''self.position.x = player.rect.centerx + (10 if dx >= 0 else -10)
+                    self.position.y = player.rect.centery + (10 if dy >= 0 else -10)'''
+                    self.attaque_dernier_temps = temps
+                    player.recevoir_degat(degat, liste_equipe)
+
+                    self.dash_actif = True
+                    print("dash activé")
+                    self.dash_debut = temps
+                    self.speed += self.acceleration_dash
+
+                    # Fin du dash après 3 secondes
+                if self.dash_actif:
+                    if temps - self.dash_debut >= self.dash_duree:
+                        self.speed -= self.acceleration_dash
+                        self.dash_actif = False
+                        print("dash désactivé")
 
 
 
         def liste(self,list_ennemi):            # pour supprimer les ennemis morts de la liste des ennemis
                     list_ennemi[:] = [monstreee for monstreee in list_ennemi if monstreee.pv >0] # notation slice pour modifier la liste originale , pop l'index créait des bug car on manipule un index qui n'existe plus 
-
 
 
 
