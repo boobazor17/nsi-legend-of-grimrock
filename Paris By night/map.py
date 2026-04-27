@@ -89,10 +89,17 @@ def create_map(tmx_data):
 
         elif obj_type == "ennemi":
             nom = obj.properties.get("nom", "ennemi1")
-            ennemis_to_spawn.append({
-                "nom": nom,
-                "x": x * SCALE,
-                "y": y * SCALE
-            })
+            if nom == "ennemi1":
+                ennemis_to_spawn.append({
+                    "nom": nom,
+                    "x": x * SCALE,
+                    "y": y * SCALE,
+                    "pv": 100,
+                    "pvmax": 100,
+                    "attaque":10, 
+                    "distance": 250,
+                    "distance_attaque" :130})
+                    
+            
 
     return tiles, collision_tiles, ennemis_to_spawn, spawnpoint_joueur, objets_interactifs
