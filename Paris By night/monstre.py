@@ -85,10 +85,10 @@ class monstre(Physique):
                         self.velocity.y += (distance_y / distance_total) * 2*speed/5
             self.position.x += self.velocity.x
             self.rect.center = self.position
-            self.collisions(l)  # faire en sorte que le système de collisions marche
+            self.collisions_x(l)  # faire en sorte que le système de collisions marche
             self.position.y += self.velocity.y
             self.rect.center = self.position
-            self.collisions(l)  # faire en sorte que le système de collisions marche
+            self.collisions_y(l)  # faire en sorte que le système de collisions marche
 
 
         def dash(self,player,liste_equipe,degat):
