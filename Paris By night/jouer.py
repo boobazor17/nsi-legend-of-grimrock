@@ -10,31 +10,39 @@ import os
 
 
 
-def lancer():
+def lancer(screen, font):
     pygame.init()
-    font = pygame.font.Font(None,40)
     width = 1080
     height = 720
     speed = 10
 
     vase1 = Vase(200, 500)
+    mur = Mur(200, 600,500,200)
     list_object =[
-    vase1 ]
+    vase1,mur ]
     
-    screen = pygame.display.set_mode((width, height))
-    pygame.display.set_caption("Fenêtre d'accueil")
     
-    fantome_perso1 = equipe.equipe(0,0,"fantome",100,100,20,100,"assets/personnage log/fantome.png")
-                    
-    rat_perso2 =  equipe.equipe(0,0,"rat", 50, 50,20,20,"assets/personnage log/rat.png")
-                    
-    pigeon_perso3 = equipe.equipe(0,0,"nom",100,100,20,20,"assets/personnage log/pigeon.png")
-                
-    perso4 = equipe.equipe(0,0,"nom", 100, 100,20,20,"assets/personnage log/pigeon.png")
-
+    # personage
+    fantome_perso1 = equipe.equipe(0,0,"fantome",100,100,20,100,10,"assets/personnage log/fantome.png")             
+    rat_perso2 =  equipe.equipe(0,0,"rat", 50, 50,20,20,10,"assets/personnage log/rat.png")       
+    pigeon_perso3 = equipe.equipe(0,0,"nom",100,100,20,20,10,"assets/personnage log/pigeon.png")         
+    perso4 = equipe.equipe(0,0,"nom", 100, 100,20,20,10,"assets/personnage log/pigeon.png")
+    
     liste_ts = [fantome_perso1,rat_perso2,pigeon_perso3,perso4 ]
-
     liste_equipe = liste_ts[:4] #définit une équipe de base que l'on pourra modifier par la suite
+   
+     #attaque
+    attaque_cac = equipe.attaque("cac", 20, 200, 0, 0, 1000)
+    attaque_distance = equipe.attaque("distance", 10, 300, 0, 0, 1000) 
+    attaque_distance1 = equipe.attaque("distance", 10, 300, 0, 0, 1000) # on créer 2 instances séparés pour pas qu'elle partage la même mémoire.
+    attaque_mage = equipe.attaque("mage",30,200,10,0,5000)
+   
+    fantome_perso1.ajouter_attaque(attaque_mage)
+    rat_perso2.ajouter_attaque(attaque_distance)
+    pigeon_perso3.ajouter_attaque(attaque_cac)
+    perso4.ajouter_attaque(attaque_distance1)      
+
+
     # Initialisation joueur + caméra
     player = Player(300, 200)
     cam    = Camera(player)
@@ -47,7 +55,9 @@ def lancer():
     image_invent = pygame.image.load(chemin).convert_alpha()
     image_invent = pygame.transform.scale(image_invent, (600, 300))
     
-    ennemi1 = monstre(0,0,"ennemi1" , 50, 60, 10, 250, 130)
+    ennemi1 = monstre(0,0,"ennemi1" , 100, 100, 10, 250, 130)
+    ennemi2 = monstre(200,-10,"ennemi1" , 100, 100, 10, 250, 130)
+    
     list_ennemi = [ennemi1]
     clock   = pygame.time.Clock()
     running = True # variable pour la boucle de jeu
@@ -83,6 +93,8 @@ def lancer():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if inventory:
                     mon_inventaire.utiliser(event.pos,liste_equipe)
+                if not inventory and not paused:
+                    equipe.regarde_clique(event.pos,liste_equipe,list_ennemi,player,list_object) #event.pos = pos_souris
 
 
 
@@ -111,6 +123,8 @@ def lancer():
                     player.velocity.x= speed / math.sqrt(2)
                 else:
                     player.velocity.x = speed
+        if player.velocity.length() > 0:
+            player.direction = player.velocity.normalize()
 
         # effet assombri lorsque le joueur est dans son inventaire a retravailler
         if inventory and player.pv and not paused> 0: 
@@ -120,12 +134,15 @@ def lancer():
             screen.blit(overlay, (0, 0))
 
         if not paused and not inventory:
-            player.position += player.velocity
+            player.position.x += player.velocity.x
             player.rect.center = player.position
+            player.collisions_x(list_object)
+            player.position.y += player.velocity.y
+            player.rect.center = player.position
+            player.collisions_y(list_object)
             for object in list_object: # check tous les objets de la liste pour voir s'il y a une collision avec le joueur
                 # pygame.draw.rect(screen, (255,0,0), (object.rect.x - int(cam.offset.x), object.rect.y - int(cam.offset.y), object.rect.width, object.rect.height), 2) #  dessine les hitbox des objets en rouge 
                 screen.blit(object.image, follow.appliquer(object.position))
-            player.collisions(list_object) 
             vase1.interaction(player,screen, font, follow, mon_inventaire)
             cam.scroll()
         else:
@@ -189,23 +206,50 @@ def lancer():
             pygame.draw.rect(screen, (128, 94, 40), menu_pause)
             screen.blit(texte, (texte_x, texte_y))
 
+            bouton_quitter = pygame.Rect(440,350,200,70)
+            pygame.draw.rect(screen,(201, 158, 89),bouton_quitter)
+            texte = font.render("quitter", True, ('white'))
+            screen.blit(texte,(490,370))
+            
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if bouton_quitter.collidepoint(event.pos):
+                    return "menu"
+            
+
+        
         # Ton code de jeu ici, mais seulement si pas en pause
         if not paused:
             # bouger les sprites, mettre à jour le jeu...
             pass
         
         
-                   
+               
 
-        if not paused and ennemi1.pv > 0:
-            ennemi1.attaque_m(player,list_object,liste_equipe)
-            ennemi1.deplacement(player)
-            ennemi1.dash(player,liste_equipe,8)
-        ennemi1.draw(screen, follow)
+        if not paused :
+            for monstree in list_ennemi:
+                if  monstree.pv > 0:
+                    l = [m for m in list_ennemi if m != monstree]
+                    monstree.deplacement(player, l)
+                    monstree.attaque_m(player,list_object,liste_equipe)
+                    monstree.dash(player,liste_equipe,8)
+            for monstree in list_ennemi:
+                monstree.draw(screen, follow)
 
         if not paused and player.pv > 0 and not inventory:
             equipe.afficher_equipe(liste_equipe,screen)
             equipe.afficher_pv (liste_equipe,screen)
+        
+        for elem in liste_equipe:
+            temps = pygame.time.get_ticks()
+            if elem.attaque.nom == "distance" or elem.attaque.nom == "mage" and elem.attaque.proj :
+                elem.attaque.update(liste_equipe, list_object, temps,screen,list_ennemi,follow)
+                elem.attaque.draw_proj(screen, follow)
+            elif elem.attaque.nom == "cac" and elem.attaque.cac.cac_actif:
+                elem.attaque.update(liste_equipe, list_object, temps,screen,list_ennemi,follow)
+            if temps - elem.attaque.attaque_dernier_temps < 150 :
+                elem.attaque.draw_proj(screen, follow)  
+        ennemi1.liste(list_ennemi)
+
 
         if inventory and player.pv > 0 and not paused:
             hpb_w = 600
@@ -218,14 +262,5 @@ def lancer():
             mon_inventaire.draw(screen, liste_equipe)
             
         pygame.display.update()
-    pygame.quit()
-    
+    return "menu"
         
-
-
-        
-        
-
-
-        
-

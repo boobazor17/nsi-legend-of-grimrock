@@ -9,4 +9,3 @@ def charger_images():
         "tower": tower
     }
  
-

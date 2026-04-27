@@ -11,21 +11,27 @@ class Physique:
         self.rect = pygame.Rect(x, y, width, height)
         self.velocity = pygame.math.Vector2(0,0)
 
-    def collisions (self,list_object):
+    def collisions_x (self,list_object):
         for object in list_object:
             if self.rect.colliderect(object.rect):
                 if self.velocity.x > 0: # collision à droite
-                    self.rect.right = object.rect.left
-                if self.velocity.x < 0: # collision à gauche
-                    self.rect.left = object.rect.right
+                    self.rect.right = object.rect.left 
+                    self.velocity.x = 0
+                elif self.velocity.x < 0: # collision à gauche
+                    self.rect.left = object.rect.right 
+                    self.velocity.x = 0
+                self.position.x = self.rect.centerx      
+
+    def collisions_y(self,list_object):
+        for object in list_object:
+            if self.rect.colliderect(object.rect):
                 if self.velocity.y > 0: # collision en bas
-                    self.rect.bottom = object.rect.top
-                if self.velocity.y < 0: # collision en haut
-                    self.rect.top = object.rect.bottom
-
-            self.position = self.rect.center
-
-
+                            self.rect.bottom = object.rect.top 
+                            self.velocity.y = 0
+                elif self.velocity.y < 0: # collision en haut
+                            self.rect.top = object.rect.bottom 
+                            self.velocity.y = 0
+                self.position.y = self.rect.centery
 class Object:
     def __init__(self,x,y,width,height,couleur,Image=None):
         self.rect = pygame.Rect(x, y, width,height)
@@ -163,7 +169,7 @@ class inventaire:
             self.t = None
                     
 class projectile:                
-        def __init__(self,x,y,proj_vitesse,proj_rayon,proj_vitesse_x,proj_vitesse_y,proj_degat,sound_lancer=None,sound_toucher=None):
+        def __init__(self,x,y,proj_vitesse,proj_rayon,proj_vitesse_x,proj_vitesse_y,proj_degat,zone,sound_lancer=None,sound_toucher=None):
             self.position_proj = pygame.math.Vector2(x,y)
             self.proj_actif = False
             self.proj_vitesse = proj_vitesse
@@ -171,9 +177,10 @@ class projectile:
             self.proj_vitesse_x = proj_vitesse_x
             self.proj_vitesse_y = proj_vitesse_y 
             self.proj_degat = proj_degat
+            self.zone = zone
             self.temps_lancement = -100
             try:
-                self.sound_lancer = pygame.mixer.Sound("assets/sound/rocksane.mp3")
+                self.sound_lancer = pygame.mixer.Sound("assets/sounds/rocksane.mp3")
                 self.sound_lancer.set_volume(0.5)  # Volume entre 0.0 et 1.0
             except Exception as e:
                 self.sound_lancer = None
@@ -181,24 +188,140 @@ class projectile:
         def lancer(self,origine,cible):
             self.proj_actif = True
             self.position_proj = origine.copy()
-            ddx=  cible.rect.centerx - self.position_proj.x
-            ddy=  cible.rect.centery - self.position_proj.y
-            dist = math.sqrt(ddx**2 + ddy**2)
-            self.proj_vitesse_x = (ddx / dist) * self.proj_vitesse
-            self.proj_vitesse_y = (ddy / dist) * self.proj_vitesse
+            if hasattr(cible, 'rect'):
+                ddx = cible.rect.centerx - self.position_proj.x
+                ddy = cible.rect.centery - self.position_proj.y
+            else:
+                ddx = cible.position.x - self.position_proj.x
+                ddy = cible.position.y - self.position_proj.y
+           
+            distance = math.sqrt(ddx**2 + ddy**2)
+            self.proj_vitesse_x = (ddx / distance) * self.proj_vitesse
+            self.proj_vitesse_y = (ddy / distance) * self.proj_vitesse
             self.position_proj += (self.proj_vitesse_x, self.proj_vitesse_y)
             if self.sound_lancer is not None:
                 self.sound_lancer.play()
 
         def collisions(self,cible,liste_equipe):    
             if self.proj_actif == True:
-                if cible.rect.collidepoint(self.position_proj):
-                    cible.recevoir_degat(self.proj_degat, liste_equipe)
-                    self.proj_actif = False
-                    
+                if type(cible).__name__ == "Player":
+                    if cible.rect.collidepoint(self.position_proj):
+                        cible.recevoir_degat(self.proj_degat, liste_equipe)
+                        self.proj_actif = False
+                else:
+                    if cible.rect.collidepoint(self.position_proj):
+                        cible.pv -=self.proj_degat     
+                        self.proj_actif = False
+                        print (cible.pv)
 
-class mur(Object):
+        def collisions_zone(self,list_ennemi,screen,follow):
+            print (1)
+            l = []
+            if len(list_ennemi) != 0:
+                for monstre in list_ennemi:
+                    dx = monstre.position.x - self.position_proj.x
+                    dy = monstre.position.y - self.position_proj.y
+                    distance_reelle = math.sqrt(int(dx**2 + dy**2))
+                    print (distance_reelle)
+                    if monstre.rect.collidepoint(self.position_proj):
+                        self.proj_actif = False
+                        pygame.draw.circle(screen, (190, 65, 65), (follow.appliquer(self.position_proj) ), self.zone)
+                        if distance_reelle <= self.zone:
+                            l.append(monstre)
+
+            if self.proj_actif is False:
+                if len(list_ennemi) != 0:
+                    for monstre in list_ennemi:
+                        dx = monstre.position.x - self.position_proj.x
+                        dy = monstre.position.y - self.position_proj.y
+                        distance_reelle = math.sqrt(int(dx**2 + dy**2))
+                        pygame.draw.circle(screen, (190, 65, 65), (follow.appliquer(self.position_proj) ), self.zone)
+                        if distance_reelle <= self.zone:
+                            l.append(monstre)
+
+                        
+            for i in range (len(l)):
+                l[i].pv -=self.proj_degat 
+                print (l[i].pv)
+        
+            
+class Cac:
+    def __init__(self,x,y,cac_hauteur,cac_largeur,cac_degat,zone,sound_lancer=None,sound_toucher=None):
+        self.position_cac = pygame.math.Vector2(x,y)
+        self.cac_actif = False
+        self.cac_hauteur = cac_hauteur
+        self.cac_largeur = cac_largeur
+        self.cac_degat = cac_degat
+        self.zone = zone
+        self.cac_rect = None
+        self.t = None
+        self
+        try:
+            self.sound_lancer = pygame.mixer.Sound("assets/sounds/rocksane.mp3") # à remplacer par le son de l'attaque cac
+            self.sound_lancer.set_volume(0.5)  # Volume entre 0.0 et 1.0
+        except Exception as e:
+            self.sound_lancer = None  
+
+    def lancer(self, origine, cible):
+        self.cac_actif = True
+        self.position_cac = origine.copy()
+        if self.sound_lancer is not None:
+            self.sound_lancer.play()
+        
+        dx = cible.position.x - origine.x
+        dy = cible.position.y - origine.y
+        distance = math.sqrt(dx**2 + dy**2)
+        if distance == 0:
+            distance = 1
+        dx /= distance  # normalise entre -1 et 1
+        dy /= distance
+
+        rect_x = origine.x + dx * self.cac_largeur - self.cac_largeur / 2
+        rect_y = origine.y + dy * self.cac_hauteur - self.cac_hauteur / 2
+
+        self.cac_rect = pygame.Rect(rect_x, rect_y, self.cac_largeur, self.cac_hauteur)
+
+    def collisions(self,cible,list_ennemi,liste_equipe):
+            if type(cible).__name__ == "Player":
+                if cible.rect.colliderect(self.cac_rect) and self.cac_actif == True:
+                    cible.recevoir_degat(self.cac_degat, liste_equipe)
+                    self.cac_actif = False        
+            else : 
+                for monstre in list_ennemi :
+                    if monstre.rect.colliderect(self.cac_rect):
+                        monstre.pv -=self.cac_degat     
+                        self.cac_actif = False
+                        print (monstre.pv)
+                        self.t = pygame.time.get_ticks()
+
+
+
+
+class Mur(Object):
     def __init__(self,x,y,width,height):
-        super().__init__(x,y,width,height,(100, 80, 60),Image=None)
+        super().__init__(x,y,width,height,(100, 80, 60),"assets/murr.png")
         self.image_originale = self.image
-        self.position = pygame.math.Vector2(x,y)                    
+        self.position = pygame.math.Vector2(x,y)       
+
+class porte(Object):             
+    def __init__(self,x,y,width,height,distance_interaction):
+        super().__init__(x,y,width,height,(150, 75, 0),Image=None)
+        self.image_originale = self.image
+        self.position = pygame.math.Vector2(x,y) 
+        self.ouvert = False
+        self.distance_interaction =  distance_interaction
+
+    def interaction(self, player,screen,follow):
+        ddx = player.rect.centerx - self.position.x
+        ddy = player.rect.centery - self.position.y
+        distance = math.sqrt(ddx**2 + ddy**2)
+        texte_x =  int(self.position.x - follow.camera.offset.x) 
+        texte_y =  int(self.position.y - follow.camera.offset.y) - 50
+        texte = font.render("E", True, (255, 255, 255))
+        if distance <= self.distance_interaction and not self.ouvert:
+            pygame.draw.circle(screen,("gold"), (texte_x+10, texte_y+10), 20) # cercle doré autour du E pour indiquer que le joueur peut interagir avec le vase
+            screen.blit(texte, (texte_x, texte_y))
+            if pygame.key.get_pressed()[pygame.K_e] :
+                self.ouvert = True
+    
+                         

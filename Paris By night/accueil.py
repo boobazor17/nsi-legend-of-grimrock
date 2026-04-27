@@ -71,7 +71,10 @@ while running == True:
         sauvegarde.afficher_sauvegarde(screen, font)
 
     elif etat == "jouer":
-        jouer.lancer()
+        resultat = jouer.lancer(screen, font)
+        if resultat == "menu":
+            etat = "menu"
+        
        
     if etat == "credits" or etat == "sauvegarde":
         if event.type == pygame.QUIT:
