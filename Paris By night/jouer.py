@@ -17,10 +17,32 @@ def lancer(screen, font):
     height = 720
     speed = 10
 
+    
+    map_manager = Map_Manager()
+    map_manager.load_map("assets/caca.tmx")
+    list_object = map_manager.list_object
+    vases = map_manager.objets_interactifs
+
+    player = Player(map_manager.spawnpoint_joueur.x, map_manager.spawnpoint_joueur.y)
+    cam = Camera(player)
+    follow = Follow(cam, player)
+    border = Border(cam, player)
+    auto = Auto(cam, player)
+    cam.setmethod(follow)
+
+    list_ennemi = []
+    for e in map_manager.ennemis_to_spawn:
+        list_ennemi.append(monstre(
+            e["x"], e["y"], e["nom"],
+            e["pv"], e["pvmax"],
+            e["attaque"],
+            e["distance"],
+            e["distance_attaque"]
+        ))
+
     vase1 = Vase(200, 500)
     mur = Mur(200, 600,500,200)
-    list_object =[
-    vase1,mur ]
+    
     
     
     # personage
@@ -50,11 +72,9 @@ def lancer(screen, font):
     image_invent = pygame.transform.scale(image_invent, (600, 300))
     
     ennemi1 = monstre(0,0,"ennemi1" , 100, 100, 10, 250, 130)
-    ennemi2 = monstre(200,-10,"ennemi1" , 100, 100, 10, 250, 130)
     
-    list_ennemi = [ennemi1]
-    """for e in map_manager.ennemis_to_spawn:
-        list_ennemi.append(monstre(e["x"], e["y"], e["nom"], 100, 100, 10, 250, 130))"""
+    
+        
     clock   = pygame.time.Clock()
     running = True # variable pour la boucle de jeu
 
@@ -64,19 +84,7 @@ def lancer(screen, font):
     t2 = 0
     mon_inventaire = inventaire()
 
-    map_manager = Map_Manager()
-    map_manager.load_map("assets/caca.tmx")
-    list_object = map_manager.list_object
-    vases = map_manager.objets_interactifs
-    print(f"Spawnpoint utilisé : {map_manager.spawnpoint_joueur}")
 
-    # un seul player, une seule caméra
-    player = Player(map_manager.spawnpoint_joueur.x, map_manager.spawnpoint_joueur.y)
-    cam = Camera(player)
-    follow = Follow(cam, player)
-    border = Border(cam, player)
-    auto = Auto(cam, player)
-    cam.setmethod(follow)
 
     while running: # boucle du jeu boucle infinie while true 
         clock.tick(60) # permet d'actualiser 60 fois le jeu par seconde (60 fps)
@@ -152,7 +160,7 @@ def lancer(screen, font):
             player.collisions_y(list_object)
             map_manager.draw(screen, follow)
             for vase in vases:
-                screen.blit(vase.image, follow.appliquer(vase.position))
+                vase.interaction(player,screen, font, follow, mon_inventaire)
                 cam.scroll()
         else:
             for object in list_object:
@@ -241,7 +249,7 @@ def lancer(screen, font):
             for monstree in list_ennemi:
                 if  monstree.pv > 0:
                     l = [m for m in list_ennemi if m != monstree]
-                    monstree.deplacement(player, l)
+                    monstree.deplacement(player, l,list_object)
                     monstree.attaque_m(player,list_object,liste_equipe)
                     monstree.dash(player,liste_equipe,8)
             for monstree in list_ennemi:
