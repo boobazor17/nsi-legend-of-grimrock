@@ -10,9 +10,8 @@ import os
 
 
 
-def lancer():
+def lancer(screen, font):
     pygame.init()
-    font = pygame.font.Font(None,40)
     width = 1080
     height = 720
     speed = 10
@@ -22,8 +21,6 @@ def lancer():
     list_object =[
     vase1,mur ]
     
-    screen = pygame.display.set_mode((width, height))
-    pygame.display.set_caption("Fenêtre d'accueil")
     
     # personage
     fantome_perso1 = equipe.equipe(0,0,"fantome",100,100,20,100,10,"assets/personnage log/fantome.png")             
@@ -208,7 +205,15 @@ def lancer():
             menu_pause = pygame.Rect(hpb_x, hpb_y, hpb_w, hpb_h)
             pygame.draw.rect(screen, (128, 94, 40), menu_pause)
             screen.blit(texte, (texte_x, texte_y))
+
+            bouton_quitter = pygame.Rect(440,350,200,70)
+            pygame.draw.rect(screen,(201, 158, 89),bouton_quitter)
+            texte = font.render("quitter", True, ('white'))
+            screen.blit(texte,(490,370))
             
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if bouton_quitter.collidepoint(event.pos):
+                    return "menu"
             
 
         
@@ -257,5 +262,5 @@ def lancer():
             mon_inventaire.draw(screen, liste_equipe)
             
         pygame.display.update()
-    pygame.quit()
+    return "menu"
         
