@@ -14,6 +14,7 @@ class Player(Physique):
             self.invincible_temps =  - 1000
             self.duree_invincibilite = 2000
             self.position = pygame.math.Vector2(x,y)
+            self.direction = pygame.math.Vector2(1,0) # initialisé vers la droite
            
         
         def draw(self, screen, follow):
@@ -42,5 +43,8 @@ class Player(Physique):
             if all(elem.pv <=0 for elem in liste_equipe):
                 self.pv = 0
         
+
+        
+
 
         
