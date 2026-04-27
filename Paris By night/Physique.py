@@ -196,6 +196,8 @@ class projectile:
                 ddy = cible.position.y - self.position_proj.y
            
             distance = math.sqrt(ddx**2 + ddy**2)
+            if distance == 0:  # <-- ajout
+                return
             self.proj_vitesse_x = (ddx / distance) * self.proj_vitesse
             self.proj_vitesse_y = (ddy / distance) * self.proj_vitesse
             self.position_proj += (self.proj_vitesse_x, self.proj_vitesse_y)
