@@ -11,24 +11,27 @@ class Physique:
         self.rect = pygame.Rect(x, y, width, height)
         self.velocity = pygame.math.Vector2(0,0)
 
-    def collisions (self,list_object):
+    def collisions_x (self,list_object):
         for object in list_object:
             if self.rect.colliderect(object.rect):
                 if self.velocity.x > 0: # collision à droite
-                    self.rect.right = object.rect.left
+                    self.rect.right = object.rect.left 
                     self.velocity.x = 0
                 elif self.velocity.x < 0: # collision à gauche
-                    self.rect.left = object.rect.right
+                    self.rect.left = object.rect.right 
                     self.velocity.x = 0
-                elif self.velocity.y > 0: # collision en bas
-                    self.rect.bottom = object.rect.top
-                    self.velocity.y = 0
+                self.position.x = self.rect.centerx      
+
+    def collisions_y(self,list_object):
+        for object in list_object:
+            if self.rect.colliderect(object.rect):
+                if self.velocity.y > 0: # collision en bas
+                            self.rect.bottom = object.rect.top 
+                            self.velocity.y = 0
                 elif self.velocity.y < 0: # collision en haut
-                    self.rect.top = object.rect.bottom
-                    self.velocity.y = 0
-
-            self.position = pygame.math.Vector2(self.rect.center)        # pygame.math.Vector2(self.rect.center) convertit ce tuple en Vector2 qui a les attributs x et y contrairement a rect.center qui est un tuple. 
-
+                            self.rect.top = object.rect.bottom 
+                            self.velocity.y = 0
+                self.position.y = self.rect.centery
 class Object:
     def __init__(self,x,y,width,height,couleur,Image=None):
         self.rect = pygame.Rect(x, y, width,height)
@@ -251,25 +254,36 @@ class Cac:
         self.cac_degat = cac_degat
         self.zone = zone
         self.cac_rect = None
+        self.t = None
+        self
         try:
             self.sound_lancer = pygame.mixer.Sound("assets/sounds/rocksane.mp3") # à remplacer par le son de l'attaque cac
             self.sound_lancer.set_volume(0.5)  # Volume entre 0.0 et 1.0
         except Exception as e:
             self.sound_lancer = None  
 
-    def lancer(self,origine):
+    def lancer(self, origine, cible):
         self.cac_actif = True
         self.position_cac = origine.copy()
-        print(1)
         if self.sound_lancer is not None:
             self.sound_lancer.play()
-        rectangle = pygame.Rect(self.position_cac.x, self.position_cac.y, self.cac_largeur, self.cac_hauteur)
-        self.cac_rect = rectangle
+        
+        dx = cible.position.x - origine.x
+        dy = cible.position.y - origine.y
+        distance = math.sqrt(dx**2 + dy**2)
+        if distance == 0:
+            distance = 1
+        dx /= distance  # normalise entre -1 et 1
+        dy /= distance
+
+        rect_x = origine.x + dx * self.cac_largeur - self.cac_largeur / 2
+        rect_y = origine.y + dy * self.cac_hauteur - self.cac_hauteur / 2
+
+        self.cac_rect = pygame.Rect(rect_x, rect_y, self.cac_largeur, self.cac_hauteur)
 
     def collisions(self,cible,list_ennemi,liste_equipe):
-        if self.cac_actif == True:
             if type(cible).__name__ == "Player":
-                if cible.rect.colliderect(self.cac_rect):
+                if cible.rect.colliderect(self.cac_rect) and self.cac_actif == True:
                     cible.recevoir_degat(self.cac_degat, liste_equipe)
                     self.cac_actif = False        
             else : 
@@ -278,6 +292,7 @@ class Cac:
                         monstre.pv -=self.cac_degat     
                         self.cac_actif = False
                         print (monstre.pv)
+                        self.t = pygame.time.get_ticks()
 
 
 
