@@ -57,7 +57,7 @@ class monstre(Physique):
             
                     
     
-        def deplacement(self,player,l):
+        def deplacement(self,player,l,list_object):
             self.velocity.x = 0
             self.velocity.y = 0
             if self.pv > 0:
@@ -86,9 +86,11 @@ class monstre(Physique):
             self.position.x += self.velocity.x
             self.rect.center = self.position
             self.collisions_x(l)  # faire en sorte que le système de collisions marche
+            self.collisions_x(list_object)
             self.position.y += self.velocity.y
             self.rect.center = self.position
             self.collisions_y(l)  # faire en sorte que le système de collisions marche
+            self.collisions_y(list_object)
 
 
         def dash(self,player,liste_equipe,degat):
@@ -110,6 +112,8 @@ class monstre(Physique):
 
         def liste(self,list_ennemi):            # pour supprimer les ennemis morts de la liste des ennemis
                     list_ennemi[:] = [monstreee for monstreee in list_ennemi if monstreee.pv >0] # notation slice pour modifier la liste originale , pop l'index créait des bug car on manipule un index qui n'existe plus 
+
+
 
 
 
