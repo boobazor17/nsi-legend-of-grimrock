@@ -6,6 +6,7 @@ from player import *
 from Physique import *
 import equipe
 import os
+from map import *
 
 
 
@@ -43,13 +44,6 @@ def lancer(screen, font):
     perso4.ajouter_attaque(attaque_distance1)      
 
 
-    # Initialisation joueur + caméra
-    player = Player(300, 200)
-    cam    = Camera(player)
-    follow = Follow(cam, player)
-    border = Border(cam, player)
-    auto   = Auto(cam, player)
-    cam.setmethod(follow)  # mode caméra actif (follow / border / auto)
 
     chemin = os.path.join(os.path.dirname(__file__), "assets/invent.png")
     image_invent = pygame.image.load(chemin).convert_alpha()
@@ -59,6 +53,8 @@ def lancer(screen, font):
     ennemi2 = monstre(200,-10,"ennemi1" , 100, 100, 10, 250, 130)
     
     list_ennemi = [ennemi1]
+    """for e in map_manager.ennemis_to_spawn:
+        list_ennemi.append(monstre(e["x"], e["y"], e["nom"], 100, 100, 10, 250, 130))"""
     clock   = pygame.time.Clock()
     running = True # variable pour la boucle de jeu
 
@@ -67,6 +63,20 @@ def lancer(screen, font):
     t1 = 0
     t2 = 0
     mon_inventaire = inventaire()
+
+    map_manager = Map_Manager()
+    map_manager.load_map("assets/caca.tmx")
+    list_object = map_manager.list_object
+    vases = map_manager.objets_interactifs
+    print(f"Spawnpoint utilisé : {map_manager.spawnpoint_joueur}")
+
+    # un seul player, une seule caméra
+    player = Player(map_manager.spawnpoint_joueur.x, map_manager.spawnpoint_joueur.y)
+    cam = Camera(player)
+    follow = Follow(cam, player)
+    border = Border(cam, player)
+    auto = Auto(cam, player)
+    cam.setmethod(follow)
 
     while running: # boucle du jeu boucle infinie while true 
         clock.tick(60) # permet d'actualiser 60 fois le jeu par seconde (60 fps)
@@ -140,16 +150,18 @@ def lancer(screen, font):
             player.position.y += player.velocity.y
             player.rect.center = player.position
             player.collisions_y(list_object)
-            for object in list_object: # check tous les objets de la liste pour voir s'il y a une collision avec le joueur
-                # pygame.draw.rect(screen, (255,0,0), (object.rect.x - int(cam.offset.x), object.rect.y - int(cam.offset.y), object.rect.width, object.rect.height), 2) #  dessine les hitbox des objets en rouge 
-                screen.blit(object.image, follow.appliquer(object.position))
-            vase1.interaction(player,screen, font, follow, mon_inventaire)
-            cam.scroll()
+            map_manager.draw(screen, follow)
+            for vase in vases:
+                screen.blit(vase.image, follow.appliquer(vase.position))
+                cam.scroll()
         else:
             for object in list_object:
                 pygame.draw.rect(screen, (255,0,0), (object.rect.x - int(cam.offset.x), object.rect.y - int(cam.offset.y), object.rect.width, object.rect.height), 2) #  dessine les hitbox des objets en rouge
                 screen.blit(object.image, follow.appliquer(object.position))
 
+        map_manager.draw(screen, follow)
+        for vase in vases:
+                screen.blit(vase.image, follow.appliquer(vase.position))
         # création de la barre de vie , rectangle noir puis rectangle rouge représentant la vie
         hpb_w = 200
         hpb_h = 12
@@ -172,20 +184,13 @@ def lancer(screen, font):
         player.draw(screen,follow)
     
         if player.pv <= 0:
-            
-            panneau_w = 420
-            panneau_h = 270
-            panneau_x = 340
-            panneau_y = 200
-            panneau = pygame.Rect(panneau_x, panneau_y, panneau_w, panneau_h)
-            pygame.draw.rect(screen, (60, 40, 20), panneau, border_radius=18)        # fond sombre
-            pygame.draw.rect(screen, (201, 158, 89), panneau, 3, border_radius=18)
                 # dimensions du bouton
             bouton_w = 200
-            bouton_h = 70
+            bouton_h = 60
     
-            bouton_x = 440
-            bouton_y = 260  
+            # centré horizontalement, en dessous du joueur
+            bouton_x = width/2 - bouton_w/2
+            bouton_y = height/2 + 50  # 50px en dessous du centre (là où est le joueur)
     
             bouton_rejouer = pygame.Rect(bouton_x, bouton_y, bouton_w, bouton_h)
             pygame.draw.rect(screen, (139, 94, 44), bouton_rejouer)
@@ -194,15 +199,9 @@ def lancer(screen, font):
             texte_x = bouton_x + bouton_w/2 - texte.get_width()/2   # centré dans le bouton
             texte_y = bouton_y + bouton_h/2 - texte.get_height()/2  # centré dans le bouton
             screen.blit(texte, (texte_x, texte_y))
-            
-            bouton_quitter = pygame.Rect(440,350,200,70)
-            pygame.draw.rect(screen,(139, 94, 44),bouton_quitter)
-            texte = font.render("quitter", True, ('white'))
-            screen.blit(texte,(490,370))
-            
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if bouton_quitter.collidepoint(event.pos):
-                    return "menu"
+
+        
+        
 
         # Dessin du menu pause
         if paused:
@@ -254,6 +253,7 @@ def lancer(screen, font):
         
         for elem in liste_equipe:
             temps = pygame.time.get_ticks()
+            elem.regenerer_mana()
             if elem.attaque.nom == "distance" or elem.attaque.nom == "mage" and elem.attaque.proj :
                 elem.attaque.update(liste_equipe, list_object, temps,screen,list_ennemi,follow)
                 elem.attaque.draw_proj(screen, follow)
@@ -276,3 +276,4 @@ def lancer(screen, font):
             
         pygame.display.update()
     return "menu"
+        
