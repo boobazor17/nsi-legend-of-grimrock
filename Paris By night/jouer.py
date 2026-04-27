@@ -263,4 +263,8 @@ def lancer(screen, font):
             
         pygame.display.update()
     return "menu"
+<<<<<<< HEAD
         
+=======
+        
+>>>>>>> 8ae85c072826440198a0ae42bf8cd2c988fcdfe0
