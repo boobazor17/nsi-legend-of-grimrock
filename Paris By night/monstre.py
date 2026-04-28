@@ -4,66 +4,31 @@ from camera import *
 pygame.init()
 from Physique import Physique  
 from Physique import projectile
-import time
+from Physique import Cac
 
-
-
-class monstre(Physique):
-        def __init__(self,x,y,nom,pv,pvmax,attaque,distance,distance_attaque):
-            super().__init__(x,y,40,40)
-            print(type(self.position))
-            self.position = pygame.math.Vector2(x,y)
-            self.nom = nom
-            self.pv = pv
-            self.pvmax = pvmax
-            self.attaque = attaque
-            self.distance = distance 
-            self.distance_attaque = distance_attaque
-            self.attaque_dernier_temps = - 1000
-            self.attaque_cooldown = 400
-            self.waypoints = [self.position.copy(), self.position+(200,0), self.position+(200,200), self.position+(0,200)]  # un carré par défaut
-            self.waypoint_actuel = 0
-            self.proj = projectile(x, y, 5, 8, 0, 0, 10,0) # initialisation du projectile (position(x,y)  vitesse , rayon, vitesse_x, vitesse_y, degat)
-            self.rect = pygame.Rect(x, y, 40, 40)
-            self.speed = 10
-            self.dash_actif = False
-            self.dash_debut = 0
-            self.dash_duree = 350  # 3 secondes
-            self.acceleration_dash = 40
-            
-
-        def draw(self, screen, follow):
-            if self.pv > 0:
-                pygame.draw.circle(screen, (99, 69, 45), follow.appliquer(self.position), 20)
-
-            if self.proj.proj_actif and self.pv > 0:
-                pygame.draw.circle(screen, (255, 165, 0), follow.appliquer(self.proj.position_proj), self.proj.proj_rayon)
                 
-    
-        def attaque_m(self,player,list_object,liste_equipe):
-            if self.pv > 0:
-                dx = self.position.x - player.rect.centerx
-                dy = self.position.y - player.rect.centery
-                distance_reelle = math.sqrt(int(dx**2 + dy**2)) # avec le théoreme de Pythagore on calcule la distance entre le monstre et le joueur
-                temps =  pygame.time.get_ticks()
-                if self.distance_attaque >= distance_reelle and temps - self.attaque_dernier_temps >= self.attaque_cooldown :
-                    self.attaque_dernier_temps = temps
-                    if temps - player.invincible_temps >= player.duree_invincibilite and player.pv > 0:  
-                        self.proj.lancer(self.position,player)
-                    else :
-                        for object in list_object: # check tous les objets de la liste pour voir s'il y a une collision avec le projectile
-                            if object.rect.collidepoint(self.proj.position_proj):    
-                                self.proj.proj_actif = False
-                if self.proj.proj_actif and temps - self.attaque_dernier_temps <= 1500:
-                    self.proj.position_proj += (self.proj.proj_vitesse_x, self.proj.proj_vitesse_y)
-                    self.proj.collisions(player,liste_equipe)            
-                else:
-                    self.proj.proj_actif = False # on detruit le projectile , on met le else après le deuxième bloc if car si la condition est False donc tout le bloc est ignoré, y compris le proj_actif = False. Le projectile reste donc actif indéfiniment. :(
-                    
-            
-                    
-    
-        def deplacement(self,player,l,list_object):
+class monstre(Physique):
+    def __init__(self, x, y, nom, pv, pvmax, attaque, distance, distance_attaque):
+        super().__init__(x,y,40,40)
+        self.position = pygame.math.Vector2(x,y)
+        self.nom = nom
+        self.pv = pv
+        self.pvmax = pvmax
+        self.attaque = attaque
+        self.distance = distance 
+        self.distance_attaque = distance_attaque
+        self.attaque_dernier_temps = - 1000
+         
+        
+class monstre_rodeur(monstre):
+    def __init__(self, x, y, nom, pv, pvmax, attaque, distance, distance_attaque,speed):
+        super().__init__(x, y, nom, pv, pvmax, attaque, distance, distance_attaque)
+        self.waypoints = [self.position.copy(), self.position+(200,0), self.position+(200,200), self.position+(0,200)]  # patrouille ici
+        self.waypoint_actuel = 0
+        self.attaque_cooldown = 400
+        self.speed =speed
+
+    def deplacement(self,player,l,list_object):
             self.velocity.x = 0
             self.velocity.y = 0
             if self.pv > 0:
@@ -99,7 +64,65 @@ class monstre(Physique):
             self.collisions_y(list_object)
 
 
-        def dash(self,player,liste_equipe,degat):
+class araignee(monstre_rodeur):
+    def __init__(self, x, y):
+        super().__init__(x, y, "araignee", 80, 80, 15, 200, 100, 8)
+        self.cac = Cac(0, 0, 50, 50, 10, 100)
+        self.rect = pygame.Rect(x, y, 40, 40)
+        self.speed = 10
+
+    def draw(self, screen, follow):
+                if self.pv > 0:
+                    pygame.draw.circle(screen, (99, 69, 45), follow.appliquer(self.position), 20)
+
+                if self.proj.proj_actif and self.pv > 0:
+                    pygame.draw.circle(screen, (255, 165, 0), follow.appliquer(self.proj.position_proj), self.proj.proj_rayon)
+
+class ennemi1(monstre_rodeur):
+    def __init__(self, x, y):
+        super().__init__(x, y, "ennemi1", 100, 100, 10, 250, 130, 10)
+        self.proj = projectile(x, y, 5, 8, 0, 0, 10,0) # initialisation du projectile (position(x,y)  vitesse , rayon, vitesse_x, vitesse_y, degat)
+        self.rect = pygame.Rect(x, y, 40, 40)
+        self.speed = 10
+        self.dash_actif = False
+        self.dash_debut = 0
+        self.dash_duree = 350  # 3 secondes
+        self.acceleration_dash = 40
+
+    def draw(self, screen, follow):
+                if self.pv > 0:
+                    pygame.draw.circle(screen, (99, 69, 45), follow.appliquer(self.position), 20)
+
+                if self.proj.proj_actif and self.pv > 0:
+                    pygame.draw.circle(screen, (255, 165, 0), follow.appliquer(self.proj.position_proj), self.proj.proj_rayon)
+
+    
+    def attaque_m(self,player,list_object,liste_equipe):
+            if self.pv > 0:
+                dx = self.position.x - player.rect.centerx
+                dy = self.position.y - player.rect.centery
+                distance_reelle = math.sqrt(int(dx**2 + dy**2)) # avec le théoreme de Pythagore on calcule la distance entre le monstre et le joueur
+                temps =  pygame.time.get_ticks()
+                if self.distance_attaque >= distance_reelle and temps - self.attaque_dernier_temps >= self.attaque_cooldown :
+                    self.attaque_dernier_temps = temps
+                    if temps - player.invincible_temps >= player.duree_invincibilite and player.pv > 0:  
+                        self.proj.lancer(self.position,player)
+                    else :
+                        for object in list_object: # check tous les objets de la liste pour voir s'il y a une collision avec le projectile
+                            if object.rect.collidepoint(self.proj.position_proj):    
+                                self.proj.proj_actif = False
+                if self.proj.proj_actif and temps - self.attaque_dernier_temps <= 1500:
+                    self.proj.position_proj += (self.proj.proj_vitesse_x, self.proj.proj_vitesse_y)
+                    self.proj.collisions(player,liste_equipe)            
+                else:
+                    self.proj.proj_actif = False # on detruit le projectile , on met le else après le deuxième bloc if car si la condition est False donc tout le bloc est ignoré, y compris le proj_actif = False. Le projectile reste donc actif indéfiniment. :(
+                    
+            
+                    
+    
+        
+
+    def dash(self,player,liste_equipe,degat):
                 if self.pv <= 0 :   #plus optimal que de faire un if à chaque fois dans les fonctions de déplacement et d'attaque, on sort directement de la fonction si le monstre est mort
                     return
                 temps =  pygame.time.get_ticks() 
@@ -109,8 +132,6 @@ class monstre(Physique):
                 distance_reelle = math.sqrt(int(dx**2 + dy**2))
                 if  player.pv > 0 and distance_reelle < 200 and temps - self.attaque_dernier_temps >= self.attaque_cooldown + 2000:
 
-                    '''self.position.x = player.rect.centerx + (10 if dx >= 0 else -10)
-                    self.position.y = player.rect.centery + (10 if dy >= 0 else -10)'''
                     self.attaque_dernier_temps = temps
                     player.recevoir_degat(degat, liste_equipe)
 
@@ -128,10 +149,7 @@ class monstre(Physique):
 
 
 
-        def liste(self,list_ennemi):            # pour supprimer les ennemis morts de la liste des ennemis
+def liste(list_ennemi):            # pour supprimer les ennemis morts de la liste des ennemis
                     list_ennemi[:] = [monstreee for monstreee in list_ennemi if monstreee.pv >0] # notation slice pour modifier la liste originale , pop l'index créait des bug car on manipule un index qui n'existe plus 
-
-
-
 
 
