@@ -30,16 +30,15 @@ def lancer(screen, font):
     auto = Auto(cam, player)
     cam.setmethod(follow)
 
+    CLASSES_ENNEMIS = {
+    "ennemi1": ennemi1,
+    "araignee": araignee,
+}
     list_ennemi = []
     for e in map_manager.ennemis_to_spawn:
-        list_ennemi.append(monstre(
-            e["x"], e["y"], e["nom"],
-            e["pv"], e["pvmax"],
-            e["attaque"],
-            e["distance"],
-            e["distance_attaque"]
-        ))
-
+        classe =  CLASSES_ENNEMIS.get(e["nom"]) #grace a un dictionnaire on récupère le nom du monstre
+        if classe:
+            list_ennemi.append(classe(e["x"], e["y"])) # les statistiques du monstres sont automatiquement mises depuis sa classe on a juste besoin placer le monstre sur la map pour avoir des coordonnées
     vase1 = Vase(200, 500)
     mur = Mur(200, 600,500,200)
     
@@ -71,7 +70,7 @@ def lancer(screen, font):
     image_invent = pygame.image.load(chemin).convert_alpha()
     image_invent = pygame.transform.scale(image_invent, (600, 300))
     
-    ennemi1 = monstre(0,0,"ennemi1" , 100, 100, 10, 250, 130)
+
     
     
         
@@ -252,6 +251,7 @@ def lancer(screen, font):
                 if  monstree.pv > 0:
                     l = [m for m in list_ennemi if m != monstree]
                     monstree.deplacement(player, l,list_object)
+                    
                     monstree.attaque_m(player,list_object,liste_equipe)
                     monstree.dash(player,liste_equipe,8)
             for monstree in list_ennemi:
@@ -271,7 +271,7 @@ def lancer(screen, font):
                 elem.attaque.update(liste_equipe, list_object, temps,screen,list_ennemi,follow)
             if temps - elem.attaque.attaque_dernier_temps < 150 :
                 elem.attaque.draw_proj(screen, follow)  
-        ennemi1.liste(list_ennemi)
+        liste(list_ennemi)
 
 
         if inventory and player.pv > 0 and not paused:
@@ -280,3 +280,4 @@ def lancer(screen, font):
         pygame.display.update()  
     pygame.quit()
     return None
+
