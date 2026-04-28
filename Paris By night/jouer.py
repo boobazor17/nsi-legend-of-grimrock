@@ -7,7 +7,7 @@ from Physique import *
 import equipe
 import os
 from map import *
-
+import Inventaire
 
 
 
@@ -82,9 +82,10 @@ def lancer(screen, font):
     paused = False
     t1 = 0
     t2 = 0
-    mon_inventaire = inventaire()
+    mon_inventaire = Inventaire.inventaire()
 
 
+    # boutons à gauche
 
     while running: # boucle du jeu boucle infinie while true 
         clock.tick(60) # permet d'actualiser 60 fois le jeu par seconde (60 fps)
@@ -113,7 +114,9 @@ def lancer(screen, font):
                     mon_inventaire.utiliser(event.pos,liste_equipe)
                 if not inventory and not paused:
                     equipe.regarde_clique(event.pos,liste_equipe,list_ennemi,player,list_object) #event.pos = pos_souris
-
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if inventory:  # seulement si l'inventaire est ouvert
+                    Inventaire.changer_menu(event.pos)  # fonction pour changer de menu
 
 
         screen.fill((201, 158, 89))
@@ -237,9 +240,8 @@ def lancer(screen, font):
             
 
         
-        # Ton code de jeu ici, mais seulement si pas en pause
+        # si le jeu n'est pas en pause ça continue 
         if not paused:
-            # bouger les sprites, mettre à jour le jeu...
             pass
         
         
@@ -273,15 +275,8 @@ def lancer(screen, font):
 
 
         if inventory and player.pv > 0 and not paused:
-            hpb_w = 600
-            hpb_h = 300
-            hpb_x = width/2 - hpb_w/2
-            hpb_y = height/2 - hpb_h/2
-            t2 = pygame.time.get_ticks() # réinitialisation du timer pour éviter les appuis rapides qui font bug le menu pause
-
-            screen.blit(image_invent, (hpb_x, hpb_y )) # affichage de l'inventaire du joueur dans le menu inventaire
-            mon_inventaire.draw(screen, liste_equipe)
-            
-        pygame.display.update()
-    return "menu"
-        
+            Inventaire.les_pieds_de_louis(screen, font, liste_equipe, mon_inventaire, image_invent)
+                
+        pygame.display.update()  
+    pygame.quit()
+    return None
