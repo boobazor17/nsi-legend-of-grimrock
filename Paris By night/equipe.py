@@ -98,31 +98,28 @@ class attaque:
             if self.nom == "distance" or self.nom == "mage":
                 if self.proj.proj_actif:
                     if self.monstre is not None :
-                        if temps - self.attaque_dernier_temps <= 1500:
+                        if temps - self.attaque_dernier_temps <= self.temps_recharge:
                                 self.proj.position_proj += (self.proj.proj_vitesse_x, self.proj.proj_vitesse_y)
                                 self.proj.collisions(self.monstre,liste_equipe)
                                 if self.nom == "mage":
-                                   self.proj.collisions_zone(list_ennemi,screen,follow)
-                                overlay = pygame.Surface((100, 100))
-                                overlay.set_alpha(100)  # 0 = invisible, 255 = opaque
-                                overlay.fill((50, 50, 50))  
-                                screen.blit(overlay, (self.case_rect.x, self.case_rect.y))          
+                                   self.proj.collisions_zone(list_ennemi,screen,follow) 
                         else:
                                 self.proj.proj_actif = False 
-                                self.proj.collisions_zone(list_ennemi,screen,follow)
+                                if self.nom == "mage":
+                                    self.proj.collisions_zone(list_ennemi,screen,follow)
                     for object in list_object: # check tous les objets de la liste pour voir s'il y a une collision avec le projectile
                         if object.rect.collidepoint(self.proj.position_proj):    
                                     self.proj.proj_actif = False       
-                if temps - self.attaque_dernier_temps <= 1500: 
-                    overlay = pygame.Surface((100, 100))
-                    overlay.set_alpha(100)  # 0 = invisible, 255 = opaque
-                    overlay.fill((50, 50, 50))  
-                    screen.blit(overlay, (self.case_rect.x, self.case_rect.y))   
+                if temps - self.attaque_dernier_temps <= self.temps_recharge:
+                    if self.case_rect is not None : 
+                        overlay = pygame.Surface((100, 100))
+                        overlay.set_alpha(100)  # 0 = invisible, 255 = opaque
+                        overlay.fill((50, 50, 50))  
+                        screen.blit(overlay, (self.case_rect.x, self.case_rect.y))   
             elif self.nom == "cac":
                 if self.cac.cac_actif:
-                    print(self.cac.cac_actif)
                     if self.monstre is not None:
-                        if temps - self.attaque_dernier_temps <= 500:
+                        if temps - self.attaque_dernier_temps <= self.temps_recharge:
                             self.cac.collisions(self.monstre,list_ennemi,liste_equipe)
                             overlay = pygame.Surface((100, 100))
                             overlay.set_alpha(100)  # 0 = invisible, 255 = opaque
