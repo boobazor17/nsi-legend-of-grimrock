@@ -53,7 +53,7 @@ def lancer(screen, font):
     attaque_cac = equipe.attaque("cac", 20, 200, 0, 0, 1000)
     attaque_distance = equipe.attaque("distance", 10, 300, 0, 0, 1000) 
     attaque_distance1 = equipe.attaque("distance", 10, 300, 0, 0, 1000) # on créer 2 instances séparés pour pas qu'elle partage la même mémoire.
-    attaque_mage = equipe.attaque("mage",30,200,10,0,5000)
+    attaque_mage = equipe.attaque("mage",30,200,10,0,3000)
    
     fantome_perso1.ajouter_attaque(attaque_mage)
     rat_perso2.ajouter_attaque(attaque_distance)
@@ -247,7 +247,8 @@ def lancer(screen, font):
         
         for elem in liste_equipe:
             temps = pygame.time.get_ticks()
-            elem.regenerer_mana()
+            if elem.pv > 0 : 
+                elem.regenerer_mana()
             if (elem.attaque.nom == "distance" or elem.attaque.nom == "mage") and elem.attaque.proj : # priorité des opérations 
                 elem.attaque.update(liste_equipe, list_object, temps,screen,list_ennemi,follow)
                 elem.attaque.draw_proj(screen, follow)
