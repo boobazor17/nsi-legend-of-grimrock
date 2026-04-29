@@ -75,6 +75,7 @@ def create_map(tmx_data):
 
     objets_interactifs = []  # nouveau
     #  Object layers 
+    types_ennemis =["ennemi1","araignee"]
     for obj in tmx_data.objects:
         obj_type = obj.properties.get("obj_type")
         x = int(obj.x)
@@ -87,19 +88,14 @@ def create_map(tmx_data):
             spawnpoint_joueur = pygame.math.Vector2(x * SCALE, y * SCALE)
             print(f"Spawnpoint trouvé : {x * SCALE}, {y * SCALE}")
 
-        elif obj_type == "ennemi":
-            nom = obj.properties.get("nom", "ennemi1")
-            if nom == "ennemi1":
-                ennemis_to_spawn.append({
-                    "nom": nom,
-                    "x": x * SCALE,
-                    "y": y * SCALE,
-                    "pv": 100,
-                    "pvmax": 100,
-                    "attaque":10, 
-                    "distance": 250,
-                    "distance_attaque" :130})
-                    
+        elif obj_type in types_ennemis:
+            ennemis_to_spawn.append({
+        "nom": obj_type,  # le nom c'est simplement obj_type
+        "x": x * SCALE,
+        "y": y * SCALE,
+    })
+
+
             
 
     return tiles, collision_tiles, ennemis_to_spawn, spawnpoint_joueur, objets_interactifs
