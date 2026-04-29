@@ -107,6 +107,7 @@ class projectile:
             self.proj_degat = proj_degat
             self.zone = zone
             self.temps_lancement = -100
+            self.rect = pygame.Rect (x-proj_rayon, y-proj_rayon, proj_rayon*2, proj_rayon*2 ) # - proj rayon car le self.rect est inialisé au top left 
             try:
                 self.sound_lancer = pygame.mixer.Sound("assets/sounds/rocksane.mp3")
                 self.sound_lancer.set_volume(0.5)  # Volume entre 0.0 et 1.0
@@ -129,6 +130,8 @@ class projectile:
             self.proj_vitesse_x = (ddx / distance) * self.proj_vitesse
             self.proj_vitesse_y = (ddy / distance) * self.proj_vitesse
             self.position_proj += (self.proj_vitesse_x, self.proj_vitesse_y)
+            self.rect.x = self.position_proj.x - self.proj_rayon
+            self.rect.y = self.position_proj.y - self.proj_rayon
             if self.sound_lancer is not None:
                 self.sound_lancer.play()
 
@@ -145,7 +148,6 @@ class projectile:
                         print (cible.pv)
 
         def collisions_zone(self,list_ennemi,screen,follow):
-            print (1)
             l = []
             if len(list_ennemi) != 0:
                 for monstre in list_ennemi:
@@ -186,17 +188,11 @@ class Cac:
         self.cac_rect = None
         self.t = None
         self
-        try:
-            self.sound_lancer = pygame.mixer.Sound("assets/sounds/rocksane.mp3") # à remplacer par le son de l'attaque cac
-            self.sound_lancer.set_volume(0.5)  # Volume entre 0.0 et 1.0
-        except Exception as e:
-            self.sound_lancer = None  
+        
 
     def lancer(self, origine, cible):
         self.cac_actif = True
         self.position_cac = origine.copy()
-        if self.sound_lancer is not None:
-            self.sound_lancer.play()
         
         dx = cible.position.x - origine.x
         dy = cible.position.y - origine.y
