@@ -33,16 +33,12 @@ def lancer(screen, font):
     CLASSES_ENNEMIS = {
     "ennemi1": ennemi1,
     "araignee": araignee,
-}
+    }
     list_ennemi = []
     for e in map_manager.ennemis_to_spawn:
         classe =  CLASSES_ENNEMIS.get(e["nom"]) #grace a un dictionnaire on récupère le nom du monstre
         if classe:
             list_ennemi.append(classe(e["x"], e["y"])) # les statistiques du monstres sont automatiquement mises depuis sa classe on a juste besoin placer le monstre sur la map pour avoir des coordonnées
-    vase1 = Vase(200, 500)
-    mur = Mur(200, 600,500,200)
-    
-    
     
     # personage
     fantome_perso1 = equipe.equipe(0,0,"fantome",100,100,20,100,10,"assets/personnage log/fantome.png")             
@@ -173,21 +169,7 @@ def lancer(screen, font):
         for vase in vases:
                 screen.blit(vase.image, follow.appliquer(vase.position))
         # création de la barre de vie , rectangle noir puis rectangle rouge représentant la vie
-        hpb_w = 200
-        hpb_h = 12
-        hpb_x = width/2 - hpb_w/2
-        hpb_y = height/2 + 4*height//9  # 1/18px au dessus du bas de l'écran 
-        barre_hp = pygame.Rect(hpb_x, hpb_y, hpb_w, hpb_h)
-        pygame.draw.rect(screen, (0, 0, 0), barre_hp )
-        hpb_w = 200 - 200 + player.pv*2
-        if hpb_w > 200 :
-            hpb_w = 200
-        hpb_h = 12
-        hpb_x = width/2 - hpb_w/2
-        hpb_y = height/2 + 4*height//9  # 1/18px au dessus du bas de l'écran 
-        barre_hp2 = pygame.Rect(hpb_x, hpb_y, hpb_w, hpb_h)
-        pygame.draw.rect(screen, (255, 0, 0), barre_hp2 )
-        cam.scroll()
+       
     
         # Dessin du joueur
         
@@ -252,10 +234,12 @@ def lancer(screen, font):
                     l = [m for m in list_ennemi if m != monstree]
                     monstree.deplacement(player, l,list_object)
                     
-                    monstree.attaque_m(player,list_object,liste_equipe)
-                    monstree.dash(player,liste_equipe,8)
+                    monstree.attaque_m(player, liste_equipe, list_object, list_ennemi)
+                    if hasattr(monstree, "dash"): # vérifie si l'objet monstre a bien une méthode monstre avant de l'appeler pratique car toutes les classes n'ont pas les mêmes méthodes
+                        monstree.dash(player, liste_equipe, 8)
+                    
             for monstree in list_ennemi:
-                monstree.draw(screen, follow)
+                monstree.draw(screen, follow, player)
 
         if not paused and player.pv > 0 and not inventory:
             equipe.afficher_equipe(liste_equipe,screen)
@@ -264,7 +248,7 @@ def lancer(screen, font):
         for elem in liste_equipe:
             temps = pygame.time.get_ticks()
             elem.regenerer_mana()
-            if elem.attaque.nom == "distance" or elem.attaque.nom == "mage" and elem.attaque.proj :
+            if (elem.attaque.nom == "distance" or elem.attaque.nom == "mage") and elem.attaque.proj : # priorité des opérations 
                 elem.attaque.update(liste_equipe, list_object, temps,screen,list_ennemi,follow)
                 elem.attaque.draw_proj(screen, follow)
             elif elem.attaque.nom == "cac" and elem.attaque.cac.cac_actif:
@@ -280,4 +264,3 @@ def lancer(screen, font):
         pygame.display.update()  
     pygame.quit()
     return None
-
