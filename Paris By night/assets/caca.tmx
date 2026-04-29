@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="16" tileheight="16" infinite="0" nextlayerid="3" nextobjectid="23">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="16" tileheight="16" infinite="0" nextlayerid="3" nextobjectid="24">
  <tileset firstgid="1" source="Plateforme.tsx"/>
  <tileset firstgid="2561" source="mur.tsx"/>
  <layer id="1" name="Calque de Tuiles 1" width="50" height="50">
@@ -72,7 +72,7 @@
   <object id="12" x="604.845" y="198.496">
    <properties>
     <property name="nom" value="ennemi1"/>
-    <property name="obj_type" value="ennemi"/>
+    <property name="obj_type" value="ennemi1"/>
    </properties>
    <point/>
   </object>
@@ -85,7 +85,14 @@
   <object id="22" x="609.524" y="345.53">
    <properties>
     <property name="nom" value="ennemi1"/>
-    <property name="obj_type" value="ennemi"/>
+    <property name="obj_type" value="ennemi1"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="23" x="550.71" y="557.393">
+   <properties>
+    <property name="nom" value="araignee"/>
+    <property name="obj_type" value="araignee"/>
    </properties>
    <point/>
   </object>
