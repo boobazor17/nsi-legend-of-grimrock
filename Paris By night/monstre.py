@@ -126,13 +126,14 @@ class ennemi1(monstre_rodeur):
                     self.attaque_dernier_temps = temps
                     if temps - player.invincible_temps >= player.duree_invincibilite and player.pv > 0:  
                         self.proj.lancer(self.position,player)
-                    else :
-                        for object in list_object: # check tous les objets de la liste pour voir s'il y a une collision avec le projectile
-                            if object.rect.collidepoint(self.proj.position_proj):    
-                                self.proj.proj_actif = False
                 if self.proj.proj_actif and temps - self.attaque_dernier_temps <= 1500:
                     self.proj.position_proj += (self.proj.proj_vitesse_x, self.proj.proj_vitesse_y)
-                    self.proj.collisions(player,liste_equipe)            
+                    self.proj.rect.x = self.proj.position_proj.x - self.proj.proj_rayon
+                    self.proj.rect.y = self.proj.position_proj.y - self.proj.proj_rayon
+                    self.proj.collisions(player,liste_equipe) 
+                    for object in list_object: # check tous les objets de la liste pour voir s'il y a une collision avec le projectile
+                        if object.rect.colliderect(self.proj.rect):    
+                                self.proj.proj_actif = False           
                 else:
                     self.proj.proj_actif = False # on detruit le projectile , on met le else après le deuxième bloc if car si la condition est False donc tout le bloc est ignoré, y compris le proj_actif = False. Le projectile reste donc actif indéfiniment. :(
                     
@@ -170,3 +171,5 @@ class ennemi1(monstre_rodeur):
 
 def liste(list_ennemi):            # pour supprimer les ennemis morts de la liste des ennemis
                     list_ennemi[:] = [monstreee for monstreee in list_ennemi if monstreee.pv >0] # notation slice pour modifier la liste originale , pop l'index créait des bug car on manipule un index qui n'existe plus 
+
+
