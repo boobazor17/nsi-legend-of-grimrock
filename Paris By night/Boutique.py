@@ -18,14 +18,27 @@ CATALOGUE = [
  
 class Coffre(Object):
     def __init__(self, x, y):
-        super().__init__(x, y, 60, 60, (180, 120, 40), "assets/coffre.png")
+        super().__init__(x, y, 60, 60, (180, 120, 40), "assets/vase.png")
         self.image_originale = self.image
         self.position = pygame.math.Vector2(x, y)
         self.distance = 200          # distance max d'interaction
-        self.ouvert = False          # interface boutique visible ou non
+        self.ouvert = False         # interface boutique visible ou non
         self.font = pygame.font.Font(None, 28)
         self.font_titre = pygame.font.Font(None, 36)
- 
+        self.images_items = []
+        self.rect_fermer = None
+        self.rects_acheter = []
+        for article in CATALOGUE:
+            try:
+                chemin = os.path.join(os.path.dirname(__file__), article["image"])
+                img = pygame.image.load(chemin).convert_alpha()
+                img = pygame.transform.scale(img, (50, 50))
+            except Exception:
+                img = pygame.Surface((50, 50))
+                img.fill((200, 100, 100))
+
+            self.images_items.append(img)
+        
 
     def dessiner_indicateur(self, screen, follow):
         texte_x = int(self.position.x - follow.camera.offset.x)
@@ -68,13 +81,8 @@ class Coffre(Object):
             pygame.draw.rect(screen, (160, 120, 60), (bx + 15, iy, bw - 30, 78), 2, border_radius=8)
  
             # image item
-            try:
-                chemin = os.path.join(os.path.dirname(__file__), article["image"])
-                img = pygame.image.load(chemin).convert_alpha()
-                img = pygame.transform.scale(img, (50, 50))
-                screen.blit(img, (bx + 25, iy + 14))
-            except Exception:
-                pygame.draw.rect(screen, (200, 100, 100), (bx + 25, iy + 14, 50, 50))
+            img = self.images_items[idx]
+            screen.blit(img, (bx + 25, iy + 14))
  
             # nom
             nom = self.font.render(article["nom"], True, (245, 235, 200))
@@ -106,23 +114,18 @@ class Coffre(Object):
                                   self.rect_fermer.y + self.rect_fermer.h // 2 - fermer_txt.get_height() // 2))
  
     
-    def interaction(self, player, screen, font, follow, mon_inventaire, joueur_or):
+    def interaction(self, player, screen, font, follow, mon_inventaire, joueur_or,events):
+        print(self.ouvert)
         dx = self.position.x - player.rect.centerx
         dy = self.position.y - player.rect.centery
         distance_reelle = math.sqrt(dx ** 2 + dy ** 2)
  
         if distance_reelle <= self.distance and not self.ouvert:
-            self._dessiner_indicateur(screen, follow)
-            self._animer()
-            if pygame.key.get_pressed()[pygame.K_e]:
-                self.ouvert = True
-                self.image = self.image_originale
+            self.dessiner_indicateur(screen, follow)
+            self.animer()
         else:
             if not self.ouvert:
                 self.image = self.image_originale
- 
-        if self.ouvert:
-            self._dessiner_boutique(screen, joueur_or[0])
 
     
     def gerer_clic(self, pos_souris, mon_inventaire, joueur_or):
