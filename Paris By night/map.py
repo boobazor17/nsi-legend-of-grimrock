@@ -1,5 +1,6 @@
 import pygame
 import pytmx
+from Boutique import Coffre
 from Physique import Vase
 import os 
 pygame.init()
@@ -93,8 +94,9 @@ def create_map(tmx_data):
         "nom": obj_type,  # le nom c'est simplement obj_type
         "x": x * SCALE,
         "y": y * SCALE,
-    })
-
+        })
+        elif obj_type == "coffre":
+            objets_interactifs.append(Coffre(x * SCALE, y * SCALE))  # Coffre à implémenter dans Boutique.py
 
             
 
