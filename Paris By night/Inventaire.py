@@ -1,10 +1,12 @@
 import pygame
 import math
 from camera import *
+import equipe 
 
 
 pygame.init()
 
+case_selectionnee_inv = None
 width = 1080
 height = 720
 
@@ -91,6 +93,32 @@ boutons_menu = {
 }
 menu_actif = "inventaire"
 
+
+def changer_equipe_inv(pos_souris, liste_equipe):
+    global case_selectionnee_inv
+
+    hpb_w = 600
+    hpb_h = 300
+    hpb_x = (width - hpb_w) / 2 + 175
+    hpb_y = (height - hpb_h) / 2 + 65
+
+    for i in range(2):
+        for j in range(2):
+            index = i * 2 + j
+            case_x = hpb_x + j * 100 + 10
+            case_y = hpb_y + i * 100 + 10
+            case_rect = pygame.Rect(case_x, case_y, 100, 100)
+
+            if case_rect.collidepoint(pos_souris) and index < len(liste_equipe):
+                if case_selectionnee_inv is None:
+                    case_selectionnee_inv = index
+                elif case_selectionnee_inv == index:
+                    case_selectionnee_inv = None
+                else:
+                    liste_equipe[case_selectionnee_inv], liste_equipe[index] = liste_equipe[index], liste_equipe[case_selectionnee_inv]
+                    case_selectionnee_inv = None
+                return
+
 def les_pieds_de_louis(screen, font, liste_equipe,mon_inventaire,image_invent):
             hpb_w = 600
             hpb_h = 300
@@ -113,6 +141,47 @@ def les_pieds_de_louis(screen, font, liste_equipe,mon_inventaire,image_invent):
                 pygame.draw.rect(screen, (180, 140, 80), (hpb_x, hpb_y, 600, 300))
                 texte = font.render("Menu Équipe", True, (0, 0, 0))
                 screen.blit(texte, (hpb_x + 200, hpb_y + 20))
+                
+                hpb_x = (width - hpb_w) / 2 +175  #la meme chose que ce que t'as fait dans équipe ian
+                hpb_y = (height - hpb_h) / 2 +65   #mais au centre cette fois
+                hpb_w = 1/5 * width  +175
+                hpb_h = 1/5 * width  +65
+
+                for i in range(2):
+                    for j in range(2):
+                        index = i * 2 + j
+                        case_x = hpb_x + j * 100 + 10  # j pour les colonnes, i pour les lignes
+                        case_y = hpb_y + i * 100 + 10
+                        pygame.draw.rect(screen, (100, 80, 60), (case_x, case_y, 100,100))
+                        pygame.draw.rect(screen, (60, 40, 20), (case_x, case_y, 100,100), 2)  # bordure
+                        if index < len(liste_equipe):
+                            image = liste_equipe[index].image
+                            screen.blit(image, (case_x, case_y-20))
+                
+
+                for i in range(2):
+                    for j in range(2):
+                        index = i * 2 + j
+                        case_x = hpb_x + j * 100 + 30  
+                        case_y = hpb_y + i * 100 + 80 
+                        if index < len(liste_equipe):
+                            pv = liste_equipe[index].pv
+                            pvmax = liste_equipe[index].pvmax
+                            pygame.draw.rect(screen, (0, 0, 0), ((case_x-5), case_y, 70, 10)) 
+                            if pv > 0:
+                                pygame.draw.rect(screen, (200, 0, 0), ((case_x-5), case_y, 70 * (pv/pvmax),10))  # bordure
+                            if liste_equipe[index].mana > 0:
+                                pygame.draw.rect(screen, (0, 0, 0), ((case_x-5), case_y + 12, 70, 6))  # fond noir
+                                pygame.draw.rect(screen, (0, 0, 139), ((case_x-5), case_y + 12, 70 * (liste_equipe[index].mana / liste_equipe[index].manamax), 6))
+                if case_selectionnee_inv is not None:
+                    i = case_selectionnee_inv // 2
+                    j = case_selectionnee_inv % 2
+                    case_x = hpb_x + j * 100 + 10
+                    case_y = hpb_y + i * 100 + 10
+                    pygame.draw.rect(screen, (255, 215, 0), (case_x, case_y, 100, 100), 4)
+
+                
+
 
             elif menu_actif == "stats":
                 pygame.draw.rect(screen, (180, 140, 80), (hpb_x, hpb_y, 600, 300))
