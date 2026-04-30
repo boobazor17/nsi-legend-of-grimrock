@@ -194,9 +194,17 @@ def lancer(screen, font):
        
     
         if player.pv <= 0:
-                # dimensions du bouton
-            bouton_w = 200
-            bouton_h = 60
+            
+            panneau_w = 420
+            panneau_h = 270
+            panneau_x = 340
+            panneau_y = 200
+            panneau = pygame.Rect(panneau_x, panneau_y, panneau_w, panneau_h)
+            pygame.draw.rect(screen, (60, 40, 20), panneau, border_radius=18)       
+            pygame.draw.rect(screen, (201, 158, 89), panneau, 3, border_radius=18)
+        
+            bouton_w = 440
+            bouton_h = 260
     
             # centré horizontalement, en dessous du joueur
             bouton_x = width/2 - bouton_w/2
@@ -209,9 +217,16 @@ def lancer(screen, font):
             texte_x = bouton_x + bouton_w/2 - texte.get_width()/2   # centré dans le bouton
             texte_y = bouton_y + bouton_h/2 - texte.get_height()/2  # centré dans le bouton
             screen.blit(texte, (texte_x, texte_y))
+            
+            bouton_quitter = pygame.Rect(440,350,200,70)
+            pygame.draw.rect(screen,(139, 94, 44),bouton_quitter)
+            texte = font.render("quitter", True, ('white'))
+            screen.blit(texte,(490,370))
+            
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if bouton_quitter.collidepoint(event.pos):
+                    return "menu"
 
-        
-        
 
         # Dessin du menu pause
         if paused:
