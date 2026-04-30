@@ -67,9 +67,9 @@ def lancer(screen, font):
     image_invent = pygame.transform.scale(image_invent, (600, 300))
     
 
-    mon_coffre = Boutique.Coffre(500, 300)  # ← coordonnées sur ta map
     joueur_or = [100]  # liste pour pouvoir le modifier depuis gerer_clic
-    
+    coffres = [obj for obj in map_manager.objets_interactifs if isinstance(obj, Boutique.Coffre)]
+    mon_coffre = coffres[0]  # si tu n'en as qu'un
         
     clock   = pygame.time.Clock()
     running = True # variable pour la boucle de jeu
@@ -85,8 +85,8 @@ def lancer(screen, font):
 
     while running: # boucle du jeu boucle infinie while true 
         clock.tick(60) # permet d'actualiser 60 fois le jeu par seconde (60 fps)
-    
-        for event in pygame.event.get():
+        events = pygame.event.get()
+        for event in events:
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_TAB:
@@ -115,8 +115,16 @@ def lancer(screen, font):
                         mon_inventaire.utiliser(event.pos, liste_equipe)
                 if not inventory and not paused:
                     equipe.regarde_clique(event.pos, liste_equipe, list_ennemi, player, list_object)
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                if mon_coffre.ouvert:
                     mon_coffre.gerer_clic(event.pos, mon_inventaire, joueur_or)
+
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_e:
+                dx = mon_coffre.position.x - player.rect.centerx
+                dy = mon_coffre.position.y - player.rect.centery
+                distance = math.sqrt(dx**2 + dy**2)
+                print("E appuyé, distance =", distance, "ouvert =", mon_coffre.ouvert)
+                if distance <= mon_coffre.distance and not mon_coffre.ouvert:
+                    mon_coffre.ouvert = True
 
 
 
@@ -162,27 +170,28 @@ def lancer(screen, font):
             player.position.y += player.velocity.y
             player.rect.center = player.position
             player.collisions_y(list_object)
-            map_manager.draw(screen, follow)
             for vase in vases:
-                vase.interaction(player,screen, font, follow, mon_inventaire,joueur_or)
+                vase.interaction(player, screen, font, follow, mon_inventaire, joueur_or, events)
                 cam.scroll()
-
-            mon_coffre.interaction(player, screen, font, follow, mon_inventaire, joueur_or)
-            screen.blit(mon_coffre.image, follow.appliquer(mon_coffre.position))
+            mon_coffre.interaction(player, screen, font, follow, mon_inventaire, joueur_or, events)
         else:
             for object in list_object:
-                pygame.draw.rect(screen, (255,0,0), (object.rect.x - int(cam.offset.x), object.rect.y - int(cam.offset.y), object.rect.width, object.rect.height), 2) #  dessine les hitbox des objets en rouge
+                pygame.draw.rect(screen, (255,0,0), (object.rect.x - int(cam.offset.x), object.rect.y - int(cam.offset.y), object.rect.width, object.rect.height), 2)
                 screen.blit(object.image, follow.appliquer(object.position))
 
         map_manager.draw(screen, follow)
         for vase in vases:
-                screen.blit(vase.image, follow.appliquer(vase.position))
-        # création de la barre de vie , rectangle noir puis rectangle rouge représentant la vie
-       
-    
-        # Dessin du joueur
+            screen.blit(vase.image, follow.appliquer(vase.position))
+        screen.blit(mon_coffre.image, follow.appliquer(mon_coffre.position))
         
+        # Dessin du joueur
         player.draw(screen,follow)
+    
+
+        if mon_coffre.ouvert and player.pv > 0 and not paused:
+            mon_coffre.dessiner_boutique(screen, joueur_or[0])
+
+       
     
         if player.pv <= 0:
                 # dimensions du bouton
