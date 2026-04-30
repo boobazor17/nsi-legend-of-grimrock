@@ -224,18 +224,26 @@ class Cac:
 
 
 class Mur(Object):
-    def __init__(self,x,y,width,height):
-        super().__init__(x,y,width,height,(100, 80, 60),"assets/murr.png")
+    def __init__(self, x, y, width, height):
+        super().__init__(x, y, width, height, (100, 80, 60), "assets/murr.png")
         self.image_originale = self.image
-        self.position = pygame.math.Vector2(x,y)       
+        self.position = pygame.math.Vector2(x, y)       
 
 class porte(Object):             
-    def __init__(self,x,y,width,height,distance_interaction):
-        super().__init__(x,y,width,height,(150, 75, 0),Image=None)
+    def __init__(self, x, y, width, height, distance_interaction):
+        super().__init__(x, y ,width,height, (150, 75, 0), Image=None)
         self.image_originale = self.image
-        self.position = pygame.math.Vector2(x,y) 
+        self.position = pygame.math.Vector2(x, y) 
         self.ouvert = False
         self.distance_interaction =  distance_interaction
+        self.rect = pygame.Rect(x, y ,width, height)
+
+class Porte_normale(porte):
+    def __init__(self, x, y, width, height, distance_interaction):
+        super().__init__(x, y, width, height, distance_interaction)
+        self.image_originale = self.image
+        if self.ouvert == True:
+            self.rect = None
 
     def interaction(self, player,screen,follow):
         ddx = player.rect.centerx - self.position.x
@@ -250,4 +258,33 @@ class porte(Object):
             if pygame.key.get_pressed()[pygame.K_e] :
                 self.ouvert = True
     
-                         
+
+class Porte_plaque(porte):
+    def __init__(self, x, y, width, height, distance_interaction, x_plaque, y_plaque, width_plaque, height_plaque):
+        super().__init__(x, y, width, height, distance_interaction)
+        self.image_originale = self.image
+        self.rect_plaque = pygame.Rect(x_plaque, y_plaque, width_plaque, height_plaque)
+        self.plaque_appuyé = False 
+
+    def passage (self,player):
+        if player.pv > 0:
+            if player.rect.colliderect(self.rect) or item.colliderect(self.rect):
+                self.plaque_appuyé = True
+            else:
+                self.plaque_appuyé = False
+        if self.plaque_appuyé is True :
+            self.rect = None
+        else :
+            self.rect = pygame.Rect(self.x, self.y, width, height)
+        
+
+class Porte_à_clé (porte):
+    def __init__(self, x, y, width, height, distance_interaction):
+        super().__init__(x, y, width, height, distance_interaction)
+        self.image_originale = self.image
+    def interaction(self,player):
+        ddx = player.rect.centerx - self.position.x
+        ddy = player.rect.centery - self.position.y
+        distance = math.sqrt(ddx**2 + ddy**2)
+        #if item.clé in mon_inventaire and self.distance_interaction <= distance:
+            #pass
