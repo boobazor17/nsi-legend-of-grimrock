@@ -203,8 +203,8 @@ def lancer(screen, font):
             pygame.draw.rect(screen, (60, 40, 20), panneau, border_radius=18)       
             pygame.draw.rect(screen, (201, 158, 89), panneau, 3, border_radius=18)
         
-            bouton_w = 440
-            bouton_h = 260
+            bouton_w = 200
+            bouton_h = 70
 
             bouton_x = 440
             bouton_y = 260
