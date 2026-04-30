@@ -205,10 +205,9 @@ def lancer(screen, font):
         
             bouton_w = 440
             bouton_h = 260
-    
-            # centré horizontalement, en dessous du joueur
-            bouton_x = width/2 - bouton_w/2
-            bouton_y = height/2 + 50  # 50px en dessous du centre (là où est le joueur)
+
+            bouton_x = 440
+            bouton_y = 260
     
             bouton_rejouer = pygame.Rect(bouton_x, bouton_y, bouton_w, bouton_h)
             pygame.draw.rect(screen, (139, 94, 44), bouton_rejouer)
