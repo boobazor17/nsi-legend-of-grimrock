@@ -55,7 +55,7 @@ class Vase(Object): # tout ce qui est physique
         self.ouvert = False
 
 
-    def interaction (self,player,screen, font, follow, mon_inventaire):
+    def interaction (self,player,screen, font, follow, mon_inventaire,joueur_or,events):
         dx = self.position.x - player.rect.centerx
         dy = self.position.y - player.rect.centery
         distance_reelle = math.sqrt(int(dx**2 + dy**2))
