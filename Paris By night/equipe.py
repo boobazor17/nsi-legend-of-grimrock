@@ -184,8 +184,56 @@ def regarde_clique(pos_souris,liste_equipe,list_ennemi,player,list_object):
 
 
     
-def changer_equipe(self,taille_equipe,liste_ts,liste_equipe):
-            pass
+case_selectionnee = None
+def changer_equipe(pos_souris, liste_equipe, screen):
+    global case_selectionnee
+
+    hpb_w = 1/5 * width + 175
+    hpb_h = 1/5 * width + 65
+    hpb_x = (width - hpb_w) / 2 + 175
+    hpb_y = (height - hpb_h) / 2 + 65
+
+    for i in range(2):
+        for j in range(2):
+            index = i * 2 + j
+            case_x = hpb_x + j * 100 + 10
+            case_y = hpb_y + i * 100 + 10
+            case_rect = pygame.Rect(case_x, case_y, 100, 100)
+
+            if case_rect.collidepoint(pos_souris) and index < len(liste_equipe):
+                if case_selectionnee is None:
+                
+                    case_selectionnee = index
+                elif case_selectionnee == index:
+
+                    case_selectionnee = None
+                else:
+                    
+                    liste_equipe[case_selectionnee], liste_equipe[index] = liste_equipe[index], liste_equipe[case_selectionnee]
+                    case_selectionnee = None
+                return
+
+def afficher_selection(screen):     #Surligne la case actuellement sélectionnée
+    global case_selectionnee
+    if case_selectionnee is None:
+        return
+
+    hpb_w = 1/5 * width + 175
+    hpb_h = 1/5 * width + 65
+    hpb_x = (width - hpb_w) / 2 + 175
+    hpb_y = (height - hpb_h) / 2 + 65
+
+    i = case_selectionnee // 2
+    j = case_selectionnee % 2
+    case_x = hpb_x + j * 100 + 10
+    case_y = hpb_y + i * 100 + 10
+
+    # Bordure jaune bien visible autour de la case sélectionnée
+    pygame.draw.rect(screen, (255, 215, 0), (case_x, case_y, 100, 100), 4)
+
+
+
+
 
 def afficher_equipe(liste_equipe,screen):
             hpb_w = 1/5 * width
