@@ -8,7 +8,7 @@ import equipe
 import os
 from map import *
 import Inventaire
-
+import Boutique
 
 
 def lancer(screen, font):
@@ -67,7 +67,8 @@ def lancer(screen, font):
     image_invent = pygame.transform.scale(image_invent, (600, 300))
     
 
-    
+    mon_coffre = Boutique.Coffre(500, 300)  # ← coordonnées sur ta map
+    joueur_or = [100]  # liste pour pouvoir le modifier depuis gerer_clic
     
         
     clock   = pygame.time.Clock()
@@ -104,14 +105,19 @@ def lancer(screen, font):
                 if  t2 - 500 > 0:
                     inventory = not inventory
                     t2 = pygame.time.get_ticks()
+            
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if inventory:
-                    mon_inventaire.utiliser(event.pos,liste_equipe)
+                    Inventaire.changer_menu(event.pos)
+                    if Inventaire.menu_actif == "equipe":
+                        Inventaire.changer_equipe_inv(event.pos, liste_equipe)
+                    else:
+                        mon_inventaire.utiliser(event.pos, liste_equipe)
                 if not inventory and not paused:
-                    equipe.regarde_clique(event.pos,liste_equipe,list_ennemi,player,list_object) #event.pos = pos_souris
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if inventory:  # seulement si l'inventaire est ouvert
-                    Inventaire.changer_menu(event.pos)  # fonction pour changer de menu
+                    equipe.regarde_clique(event.pos, liste_equipe, list_ennemi, player, list_object)
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    mon_coffre.gerer_clic(event.pos, mon_inventaire, joueur_or)
+
 
 
         screen.fill((201, 158, 89))
@@ -158,8 +164,11 @@ def lancer(screen, font):
             player.collisions_y(list_object)
             map_manager.draw(screen, follow)
             for vase in vases:
-                vase.interaction(player,screen, font, follow, mon_inventaire)
+                vase.interaction(player,screen, font, follow, mon_inventaire,joueur_or)
                 cam.scroll()
+
+            mon_coffre.interaction(player, screen, font, follow, mon_inventaire, joueur_or)
+            screen.blit(mon_coffre.image, follow.appliquer(mon_coffre.position))
         else:
             for object in list_object:
                 pygame.draw.rect(screen, (255,0,0), (object.rect.x - int(cam.offset.x), object.rect.y - int(cam.offset.y), object.rect.width, object.rect.height), 2) #  dessine les hitbox des objets en rouge
@@ -224,7 +233,6 @@ def lancer(screen, font):
         # si le jeu n'est pas en pause ça continue 
         if not paused:
             pass
-        
         
                
 
