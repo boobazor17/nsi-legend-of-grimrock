@@ -3,6 +3,7 @@ import pytmx
 from Boutique import Coffre
 from Physique import Vase
 import os 
+from Boutique import Coffre
 pygame.init()
 
 TILE_SIZE = 16
