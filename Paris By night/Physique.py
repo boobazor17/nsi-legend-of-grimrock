@@ -32,6 +32,7 @@ class Physique:
                             self.rect.top = object.rect.bottom 
                             self.velocity.y = 0
                 self.position.y = self.rect.centery
+    
 class Object:
     def __init__(self,x,y,width,height,couleur,Image=None):
         self.rect = pygame.Rect(x, y, width,height)
@@ -73,12 +74,14 @@ class Vase(Object): # tout ce qui est physique
             if touches[pygame.K_e]:
                     potion_vie = item("potion de soin", 50, 50, 20, (255, 0, 255), "assets/potion_vie.png")
                     potion_degat = item("potion de dégats", 50, 50, -20, (255, 0, 255), "assets/potion_degat.png")
+                    cle= item("clé", 50, 50, 0, (255, 255, 0), "assets/cle.png")
                     self.ouvert = True
                     
                     self.image = self.image_originale
                     
                     mon_inventaire.ajouter(potion_vie) # Appelle la méthode sur l'instance car sinon appelle inventaire.ajouter sur la classe elle-même au lieu d'une instance de la classe.
                     mon_inventaire.ajouter(potion_degat)
+                    mon_inventaire.ajouter(cle)
                     print (mon_inventaire.items[0].nom) 
         else:           
             self.image = self.image_originale
@@ -230,61 +233,54 @@ class Mur(Object):
         self.position = pygame.math.Vector2(x, y)       
 
 class porte(Object):             
-    def __init__(self, x, y, width, height, distance_interaction):
-        super().__init__(x, y ,width,height, (150, 75, 0), Image=None)
+    def __init__(self, x, y, nom, width, height, distance_interaction):
+        super().__init__(x, y, width, height, (150, 75, 0), Image=None)  # sans nom
+        self.nom = nom  # on garde le nom séparément
         self.image_originale = self.image
         self.position = pygame.math.Vector2(x, y) 
         self.ouvert = False
-        self.distance_interaction =  distance_interaction
-        self.rect = pygame.Rect(x, y ,width, height)
+        self.distance_interaction = distance_interaction
+        self.rect = pygame.Rect(x, y, width, height)
+        self.e = False
 
 class Porte_normale(porte):
-    def __init__(self, x, y, width, height, distance_interaction):
-        super().__init__(x, y, width, height, distance_interaction)
+    def __init__(self, x, y):
+        super().__init__(x, y,"porte", 50, 100, 150)
         self.image_originale = self.image
-        if self.ouvert == True:
-            self.rect = None
 
-    def interaction(self, player,screen,follow):
-        ddx = player.rect.centerx - self.position.x
-        ddy = player.rect.centery - self.position.y
-        distance = math.sqrt(ddx**2 + ddy**2)
-        texte_x =  int(self.position.x - follow.camera.offset.x) 
-        texte_y =  int(self.position.y - follow.camera.offset.y) - 50
-        texte = font.render("E", True, (255, 255, 255))
-        if distance <= self.distance_interaction and not self.ouvert:
-            pygame.draw.circle(screen,("gold"), (texte_x+10, texte_y+10), 20) # cercle doré autour du E pour indiquer que le joueur peut interagir avec le vase
-            screen.blit(texte, (texte_x, texte_y))
-            if pygame.key.get_pressed()[pygame.K_e] :
-                self.ouvert = True
+    def interaction(self, player, screen, follow, list_object, mon_inventaire):
+        if player.pv > 0:
+            if self.ouvert is False:
+                pass
+            elif self.ouvert is True : # si la porte est ouverte
+                self.e = True  # la variable self.e passa a True
+                list_object[:] = [ objet for objet in list_object if not hasattr (objet, "e") or objet.e == False ] # on regarde si les objects dans list_object on un attribut "e" ou s'il est a False, on les garde 
+
     
 
 class Porte_plaque(porte):
-    def __init__(self, x, y, width, height, distance_interaction, x_plaque, y_plaque, width_plaque, height_plaque):
-        super().__init__(x, y, width, height, distance_interaction)
+    def __init__(self, x, y, x_plaque, y_plaque, width_plaque, height_plaque):
+        super().__init__(x, y, "porte_plaque", 50, 100, 150)  
         self.image_originale = self.image
         self.rect_plaque = pygame.Rect(x_plaque, y_plaque, width_plaque, height_plaque)
         self.plaque_appuyé = False 
 
-    def passage (self,player):
+    def interaction (self, player, screen, follow, list_object, mon_inventaire):
         if player.pv > 0:
-            if player.rect.colliderect(self.rect) or item.colliderect(self.rect):
+            if player.rect.colliderect(self.rect_plaque) or item.colliderect(self.rect_plaque):
                 self.plaque_appuyé = True
             else:
                 self.plaque_appuyé = False
-        if self.plaque_appuyé is True :
-            self.rect = None
-        else :
-            self.rect = pygame.Rect(self.x, self.y, width, height)
-        
+        self.ouvert = self.plaque_appuyé
 
-class Porte_à_clé (porte):
-    def __init__(self, x, y, width, height, distance_interaction):
-        super().__init__(x, y, width, height, distance_interaction)
+class Porte_clé(porte):
+    def __init__(self, x, y):
+        super().__init__(x, y, "porte_cle", 50, 100, 150)
         self.image_originale = self.image
-    def interaction(self,player):
-        ddx = player.rect.centerx - self.position.x
-        ddy = player.rect.centery - self.position.y
-        distance = math.sqrt(ddx**2 + ddy**2)
-        #if item.clé in mon_inventaire and self.distance_interaction <= distance:
-            #pass
+    def interaction(self, player, screen, follow, list_object, mon_inventaire):
+         if player.pv > 0:
+            if self.ouvert is False:
+                pass
+            elif self.ouvert is True : # si la porte est ouverte
+                self.e = True  # la variable self.e passa a True
+                list_object[:] = [ objet for objet in list_object if not hasattr (objet, "e") or objet.e == False ] # on regarde si les objects dans list_object on un attribut "e" ou s'il est a False, on les garde
