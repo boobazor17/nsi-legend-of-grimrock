@@ -84,6 +84,22 @@ class inventaire:
             self.c = None
             self.t = None   
 
+    def drop(self,liste_items_au_sol, player):
+        if self.item_utilise is None:
+            pass
+        else:
+            item_drop = self.items.pop(self.index)
+
+            item_drop.position = player.position.copy()
+            item_drop.rect.center = item_drop.position
+            item_drop.au_sol = True
+            liste_items_au_sol.append(item_drop)
+            self.item_utilise = None
+            self.perso_choisi = None
+            self.index = None
+            self.x = None
+            self.y = None                           
+         
 
 
 boutons_menu = {
