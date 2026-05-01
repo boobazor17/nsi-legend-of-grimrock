@@ -259,19 +259,28 @@ class Porte_normale(porte):
     
 
 class Porte_plaque(porte):
-    def __init__(self, x, y, x_plaque, y_plaque, width_plaque, height_plaque):
-        super().__init__(x, y, "porte_plaque", 50, 100, 150)  
+    def __init__(self, x, y, x_plaque, y_plaque):
+        super().__init__(x, y, "porte_plaque", 50, 100, 150)
         self.image_originale = self.image
-        self.rect_plaque = pygame.Rect(x_plaque, y_plaque, width_plaque, height_plaque)
-        self.plaque_appuyé = False 
+        self.rect_plaque = pygame.Rect(x_plaque, y_plaque, 50, 50)
+        self.plaque_appuyé = False
 
-    def interaction (self, player, screen, follow, list_object, mon_inventaire):
+    def interaction(self, player, screen, follow, list_object, mon_inventaire):
         if player.pv > 0:
-            if player.rect.colliderect(self.rect_plaque) or item.colliderect(self.rect_plaque):
+            if player.rect.colliderect(self.rect_plaque) :
                 self.plaque_appuyé = True
             else:
                 self.plaque_appuyé = False
-        self.ouvert = self.plaque_appuyé
+            
+            self.ouvert = self.plaque_appuyé
+
+            if self.ouvert is True : # si la porte est ouverte
+                self.e = True  # la variable self.e passa a True
+                list_object[:] = [ objet for objet in list_object if not hasattr (objet, "e") or objet.e == False ] 
+            else:
+                self.e = False
+                if self not in list_object:
+                    list_object.append(self)
 
 class Porte_clé(porte):
     def __init__(self, x, y):
