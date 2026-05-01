@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="16" tileheight="16" infinite="0" nextlayerid="3" nextobjectid="29">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="16" tileheight="16" infinite="0" nextlayerid="3" nextobjectid="30">
  <tileset firstgid="1" source="Plateforme.tsx"/>
  <tileset firstgid="2561" source="mur.tsx"/>
  <layer id="1" name="Calque de Tuiles 1" width="50" height="50">
@@ -110,7 +110,15 @@
   </object>
   <object id="28" x="687.719" y="320.134">
    <properties>
-    <property name="obj_type" value="porte"/>
+    <property name="nom" value="porte_1"/>
+    <property name="obj_type" value="porte_plaque"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="29" x="739.181" y="316.124">
+   <properties>
+    <property name="nom" value="porte_1"/>
+    <property name="obj_type" value="plaque"/>
    </properties>
    <point/>
   </object>
