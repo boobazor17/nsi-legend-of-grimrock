@@ -92,7 +92,19 @@ class item(Object): # tout ce qui est dans l'inventaire
         super().__init__(0, 0, width, height, couleur, Image)  
         self.nom = nom
         self.effet = effet
+        self.au_sol = False
+        self.position = pygame.math.Vector2(0, 0)
                     
+    def interaction(self,player,mon_inventaire,liste_items_au_sol ):
+            dx = player.position.x - self.position.x
+            dy = player.position.y - self.position.y
+            distance = math.sqrt(int(dx**2 + dy**2))
+            if distance < 100:
+                self.au_sol = False
+                mon_inventaire.ajouter(self)
+                liste_items_au_sol[:] = [ items for items in liste_items_au_sol if items != self ] # les 2 points permette de modifier la liste originale, au lieu de créer une nouvelle liste séparée.
+                # la liste_items_au_sol retire l'item que l'on vient d'ajouter a l'inventaire
+
 
     # potion_de_soin = item("potion de soin", 50)
     
@@ -248,7 +260,7 @@ class Porte_normale(porte):
         super().__init__(x, y,"porte", 50, 100, 150)
         self.image_originale = self.image
 
-    def interaction(self, player, screen, follow, list_object, mon_inventaire):
+    def interaction(self, player, screen, follow, list_object, mon_inventaire, liste_items_au_sol):
         if player.pv > 0:
             if self.ouvert is False:
                 pass
@@ -264,29 +276,52 @@ class Porte_plaque(porte):
         self.image_originale = self.image
         self.rect_plaque = pygame.Rect(x_plaque, y_plaque, 50, 50)
         self.plaque_appuyé = False
+        self.image_plaque_appuyee = "assets/plaque_appuyée.png"
+        self.image_plaque_normale = "assets/plaque.png"
+        chemin = os.path.join(os.path.dirname(__file__), "assets/plaque.png")
+        self.image_plaque_normale = pygame.image.load(chemin).convert_alpha()
+        self.image_plaque_normale = pygame.transform.scale(self.image_plaque_normale, (50, 50))
 
-    def interaction(self, player, screen, follow, list_object, mon_inventaire):
+        chemin = os.path.join(os.path.dirname(__file__), "assets/plaque_appuyée.png")
+        self.image_plaque_appuyee = pygame.image.load(chemin).convert_alpha()
+        self.image_plaque_appuyee = pygame.transform.scale(self.image_plaque_appuyee, (50, 50))
+
+    def interaction(self, player, screen, follow, list_object, mon_inventaire, liste_items_au_sol):
         if player.pv > 0:
             if player.rect.colliderect(self.rect_plaque) :
                 self.plaque_appuyé = True
             else:
                 self.plaque_appuyé = False
             
+            for item in liste_items_au_sol:
+                if item.rect.colliderect(self.rect_plaque):
+                    self.plaque_appuyé = True
+                else:
+                    pass
+            
             self.ouvert = self.plaque_appuyé
 
             if self.ouvert is True : # si la porte est ouverte
                 self.e = True  # la variable self.e passa a True
-                list_object[:] = [ objet for objet in list_object if not hasattr (objet, "e") or objet.e == False ] 
+                list_object[:] = [ objet for objet in list_object if not hasattr (objet, "e") or objet.e == False ]  
             else:
                 self.e = False
                 if self not in list_object:
                     list_object.append(self)
 
+    def dessiner_plaque(self,screen,follow):
+        if self.plaque_appuyé:
+            image_plaque = self.image_plaque_appuyee
+        else:
+            image_plaque = self.image_plaque_normale
+        return image_plaque
+
+
 class Porte_clé(porte):
     def __init__(self, x, y):
         super().__init__(x, y, "porte_cle", 50, 100, 150)
         self.image_originale = self.image
-    def interaction(self, player, screen, follow, list_object, mon_inventaire):
+    def interaction(self, player, screen, follow, list_object, mon_inventaire, liste_items_au_sol):
          if player.pv > 0:
             if self.ouvert is False:
                 pass
