@@ -1,7 +1,7 @@
 import pygame
 import pytmx
 from Boutique import Coffre
-from Physique import Vase
+from Physique import Vase, Porte_normale, Porte_plaque, Porte_clé
 import os 
 from Boutique import Coffre
 pygame.init()
@@ -31,8 +31,8 @@ class Map_Manager:
         chemin = os.path.join(os.path.dirname(__file__), path)
         tmx_data = pytmx.load_pygame(chemin, pixelalpha=True)
         self.tiles, self.collision_tiles, self.ennemis_to_spawn, \
-        self.spawnpoint_joueur, self.objets_interactifs = create_map(tmx_data)
-        self.list_object = self.collision_tiles + self.objets_interactifs # on garde les objets Tile entiers 
+        self.spawnpoint_joueur, self.objets_interactifs, self.obj_porte = create_map(tmx_data)
+        self.list_object = self.collision_tiles + self.objets_interactifs + self.obj_porte # on garde les objets Tile entiers 
         for tile in self.tiles:
             tile.image = pygame.transform.scale(tile.image, (TILE_SIZE * SCALE, TILE_SIZE * SCALE))
             tile.rect = tile.image.get_rect(topleft=(tile.rect.x * SCALE, tile.rect.y * SCALE))
@@ -44,7 +44,11 @@ class Map_Manager:
             pos = (tile.position.x - follow.camera.offset.x,
                    tile.position.y - follow.camera.offset.y)
             screen.blit(tile.image, pos)
-            
+
+CLASSES_PORTES = {
+    "porte": Porte_normale,
+    "porte_cle": Porte_clé,
+}         
 
 def create_map(tmx_data):
     tiles = []
@@ -76,6 +80,8 @@ def create_map(tmx_data):
                 tiles.append(Tile(pos_x, pos_y, image))
 
     objets_interactifs = []  # nouveau
+    objet_porte =["porte","porte_plaque","porte_cle"] # liste des types de portes 
+    obj_porte =[]
     #  Object layers 
     types_ennemis =["ennemi1","araignee"]
     for obj in tmx_data.objects:
@@ -99,6 +105,11 @@ def create_map(tmx_data):
         elif obj_type == "coffre":
             objets_interactifs.append(Coffre(x * SCALE, y * SCALE))  # Coffre à implémenter dans Boutique.py
 
+        elif obj_type in objet_porte:
+            classe = CLASSES_PORTES.get(obj_type)
+            if classe:
+                obj_porte.append(classe(x * SCALE, y * SCALE))
+
             
 
-    return tiles, collision_tiles, ennemis_to_spawn, spawnpoint_joueur, objets_interactifs
+    return tiles, collision_tiles, ennemis_to_spawn, spawnpoint_joueur, objets_interactifs, obj_porte
