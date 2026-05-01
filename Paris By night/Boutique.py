@@ -115,7 +115,6 @@ class Coffre(Object):
  
     
     def interaction(self, player, screen, font, follow, mon_inventaire, joueur_or,events):
-        print(self.ouvert)
         dx = self.position.x - player.rect.centerx
         dy = self.position.y - player.rect.centery
         distance_reelle = math.sqrt(dx ** 2 + dy ** 2)
