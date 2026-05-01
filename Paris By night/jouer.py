@@ -43,7 +43,9 @@ def lancer(screen, font):
         classe =  CLASSES_ENNEMIS.get(e["nom"]) #grace a un dictionnaire on récupère le nom du monstre
         if classe:
             list_ennemi.append(classe(e["x"], e["y"])) # les statistiques du monstres sont automatiquement mises depuis sa classe on a juste besoin placer le monstre sur la map pour avoir des coordonnées
-    
+
+    liste_items_au_sol =  [] # liste des items au sol 
+
     # personage
     fantome_perso1 = equipe.equipe(0,0,"fantome",100,100,20,100,10,"assets/personnage log/fantome.png")             
     rat_perso2 =  equipe.equipe(0,0,"rat", 50, 50,20,20,10,"assets/personnage log/rat.png")       
@@ -139,6 +141,12 @@ def lancer(screen, font):
                                     porte.ouvert = True                     # on ouvre la porte
                                     mon_inventaire.items.pop(i)             # on supprime la clé de l'inventaire du joueur
                                     break                                   # on sort de la boucle for pour éviter que créer un bug qui supprime toutes les clés de l'inventaire si le joueur en a plusieurs
+                if len(liste_items_au_sol) !=0:
+                    for item_sol in liste_items_au_sol :
+                        item_sol.interaction(player, mon_inventaire, liste_items_au_sol)
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_g:
+                if inventory:
+                    mon_inventaire.drop(liste_items_au_sol, player)
 
         screen.fill((201, 158, 89))
         player.velocity = pygame.math.Vector2(0, 0)
@@ -200,13 +208,16 @@ def lancer(screen, font):
         for porte in liste_portes:
             if not porte.ouvert:
                 screen.blit(porte.image, follow.appliquer(porte.position))
-            porte.interaction(player, screen, follow, list_object, mon_inventaire)
+            porte.interaction(player, screen, follow, list_object, mon_inventaire, liste_items_au_sol)
+            if isinstance(porte, Porte_plaque):
+                image_plaque = porte.dessiner_plaque(screen, follow)
+                screen.blit(image_plaque, follow.appliquer(
+                     pygame.math.Vector2(porte.rect_plaque.x, porte.rect_plaque.y)
+                        ))   
 
-        for plaque in plaques.values():
-            pygame.draw.rect(
-                screen,
-                (255, 0, 0),
-                (plaque[0] - follow.camera.offset.x, plaque[1] - follow.camera.offset.y, 50, 50))
+        for item in liste_items_au_sol:
+            screen.blit(item.image,follow.appliquer(item.position))
+                
 
         # Dessin du joueur
         player.draw(screen,follow)
