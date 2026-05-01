@@ -31,7 +31,7 @@ class Map_Manager:
         chemin = os.path.join(os.path.dirname(__file__), path)
         tmx_data = pytmx.load_pygame(chemin, pixelalpha=True)
         self.tiles, self.collision_tiles, self.ennemis_to_spawn, \
-        self.spawnpoint_joueur, self.objets_interactifs, self.obj_porte = create_map(tmx_data)
+        self.spawnpoint_joueur, self.objets_interactifs, self.obj_porte, self.plaques = create_map(tmx_data)
         self.list_object = self.collision_tiles + self.objets_interactifs + self.obj_porte # on garde les objets Tile entiers 
         for tile in self.tiles:
             tile.image = pygame.transform.scale(tile.image, (TILE_SIZE * SCALE, TILE_SIZE * SCALE))
@@ -80,8 +80,10 @@ def create_map(tmx_data):
                 tiles.append(Tile(pos_x, pos_y, image))
 
     objets_interactifs = []  # nouveau
-    objet_porte =["porte","porte_plaque","porte_cle"] # liste des types de portes 
+    objet_porte =["porte","porte_cle"] # liste des types de portes 
     obj_porte =[]
+    plaques ={} 
+    portes_plaques_en_attente = [] # on créé une liste pour stocker les portes plaques en attente de leur plaque associée car sinon on risque de ne pas trouver la plaque associée si elle est définie après la porte 
     #  Object layers 
     types_ennemis =["ennemi1","araignee"]
     for obj in tmx_data.objects:
@@ -110,6 +112,22 @@ def create_map(tmx_data):
             if classe:
                 obj_porte.append(classe(x * SCALE, y * SCALE))
 
+        elif obj_type == "plaque":
+            nom = obj.properties.get("nom")
+            plaques[nom] = (x * SCALE, y * SCALE)
+            print("plaque trouvée :", nom)
+
+        elif obj_type == "porte_plaque":
+            nom = obj.properties.get("nom")
+            portes_plaques_en_attente.append((nom, x * SCALE, y * SCALE))
+
+
+    for nom, x_porte, y_porte in portes_plaques_en_attente:
+            if nom in plaques:
+                x_plaque, y_plaque = plaques[nom]
+                obj_porte.append(Porte_plaque(x_porte, y_porte, x_plaque, y_plaque))
+
+        
             
 
-    return tiles, collision_tiles, ennemis_to_spawn, spawnpoint_joueur, objets_interactifs, obj_porte
+    return tiles, collision_tiles, ennemis_to_spawn, spawnpoint_joueur, objets_interactifs, obj_porte, plaques
