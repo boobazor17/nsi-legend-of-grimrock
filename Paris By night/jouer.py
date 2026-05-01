@@ -34,6 +34,9 @@ def lancer(screen, font):
     "ennemi1": ennemi1,
     "araignee": araignee,
     }
+
+    liste_portes = map_manager.obj_porte
+
     list_ennemi = []
     for e in map_manager.ennemis_to_spawn:
         classe =  CLASSES_ENNEMIS.get(e["nom"]) #grace a un dictionnaire on récupère le nom du monstre
@@ -80,8 +83,7 @@ def lancer(screen, font):
     t2 = 0
     mon_inventaire = Inventaire.inventaire()
 
-
-    # boutons à gauche
+    liste_portes = map_manager.obj_porte
 
     while running: # boucle du jeu boucle infinie while true 
         clock.tick(60) # permet d'actualiser 60 fois le jeu par seconde (60 fps)
@@ -122,11 +124,21 @@ def lancer(screen, font):
                 dx = mon_coffre.position.x - player.rect.centerx
                 dy = mon_coffre.position.y - player.rect.centery
                 distance = math.sqrt(dx**2 + dy**2)
-                print("E appuyé, distance =", distance, "ouvert =", mon_coffre.ouvert)
                 if distance <= mon_coffre.distance and not mon_coffre.ouvert:
                     mon_coffre.ouvert = True
-
-
+                for porte in liste_portes:
+                    ddx = porte.position.x - player.rect.centerx
+                    ddy = porte.position.y - player.rect.centery
+                    distancee = math.sqrt(ddx**2 + ddy**2)
+                    if distancee <= porte.distance_interaction and not porte.ouvert:
+                        if isinstance(porte, Porte_normale):
+                            porte.ouvert = True
+                        elif isinstance(porte, Porte_clé):                          # si la porte est une porte à clé
+                            for i in range (len(mon_inventaire.items)):         # on parcourt l'inventaire du joueur pour regarder s'il a une clé
+                                if mon_inventaire.items[i].nom == "clé":     
+                                    porte.ouvert = True                     # on ouvre la porte
+                                    mon_inventaire.items.pop(i)             # on supprime la clé de l'inventaire du joueur
+                                    break                                   # on sort de la boucle for pour éviter que créer un bug qui supprime toutes les clés de l'inventaire si le joueur en a plusieurs
 
         screen.fill((201, 158, 89))
         player.velocity = pygame.math.Vector2(0, 0)
@@ -183,7 +195,13 @@ def lancer(screen, font):
         for vase in vases:
             screen.blit(vase.image, follow.appliquer(vase.position))
         screen.blit(mon_coffre.image, follow.appliquer(mon_coffre.position))
-        
+
+
+        for porte in liste_portes:
+            if not porte.ouvert:
+                screen.blit(porte.image, follow.appliquer(porte.position))
+            porte.interaction(player, screen, follow, list_object, mon_inventaire)
+
         # Dessin du joueur
         player.draw(screen,follow)
     
