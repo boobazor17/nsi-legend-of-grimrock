@@ -36,6 +36,7 @@ def lancer(screen, font):
     }
 
     liste_portes = map_manager.obj_porte
+    plaques = map_manager.plaques
 
     list_ennemi = []
     for e in map_manager.ennemis_to_spawn:
@@ -83,7 +84,6 @@ def lancer(screen, font):
     t2 = 0
     mon_inventaire = Inventaire.inventaire()
 
-    liste_portes = map_manager.obj_porte
 
     while running: # boucle du jeu boucle infinie while true 
         clock.tick(60) # permet d'actualiser 60 fois le jeu par seconde (60 fps)
@@ -201,6 +201,12 @@ def lancer(screen, font):
             if not porte.ouvert:
                 screen.blit(porte.image, follow.appliquer(porte.position))
             porte.interaction(player, screen, follow, list_object, mon_inventaire)
+
+        for plaque in plaques.values():
+            pygame.draw.rect(
+                screen,
+                (255, 0, 0),
+                (plaque[0] - follow.camera.offset.x, plaque[1] - follow.camera.offset.y, 50, 50))
 
         # Dessin du joueur
         player.draw(screen,follow)
