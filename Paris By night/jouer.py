@@ -251,7 +251,7 @@ def lancer(screen, font):
             
         
             bouton_rejouer = pygame.Rect(440,350,200,70)
-            img_bouton = pygame.image.load("/Users/famille/Desktop/nsi-legend-of-grimrock/Paris By night/assets/button.png")
+            img_bouton = pygame.image.load("assets/button.png")
             img_bouton = pygame.transform.scale(img_bouton, (370, 130))
             screen.blit(img_bouton, (358, 300))
             font = pygame.font.Font(None,60)
@@ -259,7 +259,7 @@ def lancer(screen, font):
             screen.blit(texte, (443, 352))
             
             bouton_quitter = pygame.Rect(358, 500, 370, 130)
-            img_bouton = pygame.image.load("/Users/famille/Desktop/nsi-legend-of-grimrock/Paris By night/assets/button.png")
+            img_bouton = pygame.image.load("assets/button.png")
             img_bouton = pygame.transform.scale(img_bouton, (370, 130))
             screen.blit(img_bouton, (358, 500))
             font = pygame.font.Font(None,60)
@@ -289,7 +289,7 @@ def lancer(screen, font):
             
 
             bouton_quitter = pygame.Rect(440,350,200,70)
-            img_bouton = pygame.image.load("/Users/famille/Desktop/nsi-legend-of-grimrock/Paris By night/assets/button.png")
+            img_bouton = pygame.image.load("assets/button.png")
             img_bouton = pygame.transform.scale(img_bouton, (370, 130))
             screen.blit(img_bouton, (358, 300))
             font = pygame.font.Font(None,60)
@@ -297,7 +297,7 @@ def lancer(screen, font):
             screen.blit(texte, (443, 352))
             
             bouton_sauvegarder = pygame.Rect(358, 500, 370, 130)
-            img_bouton = pygame.image.load("/Users/famille/Desktop/nsi-legend-of-grimrock/Paris By night/assets/button.png")
+            img_bouton = pygame.image.load("assets/button.png")
             img_bouton = pygame.transform.scale(img_bouton, (370, 130))
             screen.blit(img_bouton, (358, 500))
             font = pygame.font.Font(None,40)
@@ -305,7 +305,7 @@ def lancer(screen, font):
             screen.blit(texte, (435, 562))
             
             bouton_reprendre = pygame.Rect(358, 100, 370, 130)
-            img_bouton = pygame.image.load("/Users/famille/Desktop/nsi-legend-of-grimrock/Paris By night/assets/button.png")
+            img_bouton = pygame.image.load("assets/button.png")
             img_bouton = pygame.transform.scale(img_bouton, (370, 130))
             screen.blit(img_bouton, (358, 100))
             font = pygame.font.Font(None,48)
