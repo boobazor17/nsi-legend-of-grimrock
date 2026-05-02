@@ -67,13 +67,17 @@ while running == True:
         
         
                         
-    elif etat == "sauvegarde":
-        sauvegarde.afficher_sauvegarde(screen, font)
+   elif etat == "sauvegarde":                             
+        resultat = sauvegarde.afficher_sauvegarde(screen, font)
+        if resultat == "menu":
+            etat = "menu"    
 
     elif etat == "jouer":
         resultat = jouer.lancer(screen, font)
         if resultat == "menu":
             etat = "menu"
+        elif resultat == "sauvegarde":  
+            etat = "sauvegarde"
         
        
     if etat == "credits" or etat == "sauvegarde":
