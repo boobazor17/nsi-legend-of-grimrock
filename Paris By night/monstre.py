@@ -5,6 +5,7 @@ pygame.init()
 from Physique import Physique  
 from Physique import projectile
 from Physique import Cac
+import os
 
                 
 class monstre(Physique):
@@ -27,6 +28,8 @@ class monstre_rodeur(monstre):
         self.waypoint_actuel = 0
         self.attaque_cooldown = 400
         self.speed =speed
+        self.direction = pygame.math.Vector2(0, 0)
+
 
     def deplacement(self,player,l,list_object):
             self.velocity.x = 0
@@ -62,6 +65,8 @@ class monstre_rodeur(monstre):
             self.rect.center = self.position
             self.collisions_y(l)  # faire en sorte que le système de collisions marche
             self.collisions_y(list_object)
+            if self.velocity.length() > 0:
+                self.direction = self.velocity.normalize()
 
 
 class araignee(monstre_rodeur):
@@ -71,6 +76,31 @@ class araignee(monstre_rodeur):
         self.rect = pygame.Rect(x, y, 40, 40)
         self.speed = 10
         self.a = None # variable
+        chemin = os.path.join(os.path.dirname(__file__), "assets/araignee_spritesheet.png")
+        spritesheet = pygame.image.load(chemin).convert_alpha()
+
+        self.frames = []
+        frame_width = 110
+        frame_height = 70
+
+        for ligne in range(4): # on a 4 lignes d'animation dans la spritesheet
+            ligne_frames = []
+            for colonne in range(8): # on a 8 colonnes d'animation dans la spritesheet
+                frame = spritesheet.subsurface(
+                    pygame.Rect(
+                        colonne * frame_width,
+                        ligne * frame_height,
+                        frame_width,
+                        frame_height
+                    )
+                )
+                ligne_frames.append(frame)
+            self.frames.append(ligne_frames)
+
+        self.frame_index = 0
+        self.derniere_frame = 0
+        self.direction_choisie = 0
+
 
     def attaque_m(self,player,liste_equipe,list_object,list_ennemi):
         if self.pv > 0:
@@ -90,7 +120,49 @@ class araignee(monstre_rodeur):
 
     def draw(self, screen, follow, player):
                 if self.pv > 0:
-                    pygame.draw.circle(screen, (0, 0, 255), follow.appliquer(self.position), 20)
+                    dx = self.direction.x
+                    dy = self.direction.y
+                    seuil = 0.4
+
+                    if dx > seuil and dy > seuil:
+                        colonne = 4
+                    elif dx < -seuil and dy > seuil:
+                        colonne = 5
+                    elif dx < -seuil and dy < -seuil:
+                        colonne = 6
+                    elif dx > seuil and dy < -seuil:
+                        colonne = 7
+                    elif dy > seuil:
+                        colonne = 0
+                    elif dy < -seuil:
+                        colonne = 1
+                    elif dx < -seuil:
+                        colonne = 3
+                    elif dx > seuil:
+                        colonne = 2
+                    else:
+                        colonne = self.direction_choisie
+
+                    # 1. choisir direction_choisie
+                    self.direction_choisie = colonne
+
+                    # 2. avancer l’animation
+                    temps = pygame.time.get_ticks()
+                    if temps - self.derniere_frame > 120:
+                        self.frame_index = (self.frame_index + 1) % 4
+                        self.derniere_frame = temps
+
+                    # 3. choisir une seule image
+                    image = self.frames[self.frame_index][self.direction_choisie]
+
+                    # 4. afficher
+                    pos = follow.appliquer(self.position)
+                    x = pos[0] - image.get_width() // 2
+                    y = pos[1] - image.get_height() // 2
+                    screen.blit(image, (x, y))
+
+
+
                     if self.cac.cac_actif :
                         self.a = pygame.time.get_ticks()
                     if self.a is not None and player.pv > 0:
@@ -171,5 +243,3 @@ class ennemi1(monstre_rodeur):
 
 def liste(list_ennemi):            # pour supprimer les ennemis morts de la liste des ennemis
                     list_ennemi[:] = [monstreee for monstreee in list_ennemi if monstreee.pv >0] # notation slice pour modifier la liste originale , pop l'index créait des bug car on manipule un index qui n'existe plus 
-
-
