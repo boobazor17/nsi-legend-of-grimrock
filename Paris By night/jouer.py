@@ -86,6 +86,14 @@ def lancer(screen, font):
     t2 = 0
     mon_inventaire = Inventaire.inventaire()
 
+    try:
+        sound_death = pygame.mixer.Sound("assets/sounds/morxane.mp3")
+        sound_death.set_volume(0.5)
+    except:
+        sound_death = None
+
+    son_death_joue = False
+
 
     while running: # boucle du jeu boucle infinie while true 
         clock.tick(60) # permet d'actualiser 60 fois le jeu par seconde (60 fps)
@@ -230,32 +238,40 @@ def lancer(screen, font):
     
         if player.pv <= 0:
             
-            panneau_w = 420
-            panneau_h = 270
-            panneau_x = 340
-            panneau_y = 200
-            panneau = pygame.Rect(panneau_x, panneau_y, panneau_w, panneau_h)
-            pygame.draw.rect(screen, (60, 40, 20), panneau, border_radius=18)       
-            pygame.draw.rect(screen, (201, 158, 89), panneau, 3, border_radius=18)
-        
-            bouton_w = 200
-            bouton_h = 70
-
-            bouton_x = 440
-            bouton_y = 260
-    
-            bouton_rejouer = pygame.Rect(bouton_x, bouton_y, bouton_w, bouton_h)
-            pygame.draw.rect(screen, (139, 94, 44), bouton_rejouer)
-    
-            texte = font.render("Rejouer", True, (245, 240, 220))
-            texte_x = bouton_x + bouton_w/2 - texte.get_width()/2   # centré dans le bouton
-            texte_y = bouton_y + bouton_h/2 - texte.get_height()/2  # centré dans le bouton
-            screen.blit(texte, (texte_x, texte_y))
+            if not son_death_joue and sound_death:
+                sound_death.play()
+                son_death_joue = True
+                        
+            font_gameover = pygame.font.Font(None, 230)
+            texte_go = font_gameover.render("GAME OVER", True, (180, 20, 20))
             
-            bouton_quitter = pygame.Rect(440,350,200,70)
-            pygame.draw.rect(screen,(139, 94, 44),bouton_quitter)
-            texte = font.render("quitter", True, ('white'))
-            screen.blit(texte,(490,370))
+            texte_go_ombre = font_gameover.render("GAME OVER", True, (60, 0, 0))
+            screen.blit(texte_go_ombre, (width//2 - texte_go.get_width()//2 + 4, 54))  
+            screen.blit(texte_go, (width//2 - texte_go.get_width()//2, 50))
+            
+        
+            bouton_rejouer = pygame.Rect(440,350,200,70)
+            img_bouton = pygame.image.load("/Users/famille/Desktop/nsi-legend-of-grimrock/Paris By night/assets/button.png")
+            img_bouton = pygame.transform.scale(img_bouton, (370, 130))
+            screen.blit(img_bouton, (358, 300))
+            font = pygame.font.Font(None,60)
+            texte = font.render("REJOUER", True, (20, 40, 70))
+            screen.blit(texte, (443, 352))
+            
+            bouton_quitter = pygame.Rect(358, 500, 370, 130)
+            img_bouton = pygame.image.load("/Users/famille/Desktop/nsi-legend-of-grimrock/Paris By night/assets/button.png")
+            img_bouton = pygame.transform.scale(img_bouton, (370, 130))
+            screen.blit(img_bouton, (358, 500))
+            font = pygame.font.Font(None,60)
+            texte = font.render("QUITTER", True, (20, 40, 70))
+            screen.blit(texte, (435, 552))
+            
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if bouton_quitter.collidepoint(event.pos):
+                    return "menu"
+                if bouton_rejouer.collidepoint(event.pos):
+                    player.pv = player.pvmax
+                    son_gameover_joue = False
             
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if bouton_quitter.collidepoint(event.pos):
@@ -270,21 +286,43 @@ def lancer(screen, font):
             hpb_y = height/2 - hpb_h/2
             t1 = pygame.time.get_ticks() # réinitialisation du timer pour éviter les appuis rapides qui font bug le menu pause
             
-            texte = font.render("Menu Pause", True, (245, 240, 220))
-            texte_x = hpb_x+ hpb_w/2 - texte.get_width()/2   # centré dans le bouton
-            texte_y = hpb_y + hpb_h/2 - texte.get_height()/2 -100  # centré dans le bouton
-            menu_pause = pygame.Rect(hpb_x, hpb_y, hpb_w, hpb_h)
-            pygame.draw.rect(screen, (128, 94, 40), menu_pause)
-            screen.blit(texte, (texte_x, texte_y))
+            
 
             bouton_quitter = pygame.Rect(440,350,200,70)
-            pygame.draw.rect(screen,(201, 158, 89),bouton_quitter)
-            texte = font.render("quitter", True, ('white'))
-            screen.blit(texte,(490,370))
+            img_bouton = pygame.image.load("/Users/famille/Desktop/nsi-legend-of-grimrock/Paris By night/assets/button.png")
+            img_bouton = pygame.transform.scale(img_bouton, (370, 130))
+            screen.blit(img_bouton, (358, 300))
+            font = pygame.font.Font(None,60)
+            texte = font.render("QUITTER", True, (20, 40, 70))
+            screen.blit(texte, (443, 352))
+            
+            bouton_sauvegarder = pygame.Rect(358, 500, 370, 130)
+            img_bouton = pygame.image.load("/Users/famille/Desktop/nsi-legend-of-grimrock/Paris By night/assets/button.png")
+            img_bouton = pygame.transform.scale(img_bouton, (370, 130))
+            screen.blit(img_bouton, (358, 500))
+            font = pygame.font.Font(None,40)
+            texte = font.render("SAUVEGARDER", True, (20, 40, 70))
+            screen.blit(texte, (435, 562))
+            
+            bouton_reprendre = pygame.Rect(358, 100, 370, 130)
+            img_bouton = pygame.image.load("/Users/famille/Desktop/nsi-legend-of-grimrock/Paris By night/assets/button.png")
+            img_bouton = pygame.transform.scale(img_bouton, (370, 130))
+            screen.blit(img_bouton, (358, 100))
+            font = pygame.font.Font(None,48)
+            texte = font.render("REPRENDRE", True, (20, 40, 70))
+            screen.blit(texte, (438, 158))
             
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if bouton_quitter.collidepoint(event.pos):
                     return "menu"
+                
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if bouton_sauvegarder.collidepoint(event.pos):
+                    return "sauvegarde"
+                
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if bouton_reprendre.collidepoint(event.pos):
+                    paused = False
             
 
         
