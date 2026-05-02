@@ -67,7 +67,7 @@ while running == True:
         
         
                         
-   elif etat == "sauvegarde":                             
+    elif etat == "sauvegarde":                             
         resultat = sauvegarde.afficher_sauvegarde(screen, font)
         if resultat == "menu":
             etat = "menu"    
