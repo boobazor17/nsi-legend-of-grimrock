@@ -63,6 +63,138 @@ class monstre(Physique):
             if self.velocity.length() > 0:
                 self.direction = self.velocity.normalize()
 
+class semi_boss(monstre):
+    def __init__(self, x, y, nom, pv, pvmax, attaque, distance, distance_attaque, attaque_cooldown, speed):
+        super().__init__(x, y, nom, pv, pvmax, attaque, distance, distance_attaque, attaque_cooldown, speed)
+        self.speed = speed
+        self.phase = 0
+
+class sanglichon(semi_boss):
+    def __init__(self, x, y):
+        super().__init__(x, y, "sanglichon", 200, 200, 20, 300, 150, 500, 5)
+        self.ligne = 0
+        self.colonne = 0
+        chemin = os.path.join(os.path.dirname(__file__), "assets/sanglichon1.png")
+        spritesheet = pygame.image.load(chemin).convert_alpha()
+        chemin1 = os.path.join(os.path.dirname(__file__), "assets/sanglichon.png")
+        spritesheet1 = pygame.image.load(chemin1).convert_alpha()
+        self.cac = Cac(0, 0, 50, 50, 20, 150)
+        
+        frame_width = 496 // 4   
+        frame_height = 496 // 4  
+        self.frame_index = 0
+        self.derniere_frame = 0
+        self.direction_choisie = 0
+        frame_width1 = 530 // 5   
+        frame_height1 = 468 // 5
+        self.frames_attaque_index = 0
+        self.derniere_frame_attaque = 0
+        self.animation_cac_active = False
+        self.animation_cac_debut = 0
+        self.direction_attaque = 0
+        
+
+        self.frames = []
+        for ligne in range(4):  # directions
+            ligne_frames = []
+            for colonne in range(4):  # frames animation
+                frame = spritesheet.subsurface(
+                    pygame.Rect(
+                        colonne * frame_width,
+                        ligne * frame_height,
+                        frame_width,
+                        frame_height
+                    )
+                )
+                frame = pygame.transform.scale(frame, (80, 80))
+                ligne_frames.append(frame)
+            self.frames.append(ligne_frames)
+
+        self.frames_attaque = []
+        for ligne1 in range(5):  # directions
+            ligne_frame_attaque = []
+            for colonne1 in range(5):  # frames animation
+                framee = spritesheet1.subsurface(
+                    pygame.Rect(
+                        colonne1 * frame_width1,
+                        ligne1 * frame_height1,
+                        frame_width1,
+                        frame_height1
+                    )
+                )
+                frame = pygame.transform.scale(framee, (80, 80))
+                ligne_frame_attaque.append(framee)
+            self.frames_attaque.append(ligne_frame_attaque)
+
+    def attaque_m(self, player, liste_equipe, list_object, list_ennemi, classe):
+        if self.pv > 0:
+            dx = self.position.x - player.rect.centerx
+            dy = self.position.y - player.rect.centery
+            distance_reelle = math.sqrt(int(dx**2 + dy**2)) # avec le théoreme de Pythagore on calcule la distance entre le monstre et le joueur
+            temps =  pygame.time.get_ticks()
+            if distance_reelle <self.distance_attaque and temps - self.attaque_dernier_temps >= self.attaque_cooldown :
+                        self.attaque_dernier_temps = temps
+                        if temps - player.invincible_temps >= player.duree_invincibilite and player.pv > 0:  
+                            self.cac.lancer(self.position,player)
+                            self.animation_cac_active = True
+                            self.animation_cac_debut = pygame.time.get_ticks()
+                            self.direction_attaque = self.direction_choisie
+            if self.cac.cac_actif and temps - self.attaque_dernier_temps <= 500:
+                self.cac.collisions(player,list_ennemi,liste_equipe)            
+            else:
+                self.cac.cac_actif = False
+
+
+    def draw(self, screen, follow, player):
+        if self.pv <= 0:
+            return
+
+        dx = self.direction.x
+        dy = self.direction.y
+        seuil = 0.4
+
+        if abs(dy) > abs(dx):
+            if dy > seuil:
+                ligne = 1
+            elif dy < -seuil:
+                ligne = 2
+            else:
+                ligne = self.direction_choisie
+        else:
+            if dx < -seuil:
+                ligne = 3
+            elif dx > seuil:
+                ligne = 0
+            else:
+                ligne = self.direction_choisie
+
+        self.direction_choisie = ligne
+
+        temps = pygame.time.get_ticks()
+        if self.velocity.length() > 0:
+            if temps - self.derniere_frame > 120:
+                self.frame_index = (self.frame_index + 1) % 4  
+                self.derniere_frame = temps
+
+        image = self.frames[self.direction_choisie][self.frame_index]
+        pos = follow.appliquer(self.position)
+        x = pos[0] - image.get_width() // 2
+        y = pos[1] - image.get_height() // 2
+        screen.blit(image, (x, y))
+
+        if self.animation_cac_active and self.cac.cac_rect is not None and player.pv > 0:
+            temps_attaque = pygame.time.get_ticks() - self.animation_cac_debut
+            frame_attaque = temps_attaque // 80
+
+            if frame_attaque < 5:
+                image_attaque = self.frames_attaque[self.direction_attaque][frame_attaque]
+
+                x = self.cac.cac_rect.centerx - follow.camera.offset.x - image_attaque.get_width() // 2
+                y = self.cac.cac_rect.centery - follow.camera.offset.y - image_attaque.get_height() // 2
+
+                screen.blit(image_attaque, (x, y))
+            else:
+                self.animation_cac_active = False
         
 class monstre_summoner(monstre):
     def __init__(self, x, y, nom, pv, pvmax, attaque, distance, distance_attaque, attaque_cooldown, speed, summon_max, summon_cooldown,ligne,colonne, classe, Image= None ):
@@ -83,9 +215,6 @@ class monstre_summoner(monstre):
         ennemi.rect.center = ennemi.position
         self.summon_number.append(ennemi)
         list_ennemi.append(ennemi)
-
-    def draw(self, screen, follow, player):
-        pass
 
          
 
@@ -122,7 +251,7 @@ class bat_summoner(monstre_summoner):
                         frame_height
                     )
                 )
-                frame = pygame.transform.scale(frame, (40, 40))  
+                frame = pygame.transform.scale(frame, (80, 80))  
                 ligne_frames.append(frame)
             self.frames.append(ligne_frames)
         self.frame_index = 0
@@ -146,9 +275,9 @@ class bat_summoner(monstre_summoner):
                 ligne = self.direction_choisie
         else:
             if dx < -seuil:
-                ligne = 2
-            elif dx > seuil:
                 ligne = 3
+            elif dx > seuil:
+                ligne = 2
             else:
                 ligne = self.direction_choisie
 
@@ -168,7 +297,7 @@ class bat_summoner(monstre_summoner):
 
 class bat(monstre):
     def __init__(self, x, y):
-        super().__init__(x, y, "bat", 30, 30, 10, 200, 70, 500, 8 )
+        super().__init__(x, y, "bat", 30, 30, 10, 200, 90, 500, 8 )
         self.summon_dernier_temps = -1000
         self.cac = Cac(0, 0, 20, 20, 10, 50) 
         chemin = os.path.join(os.path.dirname(__file__), "assets/bat-sprite.png")
