@@ -33,7 +33,8 @@ def lancer(screen, font):
     CLASSES_ENNEMIS = {
     "ennemi1": ennemi1,
     "araignee": araignee,
-    "necromancien": bat_summoner
+    "necromancien": bat_summoner,
+    "sanglichon" : sanglichon
     }
 
     liste_portes = map_manager.obj_porte
