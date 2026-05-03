@@ -102,7 +102,69 @@ class monstre_summoner(monstre):
 
 class bat_summoner(monstre_summoner):
     def __init__(self, x, y):
-        super().__init__(x, y, "necromancien", 100, 100, 0, 300, 200, 500, 4, 4, 5000, 4, 4, bat, Image= None )
+        super().__init__(x, y, "necromancien", 100, 100, 0, 300, 200, 500, 4, 4, 5000, 4, 4, bat)
+        chemin = os.path.join(os.path.dirname(__file__), "assets/necromancien.png")
+        spritesheet = pygame.image.load(chemin).convert_alpha()
+
+        frame_width = 37
+        frame_height = 37
+        offset_x = 3
+
+        self.frames = []
+        for ligne in range(4):
+            ligne_frames = []
+            for colonne in range(6):
+                frame = spritesheet.subsurface(
+                    pygame.Rect(
+                        offset_x + colonne * frame_width,
+                        ligne * frame_height,
+                        frame_width,
+                        frame_height
+                    )
+                )
+                frame = pygame.transform.scale(frame, (40, 40))  
+                ligne_frames.append(frame)
+            self.frames.append(ligne_frames)
+        self.frame_index = 0
+        self.derniere_frame = 0
+        self.direction_choisie = 0
+
+    def draw(self, screen, follow, player):
+        if self.pv <= 0:
+            return
+
+        dx = self.direction.x
+        dy = self.direction.y
+        seuil = 0.4
+
+        if abs(dy) > abs(dx):
+            if dy > seuil:
+                ligne = 0
+            elif dy < -seuil:
+                ligne = 1
+            else:
+                ligne = self.direction_choisie
+        else:
+            if dx < -seuil:
+                ligne = 2
+            elif dx > seuil:
+                ligne = 3
+            else:
+                ligne = self.direction_choisie
+
+        self.direction_choisie = ligne
+
+        temps = pygame.time.get_ticks()
+        if self.velocity.length() > 0:
+            if temps - self.derniere_frame > 120:
+                self.frame_index = (self.frame_index + 1) % 6  
+                self.derniere_frame = temps
+
+        image = self.frames[self.direction_choisie][self.frame_index]
+        pos = follow.appliquer(self.position)
+        x = pos[0] - image.get_width() // 2
+        y = pos[1] - image.get_height() // 2
+        screen.blit(image, (x, y))
 
 class bat(monstre):
     def __init__(self, x, y):
