@@ -1,374 +1,330 @@
-import pygame
+import pygame 
+import os  
 import math
 from camera import *
 pygame.init()
-from Physique import Physique  
-from Physique import projectile
-from Physique import Cac
-import os
-from random import randint
+font = pygame.font.Font(None,40)
 
-                
-class monstre(Physique):
-    def __init__(self, x, y, nom, pv, pvmax, attaque, distance, distance_attaque, attaque_cooldown, speed):
-        super().__init__(x,y,40,40)
+class Physique:
+    def __init__(self,x,y,width,height,):
         self.position = pygame.math.Vector2(x,y)
-        self.direction = pygame.math.Vector2(0, 0)
-        self.nom = nom
-        self.pv = pv
-        self.pvmax = pvmax
-        self.attaque = attaque
-        self.distance = distance 
-        self.distance_attaque = distance_attaque
-        self.attaque_dernier_temps = - 1000
-        self.has_ronde = False
-        self.attaque_cooldown = attaque_cooldown
-        self.speed = speed
+        self.rect = pygame.Rect(x, y, width, height)
+        self.velocity = pygame.math.Vector2(0,0)
 
-    def deplacement(self,player,l,list_object):
-            self.velocity.x = 0
-            self.velocity.y = 0
-            self.direction = self.velocity
-            if self.pv > 0:
-                dx = self.position.x - player.rect.centerx
-                dy = self.position.y - player.rect.centery
-                distance_reelle = math.sqrt(int(dx**2 + dy**2))
-                if self.distance >= distance_reelle and player.pv > 0:
-                    if distance_reelle == 0:
-                        distance_reelle = 1  # pour éviter la division par zéro et le crash du jeu hein
-                    if distance_reelle > 70:
-                            # Déplacement normalisé : dx/distance_reelle donne la direction (entre -1 et 1) et on multiplie par la vitesse pour garder une vitesse constante quelle que soit la direction
-                            self.velocity.x -= (dx / distance_reelle) * 2*self.speed/3  # normalisé
-                       
-                            self.velocity.y -= (dy / distance_reelle) * 2*self.speed/3  # normalisé
+    def collisions_x (self,list_object):
+        for object in list_object:
+            if self.rect.colliderect(object.rect):
+                if self.velocity.x > 0: # collision à droite
+                    self.rect.right = object.rect.left 
+                    self.velocity.x = 0
+                elif self.velocity.x < 0: # collision à gauche
+                    self.rect.left = object.rect.right 
+                    self.velocity.x = 0
+                self.position.x = self.rect.centerx      
 
-                if self.has_ronde :  # ronde — on récupère le waypoint actuel
-                    cible_x, cible_y = self.waypoints[self.waypoint_actuel]
-                    distance_x = cible_x - self.position.x 
-                    distance_y = cible_y - self.position.y 
-                    distance_total = math.sqrt(distance_x**2 + distance_y**2)
-                    if distance_total < 10 and distance_total > - 10 :
-                        self.waypoint_actuel = (self.waypoint_actuel + 1) % len(self.waypoints)
-                    else:
-                        self.velocity.x += (distance_x / distance_total) * 2*self.speed/5  # normalisé 
-                        self.velocity.y += (distance_y / distance_total) * 2*self.speed/5
-            self.position.x += self.velocity.x
-            self.rect.center = self.position
-            self.collisions_x(l)  # faire en sorte que le système de collisions marche
-            self.collisions_x(list_object)
-            self.position.y += self.velocity.y
-            self.rect.center = self.position
-            self.collisions_y(l)  # faire en sorte que le système de collisions marche
-            self.collisions_y(list_object)
-            if self.velocity.length() > 0:
-                self.direction = self.velocity.normalize()
-
-        
-class monstre_summoner(monstre):
-    def __init__(self, x, y, nom, pv, pvmax, attaque, distance, distance_attaque, attaque_cooldown, speed, summon_max, summon_cooldown,ligne,colonne, classe, Image= None ):
-        super().__init__(x, y, nom, pv, pvmax, attaque, distance, distance_attaque, attaque_cooldown, speed)
-        self.speed =speed
-        self.summon_cooldown = summon_cooldown  # 5 secondes
-        self.summon_dernier_temps = -1000
-        self.summon_number = []
-        self.summon_max = summon_max
-        self.ligne = ligne
-        self.colonne = colonne
-        self.classe = classe
-
+    def collisions_y(self,list_object):
+        for object in list_object:
+            if self.rect.colliderect(object.rect):
+                if self.velocity.y > 0: # collision en bas
+                            self.rect.bottom = object.rect.top 
+                            self.velocity.y = 0
+                elif self.velocity.y < 0: # collision en haut
+                            self.rect.top = object.rect.bottom 
+                            self.velocity.y = 0
+                self.position.y = self.rect.centery
     
-
-    def summon(self, classe, list_ennemi):
-        ennemi = classe(self.position.x + randint(-50,50),self.position.y + randint(-50,50))
-        ennemi.rect.center = ennemi.position
-        self.summon_number.append(ennemi)
-        list_ennemi.append(ennemi)
-
-    def draw(self, screen, follow, player):
-        pass
-
-         
-
-    def attaque_m(self, player, liste_equipe, list_object, list_ennemi, classe):
-        if self.pv > 0:
-            dx = self.position.x - player.rect.centerx
-            dy = self.position.y - player.rect.centery
-            distance_reelle = math.sqrt(int(dx**2 + dy**2))
-            temps =  pygame.time.get_ticks()
-            if  distance_reelle <= self.distance_attaque and player.pv > 0:
-                if len(self.summon_number) < self.summon_max and temps - self.summon_dernier_temps >= self.summon_cooldown:
-                    self.summon_dernier_temps = temps
-                    self.summon(classe, list_ennemi)
-
-class bat_summoner(monstre_summoner):
+class Object:
+    def __init__(self,x,y,width,height,couleur,Image=None):
+        self.rect = pygame.Rect(x, y, width,height)
+        self.position = pygame.math.Vector2(x,y)  
+        self.couleur = couleur
+        if Image: # s'il y a une image
+            chemin = os.path.join(os.path.dirname(__file__), Image) #os.path.dirname(__file__) récupère le dossier où se trouve physique.py, puis os.path.join colle le chemin de l'image dessus
+            self.image = pygame.image.load(chemin).convert_alpha()
+            self.image = pygame.transform.scale(self.image, (width, height))
+        else: # tant que une image n'est pas importée
+            self.image = pygame.Surface((width, height), pygame.SRCALPHA)
+            self.image.fill(couleur)
+    
+    
+class Vase(Object): # tout ce qui est physique
     def __init__(self, x, y):
-        super().__init__(x, y, "necromancien", 100, 100, 0, 300, 200, 500, 4, 4, 5000, 4, 4, bat, Image= None )
-
-class bat(monstre):
-    def __init__(self, x, y):
-        super().__init__(x, y, "bat", 30, 30, 10, 100, 70, 500, 8 )
-        self.summon_dernier_temps = -1000
-        self.cac = Cac(0, 0, 20, 20, 10, 50) 
-        self.direction_choisie = 0
-
-    def attaque_m(self, player, liste_equipe, list_object, list_ennemi, classe):
-        if self.pv > 0:
-            dx = self.position.x - player.rect.centerx
-            dy = self.position.y - player.rect.centery
-            distance_reelle = math.sqrt(int(dx**2 + dy**2)) # avec le théoreme de Pythagore on calcule la distance entre le monstre et le joueur
-            temps =  pygame.time.get_ticks()
-            if distance_reelle <self.distance_attaque and temps - self.attaque_dernier_temps >= self.attaque_cooldown :
-                        self.attaque_dernier_temps = temps
-                        if temps - player.invincible_temps >= player.duree_invincibilite and player.pv > 0:  
-                            self.cac.lancer(self.position,player)
-                            self.animation_cac_active = True
-                            self.animation_cac_debut = pygame.time.get_ticks()
-                            self.direction_attaque = self.direction_choisie
-            if self.cac.cac_actif and temps - self.attaque_dernier_temps <= 500:
-                self.cac.collisions(player,list_ennemi,liste_equipe)            
-            else:
-                self.cac.cac_actif = False
-
-    def draw(self, screen, follow, player):
-        if self.pv > 0:
-            pygame.draw.circle(screen, (128, 0, 128), follow.appliquer(self.position), 15)
-     
-
-class monstre_rodeur(monstre):
-    def __init__(self, x, y, nom, pv, pvmax, attaque, distance, distance_attaque, attaque_cooldown, speed):
-        super().__init__(x, y, nom, pv, pvmax, attaque, distance, distance_attaque, attaque_cooldown, speed)
-        self.waypoints = [self.position.copy(), self.position+(200,0), self.position+(200,200), self.position+(0,200)]  # patrouille ici
-        self.waypoint_actuel = 0
-        self.speed =speed
-        self.has_ronde = True
-        self.attaque_cooldown = attaque_cooldown
+        super().__init__(x, y, 50, 50, (255, 0, 0),"assets/vase.png")
+        self.image_originale = self.image
+        self.position = pygame.math.Vector2(x,y)
+        self.distance = 200
+        self.ouvert = False
 
 
-
-class araignee(monstre_rodeur):
-    def __init__(self, x, y):
-        super().__init__(x, y, "araignee", 80, 80, 15, 200, 100, 700, 6)
-        self.cac = Cac(0, 0, 35, 35, 10, 100)
-        self.rect = pygame.Rect(x, y, 40, 40)
-        self.a = None # variable
-        chemin = os.path.join(os.path.dirname(__file__), "assets/araignee_spritesheet.png")
-        spritesheet = pygame.image.load(chemin).convert_alpha()
-        chemin = os.path.join(os.path.dirname(__file__), "assets/aa.png")
-        attaque_sheet = pygame.image.load(chemin).convert_alpha()
-
-        self.frames = []
-        frame_width = 110
-        frame_height = 70
-
-        for ligne in range(4): # on a 4 lignes d'animation dans la spritesheet
-            ligne_frames = []
-            for colonne in range(8): # on a 8 colonnes d'animation dans la spritesheet
-                frame = spritesheet.subsurface(
-                    pygame.Rect(
-                        colonne * frame_width,
-                        ligne * frame_height,
-                        frame_width,
-                        frame_height
-                    )
-                )
-                ligne_frames.append(frame)
-            self.frames.append(ligne_frames)
-
-        self.frame_index = 0
-        self.derniere_frame = 0
-        self.direction_choisie = 0
-
-        # Si le fond noir n'est pas transparent :
-        attaque_sheet.set_colorkey((0, 0, 0))
-
-        self.frames_attaque = []
-
-        colonnes_attaque = 5
-        lignes_attaque = 8
-        frame_w = attaque_sheet.get_width() // colonnes_attaque
-        frame_h = attaque_sheet.get_height() // lignes_attaque
-
-        for ligne in range(lignes_attaque):
-            ligne_frames = []
-            for colonne in range(colonnes_attaque):
-                frame = attaque_sheet.subsurface(
-                    pygame.Rect(
-                        colonne * frame_w,
-                        ligne * frame_h,
-                        frame_w,
-                        frame_h
-                    )
-                )
-                ligne_frames.append(frame)
-            self.frames_attaque.append(ligne_frames)
-        self.animation_cac_active = False
-        self.animation_cac_debut = 0
-        self.direction_attaque = 0
-
-
-
-    def attaque_m(self,player,liste_equipe,list_object,list_ennemi, classe):
-        if self.pv > 0:
-            dx = self.position.x - player.rect.centerx
-            dy = self.position.y - player.rect.centery
-            distance_reelle = math.sqrt(int(dx**2 + dy**2)) # avec le théoreme de Pythagore on calcule la distance entre le monstre et le joueur
-            temps =  pygame.time.get_ticks()
-            if distance_reelle <self.distance_attaque and temps - self.attaque_dernier_temps >= self.attaque_cooldown :
-                        self.attaque_dernier_temps = temps
-                        if temps - player.invincible_temps >= player.duree_invincibilite and player.pv > 0:  
-                            self.cac.lancer(self.position,player)
-                            self.animation_cac_active = True
-                            self.animation_cac_debut = pygame.time.get_ticks()
-                            self.direction_attaque = self.direction_choisie
-            if self.cac.cac_actif and temps - self.attaque_dernier_temps <= 500:
-                self.cac.collisions(player,list_ennemi,liste_equipe)            
-            else:
-                self.cac.cac_actif = False
+    def interaction (self,player,screen, font, follow, mon_inventaire,joueur_or,events):
+        dx = self.position.x - player.rect.centerx
+        dy = self.position.y - player.rect.centery
+        distance_reelle = math.sqrt(int(dx**2 + dy**2))
+        texte_x =  int(self.position.x - follow.camera.offset.x) 
+        texte_y =  int(self.position.y - follow.camera.offset.y) - 50
+        texte = font.render("E", True, (255, 255, 255))
+        if self.distance >= distance_reelle and not self.ouvert:
+            pygame.draw.circle(screen,("gold"), (texte_x+10, texte_y+10), 20) # cercle doré autour du E pour indiquer que le joueur peut interagir avec le vase
+            screen.blit(texte, (texte_x, texte_y))
+            u = pygame.time.get_ticks()
+            self.width = 50 +  math.sin(u/200) * 2.5
+            self.height = 50 +  math.sin(u/200) * 2.5
+            self.image = pygame.transform.scale(self.image_originale, (int(self.width), int(self.height)))
+            touches = pygame.key.get_pressed()
+            if touches[pygame.K_e]:
+                    potion_vie = item("potion de soin", 50, 50, 20, (255, 0, 255), "assets/potion_vie.png")
+                    potion_degat = item("potion de dégats", 50, 50, -20, (255, 0, 255), "assets/potion_degat.png")
+                    cle= item("clé", 50, 50, 0, (255, 255, 0), "assets/cle.png")
+                    self.ouvert = True
+                    
+                    self.image = self.image_originale
+                    
+                    mon_inventaire.ajouter(potion_vie) # Appelle la méthode sur l'instance car sinon appelle inventaire.ajouter sur la classe elle-même au lieu d'une instance de la classe.
+                    mon_inventaire.ajouter(potion_degat)
+                    mon_inventaire.ajouter(cle)
+                    print (mon_inventaire.items[0].nom) 
+        else:           
+            self.image = self.image_originale
                         
 
-    def draw(self, screen, follow, player):
-                if self.pv > 0:
-                    dx = self.direction.x
-                    dy = self.direction.y
-                    seuil = 0.4
-
-                    if dx > seuil and dy > seuil:
-                        colonne = 4
-                    elif dx < -seuil and dy > seuil:
-                        colonne = 5
-                    elif dx < -seuil and dy < -seuil:
-                        colonne = 6
-                    elif dx > seuil and dy < -seuil:
-                        colonne = 7
-                    elif dy > seuil:
-                        colonne = 0
-                    elif dy < -seuil:
-                        colonne = 1
-                    elif dx < -seuil:
-                        colonne = 3
-                    elif dx > seuil:
-                        colonne = 2
-                    else:
-                        colonne = self.direction_choisie
-
-                    # 1. choisir direction_choisie
-                    self.direction_choisie = colonne
-
-                    # 2. avancer l’animation
-                    temps = pygame.time.get_ticks()
-                    if self.velocity.length() > 0:
-                        if temps - self.derniere_frame > 120:
-                            self.frame_index = (self.frame_index + 1) % 4
-                            self.derniere_frame = temps
-
-                    # 3. choisir une seule image
-                    image = self.frames[self.frame_index][self.direction_choisie]
-
-                    # 4. afficher
-                    pos = follow.appliquer(self.position)
-                    x = pos[0] - image.get_width() // 2
-                    y = pos[1] - image.get_height() // 2
-                    screen.blit(image, (x, y))
-
-                    if self.animation_cac_active and self.cac.cac_rect is not None and player.pv > 0:
-                        temps_attaque = pygame.time.get_ticks() - self.animation_cac_debut
-                        frame_attaque = temps_attaque // 60
-
-                        if frame_attaque < 5:
-                            correspondance_attaque = {
-                                0: 2,  # bas
-                                1: 6,  # haut
-                                2: 0,
-                                3: 4,
-                                4: 7,
-                                5: 5,
-                                6: 3,
-                                7: 1,
-                            }
+class item(Object): # tout ce qui est dans l'inventaire
+    def __init__(self, nom, height, width, effet, couleur=(255,255,255), Image=None):
+        super().__init__(0, 0, width, height, couleur, Image)  
+        self.nom = nom
+        self.effet = effet
+        self.au_sol = False
+        self.position = pygame.math.Vector2(0, 0)
+                    
+    def interaction(self,player,mon_inventaire,liste_items_au_sol ):
+            dx = player.position.x - self.position.x
+            dy = player.position.y - self.position.y
+            distance = math.sqrt(int(dx**2 + dy**2))
+            if distance < 100:
+                self.au_sol = False
+                mon_inventaire.ajouter(self)
+                liste_items_au_sol[:] = [ items for items in liste_items_au_sol if items != self ] # les 2 points permette de modifier la liste originale, au lieu de créer une nouvelle liste séparée.
+                # la liste_items_au_sol retire l'item que l'on vient d'ajouter a l'inventaire
 
 
-                            ligne_attaque = correspondance_attaque[self.direction_attaque]
-                            image_attaque = self.frames_attaque[ligne_attaque][frame_attaque]
-
-                            x = self.cac.cac_rect.centerx - follow.camera.offset.x - image_attaque.get_width() // 2
-                            y = self.cac.cac_rect.centery - follow.camera.offset.y - image_attaque.get_height() // 2
-
-                            screen.blit(image_attaque, (x, y))
-                        else:
-                            self.animation_cac_active = False
-
-
-class ennemi1(monstre_rodeur):
-    def __init__(self, x, y):
-        super().__init__(x, y, "ennemi1", 100, 100, 10, 250, 130, 600, 10)
-        self.proj = projectile(x, y, 5, 8, 0, 0, 10,0) # initialisation du projectile (position(x,y)  vitesse , rayon, vitesse_x, vitesse_y, degat)
-        self.rect = pygame.Rect(x, y, 40, 40)
-        self.speed = 10
-        self.dash_actif = False
-        self.dash_debut = 0
-        self.dash_duree = 350  # 3 secondes
-        self.acceleration_dash = 40
-
-    def draw(self, screen, follow, player):
-                if self.pv > 0:
-                    pygame.draw.circle(screen, (99, 69, 45), follow.appliquer(self.position), 20)
-
-                if self.proj.proj_actif and self.pv > 0:
-                    pygame.draw.circle(screen, (255, 165, 0), follow.appliquer(self.proj.position_proj), self.proj.proj_rayon)
-
+    # potion_de_soin = item("potion de soin", 50)
     
-    def attaque_m(self, player, liste_equipe, list_object, list_ennemi, classe):
-            if self.pv > 0:
-                dx = self.position.x - player.rect.centerx
-                dy = self.position.y - player.rect.centery
-                distance_reelle = math.sqrt(int(dx**2 + dy**2)) # avec le théoreme de Pythagore on calcule la distance entre le monstre et le joueur
-                temps =  pygame.time.get_ticks()
-                if self.distance_attaque >= distance_reelle and temps - self.attaque_dernier_temps >= self.attaque_cooldown :
-                    self.attaque_dernier_temps = temps
-                    if temps - player.invincible_temps >= player.duree_invincibilite and player.pv > 0:  
-                        self.proj.lancer(self.position,player)
-                if self.proj.proj_actif and temps - self.attaque_dernier_temps <= 1500:
-                    self.proj.position_proj += (self.proj.proj_vitesse_x, self.proj.proj_vitesse_y)
-                    self.proj.rect.x = self.proj.position_proj.x - self.proj.proj_rayon
-                    self.proj.rect.y = self.proj.position_proj.y - self.proj.proj_rayon
-                    self.proj.collisions(player,liste_equipe) 
-                    for object in list_object: # check tous les objets de la liste pour voir s'il y a une collision avec le projectile
-                        if object.rect.colliderect(self.proj.rect):    
-                                self.proj.proj_actif = False           
+
+
+                    
+class projectile:                
+        def __init__(self,x,y,proj_vitesse,proj_rayon,proj_vitesse_x,proj_vitesse_y,proj_degat,zone,sound_lancer=None,sound_toucher=None):
+            self.position_proj = pygame.math.Vector2(x,y)
+            self.proj_actif = False
+            self.proj_vitesse = proj_vitesse
+            self.proj_rayon = proj_rayon
+            self.proj_vitesse_x = proj_vitesse_x
+            self.proj_vitesse_y = proj_vitesse_y 
+            self.proj_degat = proj_degat
+            self.zone = zone
+            self.temps_lancement = -100
+            self.rect = pygame.Rect (x-proj_rayon, y-proj_rayon, proj_rayon*2, proj_rayon*2 ) # - proj rayon car le self.rect est inialisé au top left 
+            try:
+                self.sound_lancer = pygame.mixer.Sound("assets/sounds/rocksane.mp3")
+                self.sound_lancer.set_volume(0.5)  # Volume entre 0.0 et 1.0
+            except Exception as e:
+                self.sound_lancer = None
+             
+        def lancer(self,origine,cible):
+            self.proj_actif = True
+            self.position_proj = origine.copy()
+            if hasattr(cible, 'rect'):
+                ddx = cible.rect.centerx - self.position_proj.x
+                ddy = cible.rect.centery - self.position_proj.y
+            else:
+                ddx = cible.position.x - self.position_proj.x
+                ddy = cible.position.y - self.position_proj.y
+           
+            distance = math.sqrt(ddx**2 + ddy**2)
+            if distance == 0:  # <-- ajout
+                return
+            self.proj_vitesse_x = (ddx / distance) * self.proj_vitesse
+            self.proj_vitesse_y = (ddy / distance) * self.proj_vitesse
+            self.position_proj += (self.proj_vitesse_x, self.proj_vitesse_y)
+            self.rect.x = self.position_proj.x - self.proj_rayon
+            self.rect.y = self.position_proj.y - self.proj_rayon
+            if self.sound_lancer is not None:
+                self.sound_lancer.play()
+
+        def collisions(self,cible,liste_equipe):    
+            if self.proj_actif == True:
+                if type(cible).__name__ == "Player":
+                    if cible.rect.collidepoint(self.position_proj):
+                        cible.recevoir_degat(self.proj_degat, liste_equipe)
+                        self.proj_actif = False
                 else:
-                    self.proj.proj_actif = False # on detruit le projectile , on met le else après le deuxième bloc if car si la condition est False donc tout le bloc est ignoré, y compris le proj_actif = False. Le projectile reste donc actif indéfiniment. :(
-                    
+                    if cible.rect.collidepoint(self.position_proj):
+                        cible.pv -=self.proj_degat     
+                        self.proj_actif = False
+                        print (cible.pv)
+
+        def collisions_zone(self,list_ennemi,screen,follow):
+            l = []
+            if len(list_ennemi) != 0:
+                for monstre in list_ennemi:
+                    dx = monstre.position.x - self.position_proj.x
+                    dy = monstre.position.y - self.position_proj.y
+                    distance_reelle = math.sqrt(int(dx**2 + dy**2))
+                    print (distance_reelle)
+                    if monstre.rect.collidepoint(self.position_proj):
+                        self.proj_actif = False
+                        pygame.draw.circle(screen, (190, 65, 65), (follow.appliquer(self.position_proj) ), self.zone)
+                        if distance_reelle <= self.zone:
+                            l.append(monstre)
+
+            if self.proj_actif is False:
+                if len(list_ennemi) != 0:
+                    for monstre in list_ennemi:
+                        dx = monstre.position.x - self.position_proj.x
+                        dy = monstre.position.y - self.position_proj.y
+                        distance_reelle = math.sqrt(int(dx**2 + dy**2))
+                        pygame.draw.circle(screen, (190, 65, 65), (follow.appliquer(self.position_proj) ), self.zone)
+                        if distance_reelle <= self.zone:
+                            l.append(monstre)
+
+                        
+            for i in range (len(l)):
+                l[i].pv -=self.proj_degat 
+                print (l[i].pv)
+        
             
-                    
-    
+class Cac:
+    def __init__(self,x,y,cac_hauteur,cac_largeur,cac_degat,zone,sound_lancer=None,sound_toucher=None):
+        self.position_cac = pygame.math.Vector2(x,y)
+        self.cac_actif = False
+        self.cac_hauteur = cac_hauteur
+        self.cac_largeur = cac_largeur
+        self.cac_degat = cac_degat
+        self.zone = zone
+        self.cac_rect = None
+        self.t = None
+        self
         
 
-    def dash(self, player, liste_equipe, degat):
-                if self.pv <= 0 :   #plus optimal que de faire un if à chaque fois dans les fonctions de déplacement et d'attaque, on sort directement de la fonction si le monstre est mort
-                    return
-                temps =  pygame.time.get_ticks() 
-                
-                dx = self.position.x - player.rect.centerx
-                dy = self.position.y - player.rect.centery
-                distance_reelle = math.sqrt(int(dx**2 + dy**2))
-                if  player.pv > 0 and distance_reelle < 200 and temps - self.attaque_dernier_temps >= self.attaque_cooldown + 2000:
+    def lancer(self, origine, cible):
+        self.cac_actif = True
+        self.position_cac = origine.copy()
+        
+        dx = cible.position.x - origine.x
+        dy = cible.position.y - origine.y
+        distance = math.sqrt(dx**2 + dy**2)
+        if distance == 0:
+            distance = 1
+        dx /= distance  # normalise entre -1 et 1
+        dy /= distance
 
-                    self.attaque_dernier_temps = temps
-                    player.recevoir_degat(degat, liste_equipe)
+        rect_x = origine.x + dx * self.cac_largeur - self.cac_largeur / 2
+        rect_y = origine.y + dy * self.cac_hauteur - self.cac_hauteur / 2
 
-                    self.dash_actif = True
-                    print("dash activé")
-                    self.dash_debut = temps
-                    self.speed += self.acceleration_dash
+        self.cac_rect = pygame.Rect(rect_x, rect_y, self.cac_largeur, self.cac_hauteur)
 
-                    # Fin du dash après 3 secondes
-                if self.dash_actif:
-                    if temps - self.dash_debut >= self.dash_duree:
-                        self.speed -= self.acceleration_dash
-                        self.dash_actif = False
-                        print("dash désactivé")
+    def collisions(self,cible,list_ennemi,liste_equipe):
+            if type(cible).__name__ == "Player":
+                if cible.rect.colliderect(self.cac_rect) and self.cac_actif == True:
+                    cible.recevoir_degat(self.cac_degat, liste_equipe)
+                    self.cac_actif = False        
+            else : 
+                for monstre in list_ennemi :
+                    if monstre.rect.colliderect(self.cac_rect):
+                        monstre.pv -=self.cac_degat     
+                        self.cac_actif = False
+                        print (monstre.pv)
+                        self.t = pygame.time.get_ticks()
 
 
 
-def liste(list_ennemi):            # pour supprimer les ennemis morts de la liste des ennemis
-                    list_ennemi[:] = [monstreee for monstreee in list_ennemi if monstreee.pv >0] # notation slice pour modifier la liste originale , pop l'index créait des bug car on manipule un index qui n'existe plus 
+
+class Mur(Object):
+    def __init__(self, x, y, width, height):
+        super().__init__(x, y, width, height, (100, 80, 60), "assets/murr.png")
+        self.image_originale = self.image
+        self.position = pygame.math.Vector2(x, y)       
+
+class porte(Object):             
+    def __init__(self, x, y, nom, width, height, distance_interaction):
+        super().__init__(x, y, width, height, (150, 75, 0), Image=None)  # sans nom
+        self.nom = nom  # on garde le nom séparément
+        self.image_originale = self.image
+        self.position = pygame.math.Vector2(x, y) 
+        self.ouvert = False
+        self.distance_interaction = distance_interaction
+        self.rect = pygame.Rect(x, y, width, height)
+        self.e = False
+
+class Porte_normale(porte):
+    def __init__(self, x, y):
+        super().__init__(x, y,"porte", 50, 100, 150)
+        self.image_originale = self.image
+
+    def interaction(self, player, screen, follow, list_object, mon_inventaire, liste_items_au_sol):
+        if player.pv > 0:
+            if self.ouvert is False:
+                pass
+            elif self.ouvert is True : # si la porte est ouverte
+                self.e = True  # la variable self.e passa a True
+                list_object[:] = [ objet for objet in list_object if not hasattr (objet, "e") or objet.e == False ] # on regarde si les objects dans list_object on un attribut "e" ou s'il est a False, on les garde 
+
+    
+
+class Porte_plaque(porte):
+    def __init__(self, x, y, x_plaque, y_plaque):
+        super().__init__(x, y, "porte_plaque", 50, 100, 150)
+        self.image_originale = self.image
+        self.rect_plaque = pygame.Rect(x_plaque, y_plaque, 50, 50)
+        self.plaque_appuyé = False
+        self.image_plaque_appuyee = "assets/plaque_appuyée.png"
+        self.image_plaque_normale = "assets/plaque.png"
+        chemin = os.path.join(os.path.dirname(__file__), "assets/plaque.png")
+        self.image_plaque_normale = pygame.image.load(chemin).convert_alpha()
+        self.image_plaque_normale = pygame.transform.scale(self.image_plaque_normale, (50, 50))
+
+        chemin = os.path.join(os.path.dirname(__file__), "assets/plaque_appuyée.png")
+        self.image_plaque_appuyee = pygame.image.load(chemin).convert_alpha()
+        self.image_plaque_appuyee = pygame.transform.scale(self.image_plaque_appuyee, (50, 50))
+
+    def interaction(self, player, screen, follow, list_object, mon_inventaire, liste_items_au_sol):
+        if player.pv > 0:
+            if player.rect.colliderect(self.rect_plaque) :
+                self.plaque_appuyé = True
+            else:
+                self.plaque_appuyé = False
+            
+            for item in liste_items_au_sol:
+                if item.rect.colliderect(self.rect_plaque):
+                    self.plaque_appuyé = True
+                else:
+                    pass
+            
+            self.ouvert = self.plaque_appuyé
+
+            if self.ouvert is True : # si la porte est ouverte
+                self.e = True  # la variable self.e passa a True
+                list_object[:] = [ objet for objet in list_object if not hasattr (objet, "e") or objet.e == False ]  
+            else:
+                self.e = False
+                if self not in list_object:
+                    list_object.append(self)
+
+    def dessiner_plaque(self,screen,follow):
+        if self.plaque_appuyé:
+            image_plaque = self.image_plaque_appuyee
+        else:
+            image_plaque = self.image_plaque_normale
+        return image_plaque
+
+
+class Porte_clé(porte):
+    def __init__(self, x, y):
+        super().__init__(x, y, "porte_cle", 50, 100, 150)
+        self.image_originale = self.image
+    def interaction(self, player, screen, follow, list_object, mon_inventaire, liste_items_au_sol):
+         if player.pv > 0:
+            if self.ouvert is False:
+                pass
+            elif self.ouvert is True : # si la porte est ouverte
+                self.e = True  # la variable self.e passa a True
+                list_object[:] = [ objet for objet in list_object if not hasattr (objet, "e") or objet.e == False ] # on regarde si les objects dans list_object on un attribut "e" ou s'il est a False, on les garde
