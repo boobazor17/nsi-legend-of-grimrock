@@ -71,7 +71,7 @@ class semi_boss(monstre):
 
 class sanglichon(semi_boss):
     def __init__(self, x, y):
-        super().__init__(x, y, "sanglichon", 200, 200, 20, 300, 150, 500, 5)
+        super().__init__(x, y, "sanglichon", 200, 200, 20, 300, 80, 500, 5)
         self.ligne = 0
         self.colonne = 0
         chemin = os.path.join(os.path.dirname(__file__), "assets/sanglichon1.png")
@@ -92,6 +92,7 @@ class sanglichon(semi_boss):
         self.animation_cac_active = False
         self.animation_cac_debut = 0
         self.direction_attaque = 0
+        self.fin_attaque = 0
         
 
         self.frames = []
@@ -112,9 +113,20 @@ class sanglichon(semi_boss):
 
         self.frames_attaque = []
         for ligne1 in range(5):  # directions
+            if ligne1 == 3:  # ligne à ignorer
+                continue  # on saute cette ligne
+    
+            if ligne1 == 0 or ligne1 == 4:  # attaques horizontales
+                frame_width1 = 533 // 5
+                ratio = 80 / frame_width1
+                nouvelle_hauteur = int(frame_height1 * ratio)
+                frame = pygame.transform.scale(frame, (80, nouvelle_hauteur))
+            else:  # attaques verticales
+                frame_width1 = 420 // 5
+                frame = pygame.transform.scale(frame, (80, 80))
             ligne_frame_attaque = []
             for colonne1 in range(5):  # frames animation
-                framee = spritesheet1.subsurface(
+                frame = spritesheet1.subsurface(
                     pygame.Rect(
                         colonne1 * frame_width1,
                         ligne1 * frame_height1,
@@ -122,7 +134,7 @@ class sanglichon(semi_boss):
                         frame_height1
                     )
                 )
-                frame = pygame.transform.scale(framee, (80, 80))
+                frame = pygame.transform.scale(frame, (80, 80))
                 ligne_frame_attaque.append(frame)
             self.frames_attaque.append(ligne_frame_attaque)
 
@@ -132,7 +144,7 @@ class sanglichon(semi_boss):
             dy = self.position.y - player.rect.centery
             distance_reelle = math.sqrt(int(dx**2 + dy**2)) # avec le théoreme de Pythagore on calcule la distance entre le monstre et le joueur
             temps =  pygame.time.get_ticks()
-            if distance_reelle <self.distance_attaque and temps - self.attaque_dernier_temps >= self.attaque_cooldown :
+            if distance_reelle < self.distance_attaque and temps - self.attaque_dernier_temps >= self.attaque_cooldown :
                         self.attaque_dernier_temps = temps
                         if temps - player.invincible_temps >= player.duree_invincibilite and player.pv > 0:  
                             self.cac.lancer(self.position,player)
@@ -179,22 +191,24 @@ class sanglichon(semi_boss):
 
             if frame_attaque < 5:
                 correspondance_attaque = {   
-                        0: 4,  # droite 
-                        1: 1,  # bas    
-                        2: 2,  # haut   
-                        3: 0,  # gauche 
-                    }
+                    0: 3,  # droite → index 3 (était ligne 4)
+                    1: 1,  # bas → index 1
+                    2: 2,  # haut → index 2
+                    3: 0,  # gauche → index 0
+                }
                 ligne_attaque = correspondance_attaque[self.direction_attaque]
                 image_attaque = self.frames_attaque[ligne_attaque][frame_attaque]
                 pos = follow.appliquer(self.position)
                 x = pos[0] - image_attaque.get_width() // 2
-                y = pos[1] - image_attaque.get_height() // 2
+                y = pos[1] - image_attaque.get_height() 
                 screen.blit(image_attaque, (x, y))
                 return  
             else:
                 self.animation_cac_active = False
+                self.fin_attaque = temps  # on note le moment de fin
 
-
+        if temps - self.fin_attaque < 200:  # 200ms de récupération
+            self.frame_index = 0  # reste sur la première frame
        
         if self.velocity.length() > 0:
             if temps - self.derniere_frame > 120:
@@ -204,7 +218,7 @@ class sanglichon(semi_boss):
         image = self.frames[self.direction_choisie][self.frame_index]
         pos = follow.appliquer(self.position)
         x = pos[0] - image.get_width() // 2
-        y = pos[1] - image.get_height() // 2
+        y = pos[1] - image.get_height() 
         screen.blit(image, (x, y))
         
 class monstre_summoner(monstre):
