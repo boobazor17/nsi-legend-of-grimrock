@@ -105,7 +105,8 @@ class inventaire:
 boutons_menu = {
     "inventaire": pygame.Rect(50, 200, 150, 50),
     "equipe": pygame.Rect(50, 270, 150, 50),
-    "stats": pygame.Rect(50, 340, 150, 50)
+    "stats": pygame.Rect(50, 340, 150, 50),
+    "info": pygame.Rect(50, 410, 150, 50)
 }
 menu_actif = "inventaire"
 
