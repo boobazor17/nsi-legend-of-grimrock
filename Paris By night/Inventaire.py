@@ -205,7 +205,10 @@ def les_pieds_de_louis(screen, font, liste_equipe,mon_inventaire,image_invent):
                 texte = font.render("Statistiques", True, (0, 0, 0))
                 screen.blit(texte, (hpb_x + 200, hpb_y + 20))
 
-
+            elif menu_actif == "info":
+                pygame.draw.rect(screen, (180, 140, 80), (hpb_x, hpb_y, 600, 300))
+                texte = font.render("Informations sur le jeu", True, (0, 0, 0))
+                screen.blit(texte, (hpb_x + 150, hpb_y + 20))
 
 def changer_menu(pos_souris):
     global menu_actif
