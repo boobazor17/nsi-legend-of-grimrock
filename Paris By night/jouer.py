@@ -159,32 +159,8 @@ def lancer(screen, font):
                     mon_inventaire.drop(liste_items_au_sol, player)
 
         screen.fill((201, 158, 89))
-        player.velocity = pygame.math.Vector2(0, 0)
-        # déplacement du personnage uniforme dans chaque directions
         touches = pygame.key.get_pressed()
-        if player.pv > 0:
-            if touches[pygame.K_z] or touches[pygame.K_UP]:
-                if (touches[pygame.K_d] or touches[pygame.K_RIGHT]) ^ (touches[pygame.K_q] or touches[pygame.K_LEFT]): # ^ = ou exclusif (xor)
-                    player.velocity.y = - speed / math.sqrt(2)
-                else:
-                    player.velocity.y = - speed
-            if touches[pygame.K_s] or touches[pygame.K_DOWN]:
-                if (touches[pygame.K_d] or touches[pygame.K_RIGHT]) ^ (touches[pygame.K_q] or touches[pygame.K_LEFT]):
-                    player.velocity.y = speed / math.sqrt(2)
-                else:
-                    player.velocity.y = speed
-            if touches[pygame.K_q] or touches[pygame.K_LEFT]:
-                if (touches[pygame.K_z] or touches[pygame.K_UP]) ^ (touches[pygame.K_s] or touches[pygame.K_DOWN]):
-                    player.velocity.x = -speed / math.sqrt(2)
-                else:
-                    player.velocity.x = -speed
-            if touches[pygame.K_d] or touches[pygame.K_RIGHT]:
-                if (touches[pygame.K_z] or touches[pygame.K_UP]) ^ (touches[pygame.K_s] or touches[pygame.K_DOWN]):
-                    player.velocity.x= speed / math.sqrt(2)
-                else:
-                    player.velocity.x = speed
-        if player.velocity.length() > 0:
-            player.direction = player.velocity.normalize()
+        player.mouvement(touches)
 
         # effet assombri lorsque le joueur est dans son inventaire a retravailler
         if inventory and player.pv and not paused> 0: 
