@@ -33,6 +33,7 @@ def lancer(screen, font):
     CLASSES_ENNEMIS = {
     "ennemi1": ennemi1,
     "araignee": araignee,
+    "necromancien": bat_summoner
     }
 
     liste_portes = map_manager.obj_porte
@@ -329,7 +330,6 @@ def lancer(screen, font):
         # si le jeu n'est pas en pause ça continue 
         if not paused:
             pass
-        
                
 
         if not paused :
@@ -338,12 +338,15 @@ def lancer(screen, font):
                     l = [m for m in list_ennemi if m != monstree]
                     monstree.deplacement(player, l,list_object)
                     
-                    monstree.attaque_m(player, liste_equipe, list_object, list_ennemi)
+                    monstree.attaque_m(player, liste_equipe, list_object, list_ennemi, bat)
                     if hasattr(monstree, "dash"): # vérifie si l'objet monstre a bien une méthode monstre avant de l'appeler pratique car toutes les classes n'ont pas les mêmes méthodes
                         monstree.dash(player, liste_equipe, 8)
                     
             for monstree in list_ennemi:
                 monstree.draw(screen, follow, player)
+                if pygame.key.get_pressed()[pygame.K_t]:
+                    pygame.draw.rect(screen, (255,0,0), (monstree.rect.x - int(cam.offset.x), monstree.rect.y - int(cam.offset.y), monstree.rect.width, monstree.rect.height),2)
+                
 
         if not paused and player.pv > 0 and not inventory:
             equipe.afficher_equipe(liste_equipe,screen)
@@ -360,7 +363,9 @@ def lancer(screen, font):
                 elem.attaque.update(liste_equipe, list_object, temps,screen,list_ennemi,follow)
             if temps - elem.attaque.attaque_dernier_temps < 150 :
                 elem.attaque.draw_proj(screen, follow)  
+            
         liste(list_ennemi)
+
 
 
         if inventory and player.pv > 0 and not paused:
