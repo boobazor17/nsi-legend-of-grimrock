@@ -24,11 +24,11 @@ class monstre(Physique):
         self.has_ronde = False
         self.attaque_cooldown = attaque_cooldown
         self.speed = speed
+        self.direction_choisie = 0
 
     def deplacement(self,player,l,list_object):
             self.velocity.x = 0
             self.velocity.y = 0
-            self.direction = self.velocity
             if self.pv > 0:
                 dx = self.position.x - player.rect.centerx
                 dy = self.position.y - player.rect.centery
@@ -106,10 +106,33 @@ class bat_summoner(monstre_summoner):
 
 class bat(monstre):
     def __init__(self, x, y):
-        super().__init__(x, y, "bat", 30, 30, 10, 100, 70, 500, 8 )
+        super().__init__(x, y, "bat", 30, 30, 10, 200, 70, 500, 8 )
         self.summon_dernier_temps = -1000
         self.cac = Cac(0, 0, 20, 20, 10, 50) 
-        self.direction_choisie = 0
+        chemin = os.path.join(os.path.dirname(__file__), "assets/bat-sprite.png")
+        spritesheet = pygame.image.load(chemin).convert_alpha()
+
+        self.frames = []
+        frame_width = 32
+        frame_height = 32
+
+        for ligne in range(4):
+            ligne_frames = []
+            for colonne in range(1,4):
+                frame = spritesheet.subsurface(
+                    pygame.Rect(
+                        colonne * frame_width,
+                        ligne * frame_height,
+                        frame_width,
+                        frame_height
+                    )
+                )
+                ligne_frames.append(frame)
+            self.frames.append(ligne_frames)
+
+        self.frame_index = 0
+        self.derniere_frame = 0
+        self.temps_mort = None
 
     def attaque_m(self, player, liste_equipe, list_object, list_ennemi, classe):
         if self.pv > 0:
@@ -131,7 +154,54 @@ class bat(monstre):
 
     def draw(self, screen, follow, player):
         if self.pv > 0:
-            pygame.draw.circle(screen, (128, 0, 128), follow.appliquer(self.position), 15)
+            dx = self.direction.x
+            dy = self.direction.y
+            seuil = 0.4
+
+            if abs(dy) > abs(dx):  # vertical dominant
+                if dy > seuil:
+                    ligne = 0  # bas
+                elif dy < -seuil:
+                    ligne = 2  # haut
+                else:
+                    ligne = self.direction_choisie
+            else:  # horizontal dominant
+                if dx > seuil:
+                    ligne = 1  # droite
+                elif dx < -seuil:
+                    ligne = 3  # gauche
+                else:
+                    ligne = self.direction_choisie
+
+            if ligne != self.direction_choisie:
+                self.frame_index = 0  # repart de la première frame
+            self.direction_choisie = ligne
+
+            temps = pygame.time.get_ticks()
+            if temps - self.derniere_frame > 120:
+                self.frame_index = (self.frame_index + 1) % 3
+                self.derniere_frame = temps
+
+            image = self.frames[self.direction_choisie][self.frame_index]
+            
+
+            pos = follow.appliquer(self.position)
+            x = pos[0] - image.get_width() // 2
+            y = pos[1] - image.get_height() // 2
+
+            screen.blit(image, (x, y))
+        if self.pv <= 0:
+            if self.temps_mort is None:
+                self.temps_mort = pygame.time.get_ticks()
+            temps = pygame.time.get_ticks()
+            if temps - self.temps_mort <= 500:
+                image = self.frames[self.direction_choisie][0]
+                pos = follow.appliquer(self.position)
+                x = pos[0] - image.get_width() // 2
+                y = pos[1] - image.get_height() // 2
+                screen.blit(image, (x, y))
+            return  # on sort de draw, rien d'autre à afficher
+
      
 
 class monstre_rodeur(monstre):
@@ -176,7 +246,6 @@ class araignee(monstre_rodeur):
 
         self.frame_index = 0
         self.derniere_frame = 0
-        self.direction_choisie = 0
 
         # Si le fond noir n'est pas transparent :
         attaque_sheet.set_colorkey((0, 0, 0))
