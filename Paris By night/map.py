@@ -85,7 +85,7 @@ def create_map(tmx_data):
     plaques ={} 
     portes_plaques_en_attente = [] # on créé une liste pour stocker les portes plaques en attente de leur plaque associée car sinon on risque de ne pas trouver la plaque associée si elle est définie après la porte 
     #  Object layers 
-    types_ennemis =["ennemi1","araignee"]
+    types_ennemis =["ennemi1","araignee","necromancien"]
     for obj in tmx_data.objects:
         obj_type = obj.properties.get("obj_type")
         x = int(obj.x)
