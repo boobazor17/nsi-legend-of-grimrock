@@ -246,7 +246,7 @@ class Mur(Object):
 
 class porte(Object):             
     def __init__(self, x, y, nom, width, height, distance_interaction):
-        super().__init__(x, y, width, height, (150, 75, 0), Image=None)  # sans nom
+        super().__init__(x, y, width, height, (150, 75, 0), "assets/porte2.jpg")  # sans nom
         self.nom = nom  # on garde le nom séparément
         self.image_originale = self.image
         self.position = pygame.math.Vector2(x, y) 
@@ -254,6 +254,7 @@ class porte(Object):
         self.distance_interaction = distance_interaction
         self.rect = pygame.Rect(x, y, width, height)
         self.e = False
+        
 
 class Porte_normale(porte):
     def __init__(self, x, y):
