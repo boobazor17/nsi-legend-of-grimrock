@@ -259,7 +259,7 @@ class bat_summoner(monstre_summoner):
         super().__init__(x, y, "necromancien", 100, 100, 0, 300, 200, 500, 4, 4, 5000, 4, 4, bat)
         chemin = os.path.join(os.path.dirname(__file__), "assets/necromancien.png")
         spritesheet = pygame.image.load(chemin).convert_alpha()
-
+        self.rect = pygame.Rect(x, y, 40, 60)
         frame_width = 37
         frame_height = 37
         offset_x = 3
@@ -441,6 +441,7 @@ class araignee(monstre_rodeur):
         spritesheet = pygame.image.load(chemin).convert_alpha()
         chemin = os.path.join(os.path.dirname(__file__), "assets/aa.png")
         attaque_sheet = pygame.image.load(chemin).convert_alpha()
+        self.rect = pygame.Rect(x, y, 60, 40)
 
         self.frames = []
         frame_width = 110
