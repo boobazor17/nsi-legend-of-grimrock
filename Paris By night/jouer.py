@@ -125,6 +125,9 @@ def lancer(screen, font):
                     Inventaire.changer_menu(event.pos)
                     if Inventaire.menu_actif == "equipe":
                         Inventaire.changer_equipe_inv(event.pos, liste_equipe)
+                    elif Inventaire.menu_actif == "stats":
+                         Inventaire.selectionner_perso_stats(event.pos, liste_equipe) 
+                    
                     else:
                         mon_inventaire.utiliser(event.pos, liste_equipe)
                 if not inventory and not paused:
@@ -323,8 +326,7 @@ def lancer(screen, font):
                 monstree.draw(screen, follow, player)
                 if pygame.key.get_pressed()[pygame.K_t]:
                     pygame.draw.rect(screen, (255,0,0), (monstree.rect.x - int(cam.offset.x), monstree.rect.y - int(cam.offset.y), monstree.rect.width, monstree.rect.height),2)
-                    pygame.draw.rect(screen, (255,0,0), (player.rect.x - int(cam.offset.x), player.rect.y - int(cam.offset.y), player.rect.width, player.rect.height), 2)
-            
+                
 
         if not paused and player.pv > 0 and not inventory:
             equipe.afficher_equipe(liste_equipe,screen)
