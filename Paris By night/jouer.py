@@ -52,7 +52,7 @@ def lancer(screen, font):
     fantome_perso1 = equipe.equipe(0,0,"fantome",100,100,20,100,10,"assets/personnage log/fantome.png")             
     rat_perso2 =  equipe.equipe(0,0,"rat", 50, 50,20,20,10,"assets/personnage log/rat.png")       
     pigeon_perso3 = equipe.equipe(0,0,"nom",100,100,20,20,10,"assets/personnage log/pigeon.png")         
-    perso4 = equipe.equipe(0,0,"nom", 100, 100,20,20,10,"assets/personnage log/pigeon.png")
+    perso4 = equipe.equipe(0,0,"nom", 100, 100,20,20,10,"assets/personnage log/escargot.png")
     
     liste_ts = [fantome_perso1,rat_perso2,pigeon_perso3,perso4 ]
     liste_equipe = liste_ts[:4] #définit une équipe de base que l'on pourra modifier par la suite
