@@ -107,7 +107,7 @@ class sanglichon(semi_boss):
                         frame_height
                     )
                 )
-                frame = pygame.transform.scale(frame, (80, 80))
+                frame = pygame.transform.scale(frame, (120, 120))
                 ligne_frames.append(frame)
             self.frames.append(ligne_frames)
 
@@ -123,7 +123,7 @@ class sanglichon(semi_boss):
                 frame = pygame.transform.scale(frame, (80, nouvelle_hauteur))
             else:  # attaques verticales
                 frame_width1 = 420 // 5
-                frame = pygame.transform.scale(frame, (80, 80))
+                frame = pygame.transform.scale(frame, (120, 120))
             ligne_frame_attaque = []
             for colonne1 in range(5):  # frames animation
                 frame = spritesheet1.subsurface(
@@ -134,7 +134,7 @@ class sanglichon(semi_boss):
                         frame_height1
                     )
                 )
-                frame = pygame.transform.scale(frame, (80, 80))
+                frame = pygame.transform.scale(frame, (120, 120))
                 ligne_frame_attaque.append(frame)
             self.frames_attaque.append(ligne_frame_attaque)
 
