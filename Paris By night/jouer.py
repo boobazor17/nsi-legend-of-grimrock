@@ -323,7 +323,8 @@ def lancer(screen, font):
                 monstree.draw(screen, follow, player)
                 if pygame.key.get_pressed()[pygame.K_t]:
                     pygame.draw.rect(screen, (255,0,0), (monstree.rect.x - int(cam.offset.x), monstree.rect.y - int(cam.offset.y), monstree.rect.width, monstree.rect.height),2)
-                
+                    pygame.draw.rect(screen, (255,0,0), (player.rect.x - int(cam.offset.x), player.rect.y - int(cam.offset.y), player.rect.width, player.rect.height), 2)
+            
 
         if not paused and player.pv > 0 and not inventory:
             equipe.afficher_equipe(liste_equipe,screen)
