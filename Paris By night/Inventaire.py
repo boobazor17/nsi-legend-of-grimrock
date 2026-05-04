@@ -7,7 +7,7 @@ import equipe
 
 pygame.init()
 
-
+perso_stats_selectionne_suplement_les_cheveux_de_ian = None
 case_selectionnee_inv = None
 width = 1080
 height = 720
@@ -207,9 +207,60 @@ def les_pieds_de_louis(screen, font, liste_equipe,mon_inventaire,image_invent):
 
             elif menu_actif == "stats":
                 pygame.draw.rect(screen, (180, 140, 80), (hpb_x, hpb_y, 600, 300))
-                texte = font.render("Statistiques", True, (0, 0, 0))
-                screen.blit(texte, (hpb_x + 200, hpb_y + 20))
 
+                titre = font.render("Statistiques", True, (0, 0, 0))
+                screen.blit(titre, (hpb_x + 200, hpb_y + 20))
+
+                
+                case_size = 70
+                start_x = hpb_x + 20
+                start_y = hpb_y + 60
+                intervale = 90
+
+            
+                for i in range(2):
+                    for j in range(2):
+                        index = i * 2 + j
+                        case_x = start_x + j * intervale
+                        case_y = start_y + i * intervale
+
+                        pygame.draw.rect(screen, (100, 80, 60), (case_x, case_y, case_size, case_size))
+                        pygame.draw.rect(screen, (60, 40, 20), (case_x, case_y, case_size, case_size), 2)
+
+                        if index < len(liste_equipe):
+                            perso = liste_equipe[index]
+
+                            
+                            screen.blit(perso.image, (case_x, case_y - 10))
+
+                          
+                            if perso_stats_selectionne_suplement_les_cheveux_de_ian == perso:
+                                pygame.draw.rect(screen, (255, 215, 0), (case_x, case_y, case_size, case_size), 3)
+
+             
+                if perso_stats_selectionne_suplement_les_cheveux_de_ian is not None:
+                    perso = perso_stats_selectionne_suplement_les_cheveux_de_ian
+
+                    x_stats = hpb_x + 250
+                    y_stats = hpb_y + 80
+
+                    lignes = [
+                        f"PV : {perso.pv}/{perso.pvmax}",
+                        f"Mana : {perso.mana}/{perso.manamax}",
+                    ]
+
+
+                    # affichage texte
+                    for i, ligne in enumerate(lignes):
+                        txt = font.render(ligne, True, (0, 0, 0))
+                        screen.blit(txt, (x_stats, y_stats + i * 30))
+
+                else:
+                    # message si rien sélectionné
+                    txt = font.render("Clique sur un personnage", True, (50, 50, 50))
+                    screen.blit(txt, (hpb_x + 230, hpb_y + 150))
+            
+            
             elif menu_actif == "info":
                 screen.blit(mon_inventaire.image_info , (hpb_x, hpb_y))
 
@@ -218,3 +269,21 @@ def changer_menu(pos_souris):
     for nom_du_menu, rect in boutons_menu.items():
         if rect.collidepoint(pos_souris):
             menu_actif = nom_du_menu
+
+def selectionner_perso_stats(pos_souris, liste_equipe):
+    global perso_stats_selectionne_suplement_les_cheveux_de_ian
+
+    hpb_w = 600
+    hpb_h = 300
+    hpb_x = width/2 - hpb_w/2
+    hpb_y = height/2 - hpb_h/2
+
+    for i in range(2):
+        for j in range(2):
+            index = i * 2 + j
+            case_x = hpb_x + 20 + j * 100
+            case_y = hpb_y + 60 + i * 100
+            case_rect = pygame.Rect(case_x, case_y, 80, 80)
+
+            if case_rect.collidepoint(pos_souris) and index < len(liste_equipe):
+                perso_stats_selectionne_suplement_les_cheveux_de_ian = liste_equipe[index]
