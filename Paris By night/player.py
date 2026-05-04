@@ -11,7 +11,7 @@ class Player(Physique):
         def __init__(self, x, y, radius=20,):
             super().__init__(x, y, radius*2, radius*2)
             self.radius = radius
-            self.rect = pygame.Rect(x, y , radius * 2, radius * 2)
+            self.rect = pygame.Rect(x, y , 38, 70)
             self.pv = 100
             self.pvmax = 100
             self.invincible_temps =  - 1000
@@ -26,6 +26,7 @@ class Player(Physique):
             self.frames = []
             frame_width =964 // 8
             frame_height = 596//4
+            self.scale = 0.55 
 
             for ligne in range(4): # on a 4 lignes d'animation dans la spritesheet
                 ligne_frames = []
@@ -118,6 +119,7 @@ class Player(Physique):
 
                     # 3. choisir une seule image
                     image = self.frames[self.frame_index][self.direction_choisie]
+                    image = pygame.transform.scale(image,(int(image.get_width() * self.scale), int(image.get_height() * self.scale)))
 
                     # 4. afficher
                     pos = follow.appliquer(self.position)
