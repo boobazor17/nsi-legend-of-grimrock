@@ -18,7 +18,7 @@ CATALOGUE = [
  
 class Coffre(Object):
     def __init__(self, x, y):
-        super().__init__(x, y, 60, 60, (180, 120, 40), "assets/vase.png")
+        super().__init__(x, y, 60, 60, (180, 120, 40), "assets/coffre.png")
         self.image_originale = self.image
         self.position = pygame.math.Vector2(x, y)
         self.distance = 200          # distance max d'interaction
