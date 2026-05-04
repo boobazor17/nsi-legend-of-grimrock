@@ -1,3 +1,4 @@
+import os
 import pygame
 import math
 from camera import *
@@ -5,6 +6,7 @@ import equipe
 
 
 pygame.init()
+
 
 case_selectionnee_inv = None
 width = 1080
@@ -18,7 +20,10 @@ class inventaire:
         self.index = None
         self.x=None
         self.y = None
-
+        self.chemin_info = os.path.join(os.path.dirname(__file__), "assets/info.png")
+        self.image_info = pygame.image.load(self.chemin_info).convert_alpha()
+        self.image_info = pygame.transform.scale(self.image_info, (600, 300))
+    
     def ajouter(self, nouvel_item):
         self.items.append(nouvel_item)
         
@@ -206,9 +211,7 @@ def les_pieds_de_louis(screen, font, liste_equipe,mon_inventaire,image_invent):
                 screen.blit(texte, (hpb_x + 200, hpb_y + 20))
 
             elif menu_actif == "info":
-                pygame.draw.rect(screen, (180, 140, 80), (hpb_x, hpb_y, 600, 300))
-                texte = font.render("Informations sur le jeu", True, (0, 0, 0))
-                screen.blit(texte, (hpb_x + 150, hpb_y + 20))
+                screen.blit(mon_inventaire.image_info , (hpb_x, hpb_y))
 
 def changer_menu(pos_souris):
     global menu_actif
