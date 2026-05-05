@@ -303,7 +303,8 @@ def lancer(screen, font, save_data=None):
                 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if bouton_sauvegarder.collidepoint(event.pos):
-                    return "sauvegarde"
+                    sauvegarde.afficher_sauvegarde_ingame(screen, font, player, liste_equipe, mon_inventaire, joueur_or)
+                    paused = False
                 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if bouton_reprendre.collidepoint(event.pos):
