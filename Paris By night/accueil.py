@@ -17,6 +17,7 @@ tower_img = images["tower"]
 
 etat = "menu"
 running = True
+save_a_charger = None 
 while running == True:
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -71,9 +72,14 @@ while running == True:
         resultat = sauvegarde.afficher_sauvegarde(screen, font)
         if resultat == "menu":
             etat = "menu"    
+        elif isinstance(resultat, tuple) and resultat[0] == "charger":
+            _, slot, save_data = resultat
+            save_a_charger = save_data
+            etat = "jouer"
 
     elif etat == "jouer":
-        resultat = jouer.lancer(screen, font)
+        resultat = jouer.lancer(screen, font, save_a_charger)
+        save_a_charger = None
         if resultat == "menu":
             etat = "menu"
         elif resultat == "sauvegarde":  
