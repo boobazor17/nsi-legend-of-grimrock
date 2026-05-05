@@ -309,5 +309,5 @@ def afficher_sauvegarde_ingame(screen, font, player, liste_equipe, mon_inventair
                                 break
                         sauvegarder(i, player, liste_equipe, mon_inventaire, joueur_or)
                         data_saves = _charger_json()
-                        message = f"✓ Sauvegardé dans le slot {i + 1} !"
+                        message = f"Sauvegardé dans le slot {i + 1} !"
                         msg_timer = pygame.time.get_ticks()
