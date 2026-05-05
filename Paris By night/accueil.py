@@ -47,7 +47,8 @@ while running == True:
                     pygame.draw.rect(screen,("gold"),bouton_credits)
                     pygame.draw.rect(screen, ("goldenrod"), bouton_credits, 14)
                 
-                    texte1 = font.render("JOUER", True, ('MidnightBlue'))
+                    texte1 = font.render("NOUVELLE", True, ('MidnightBlue'))
+                    texte5 = font.render("PARTIE", True, ('MidnightBlue'))
                     texte2 = font.render("SAUVEGARDE", True, ('MidnightBlue'))
                     texte3 = font.render("CREDITS", True, ('MidnightBlue'))
                     texte4a = font_titre.render("PARIS", True, ("lightsteelblue"))
@@ -56,7 +57,8 @@ while running == True:
                     
                     screen.blit(tower_img, (380, 10))
                     
-                    screen.blit(texte1,(185,200))
+                    screen.blit(texte1,(150,190))
+                    screen.blit(texte5, (167, 220))
                     screen.blit(texte2,(136,380))
                     screen.blit(texte3,(173,555))
                     screen.blit(texte4a, (400, 150))
