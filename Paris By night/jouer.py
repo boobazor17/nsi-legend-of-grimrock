@@ -9,9 +9,10 @@ import os
 from map import *
 import Inventaire
 import Boutique
+import sauvegarde
 
 
-def lancer(screen, font):
+def lancer(screen, font, save_data=None):
     pygame.init()
     width = 1080
     height = 720
@@ -87,6 +88,9 @@ def lancer(screen, font):
     t1 = 0
     t2 = 0
     mon_inventaire = Inventaire.inventaire()
+    
+    if save_data is not None:
+        sauvegarde.appliquer_chargement(save_data, player, liste_equipe, mon_inventaire, joueur_or)
 
     try:
         sound_death = pygame.mixer.Sound("assets/sounds/morxane.mp3")
