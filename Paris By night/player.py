@@ -4,6 +4,7 @@ from camera import *
 from Physique import Physique
 import math
 import os
+from random import randint
     
 speed = 6
 
@@ -46,11 +47,18 @@ class Player(Physique):
                 
 
         def recevoir_degat(self, degat, liste_equipe):
-            for elem in liste_equipe:
-                if elem.pv > 0 :
-                     elem.pv -= degat
-                     break
-            if all(elem.pv <=0 for elem in liste_equipe):
+            formation_avant = [liste_equipe[i] for i in range(2) if liste_equipe[i].pv > 0] #on créé une liste avec seulement les 2 premiers personnages liste_equipe de et on les prend seulement s'ils ont des pv
+            formation_arriere = [liste_equipe[i] for i in range(2, 4) ] # même chose mais pour les 2 derniers personnages de liste_equipe
+            if len(formation_avant) != 0: # si la liste formation_avant n'est pas vide on retire des pv a l'un des ou le personnage dedans aléatoirement
+                x =randint(0, len(formation_avant) - 1)
+                cible = formation_avant[x]
+            elif len(formation_arriere) !=0:  # même principe , qui s'execute seulement si la première liste est vide , ce qui donne de l'importance a la formation.
+                x =randint(0, len(formation_arriere) - 1)
+                cible = formation_arriere[x]
+            cible.pv -= degat # on enlève les pv au personnage
+            if cible.pv < 0:
+                cible.pv = 0
+            if all(elem.pv <= 0 for elem in liste_equipe): # si plus aucun personnage de l'équipe n'a de pv alors les pv du joueur sont mis a 0 
                 self.pv = 0
         
 
