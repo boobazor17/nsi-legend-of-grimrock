@@ -9,15 +9,18 @@ import assetss
 pygame.display.set_caption("caca")
 screen = pygame.display.set_mode((1080,720 ))
 
+fond = pygame.image.load("assets/fond.png")
+fond = pygame.transform.scale(fond, (1080, 720))
+
 font = pygame.font.Font(None,40)
 font_titre = pygame.font.Font(None,220)
-
 images = assetss.charger_images()  
-tower_img = images["tower"] 
+
 
 etat = "menu"
 running = True
 save_a_charger = None 
+
 while running == True:
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -32,7 +35,7 @@ while running == True:
             if event.key == pygame.K_ESCAPE and etat == "credits":
                 etat = "menu"
 
-    screen.fill(("Midnightblue"))
+    screen.blit(fond, (0, 0))
     if etat == "menu":
                     # bouton
                     bouton_jouer = pygame.Rect(100,150,260,130)
@@ -55,7 +58,6 @@ while running == True:
                     texte4b = font_titre.render("BY", True, ("lightsteelblue"))
                     texte4c = font_titre.render("NIGHT", True, ("lightsteelblue"))
                     
-                    screen.blit(tower_img, (380, 10))
                     
                     screen.blit(texte1,(150,190))
                     screen.blit(texte5, (167, 220))
@@ -67,8 +69,6 @@ while running == True:
                                         
     elif etat == "credits":
         credits.afficher_credits(screen, font)
-        
-        
                         
     elif etat == "sauvegarde":                             
         resultat = sauvegarde.afficher_sauvegarde(screen, font)
