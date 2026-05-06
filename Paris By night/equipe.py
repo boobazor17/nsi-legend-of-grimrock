@@ -140,30 +140,7 @@ class attaque:
                 self.cac.cac_rect.y - follow.camera.offset.y,
                 self.cac.cac_largeur,
                 self.cac.cac_hauteur
-            ))
-   
-   
-   
-   
-    """ def personnage():
-     for i in range(4):  # pour des équipes de 4
-        print("Choisis un personnage :")
-        
-        for index, perso in enumerate():
-            print(index, "-", perso["nom"])     #choisir le perso avec son nom et un chiffre l'index
-        
-        choix = int(input("Numéro du personnage : ")) #rentrer le numéro donc l'index
-        
-        equipe.append([choix])
-
-    print("Ton équipe est composée de :")
-    for perso in equipe:
-        print(perso["nom"], "-", perso["pv"], "PV") #affiche les infos du perso
-
-    if [choix] not in equipe:  #pour éviter que un personnage soit choisi plusieurs fois par erreur
-        equipe.append([choix])
-    else:
-        print("Déjà choisi !") """                
+            ))              
 
 def regarde_clique(pos_souris,liste_equipe,list_ennemi,player,list_object):
         hpb_w = 1/5 * width
