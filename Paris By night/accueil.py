@@ -9,8 +9,13 @@ import assetss
 pygame.display.set_caption("caca")
 screen = pygame.display.set_mode((1080,720 ))
 
+# mettre le fond
 fond = pygame.image.load("assets/fond.png")
 fond = pygame.transform.scale(fond, (1080, 720))
+
+# insérer les boutons
+bouton_img = pygame.image.load("assets/bouton.png")
+bouton_img = pygame.transform.scale(bouton_img, (260, 130))
 
 font = pygame.font.Font(None,40)
 font_titre = pygame.font.Font(None,220)
@@ -39,30 +44,27 @@ while running == True:
     if etat == "menu":
                     # bouton
                     bouton_jouer = pygame.Rect(100,150,260,130)
-                    pygame.draw.rect(screen,("gold"),bouton_jouer)
-                    pygame.draw.rect(screen, ("goldenrod"), bouton_jouer, 14)
+                    screen.blit(bouton_img, bouton_jouer)
                 
                     bouton_sauvegarde = pygame.Rect(100,325,260,130)
-                    pygame.draw.rect(screen,("gold"),bouton_sauvegarde)
-                    pygame.draw.rect(screen, ("goldenrod"), bouton_sauvegarde, 14)
+                    screen.blit(bouton_img, bouton_sauvegarde)
                 
                     bouton_credits = pygame.Rect(100,500,260,130)
-                    pygame.draw.rect(screen,("gold"),bouton_credits)
-                    pygame.draw.rect(screen, ("goldenrod"), bouton_credits, 14)
+                    screen.blit(bouton_img, bouton_credits)
                 
-                    texte1 = font.render("NOUVELLE", True, ('MidnightBlue'))
-                    texte5 = font.render("PARTIE", True, ('MidnightBlue'))
-                    texte2 = font.render("SAUVEGARDE", True, ('MidnightBlue'))
-                    texte3 = font.render("CREDITS", True, ('MidnightBlue'))
-                    texte4a = font_titre.render("PARIS", True, ("lightsteelblue"))
-                    texte4b = font_titre.render("BY", True, ("lightsteelblue"))
-                    texte4c = font_titre.render("NIGHT", True, ("lightsteelblue"))
+                    texte1 = font.render("NOUVELLE", True, ('Black'))
+                    texte5 = font.render("PARTIE", True, ('Black'))
+                    texte2 = font.render("SAUVEGARDE", True, ('Black'))
+                    texte3 = font.render("CREDITS", True, ('Black'))
+                    texte4a = font_titre.render("PARIS", True, ("White"))
+                    texte4b = font_titre.render("BY", True, ("White"))
+                    texte4c = font_titre.render("NIGHT", True, ("White"))
                     
                     
-                    screen.blit(texte1,(150,190))
-                    screen.blit(texte5, (167, 220))
-                    screen.blit(texte2,(136,380))
-                    screen.blit(texte3,(173,555))
+                    screen.blit(texte1,(160,175))
+                    screen.blit(texte5, (177, 205))
+                    screen.blit(texte2,(136,365))
+                    screen.blit(texte3,(166,540))
                     screen.blit(texte4a, (400, 150))
                     screen.blit(texte4b, (530, 320))
                     screen.blit(texte4c, (400, 500))
@@ -91,6 +93,8 @@ while running == True:
     if etat == "credits" or etat == "sauvegarde":
         if event.type == pygame.QUIT:
                 etat = "menu"
+
+    bouton_img = bouton_img.convert_alpha()
             
     # mettre à jour l'écran
     pygame.display.update()
