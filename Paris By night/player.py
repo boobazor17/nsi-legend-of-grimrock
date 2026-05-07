@@ -12,7 +12,7 @@ class Player(Physique):
         def __init__(self, x, y, radius=20,):
             super().__init__(x, y, radius*2, radius*2)
             self.radius = radius
-            self.rect = pygame.Rect(x, y , 38, 70)
+            self.rect = pygame.Rect(x, y , 38, 38)
             self.pv = 100
             self.pvmax = 100
             self.invincible_temps =  - 1000
@@ -132,5 +132,5 @@ class Player(Physique):
                     # 4. afficher
                     pos = follow.appliquer(self.position)
                     x = pos[0] - image.get_width() // 2
-                    y = pos[1] - image.get_height() // 2
+                    y = pos[1] - image.get_height() // 2 -13 # - 13 pour que la hitbox soit au pied du personnage et pas au milieu
                     screen.blit(image, (x, y))
