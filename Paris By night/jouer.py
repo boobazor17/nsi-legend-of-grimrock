@@ -1,6 +1,7 @@
 import pygame
 import math
 from camera import *
+from graphique import dessiner_vision
 from monstre import *
 from player import *
 from Physique import *
@@ -17,6 +18,7 @@ def lancer(screen, font, save_data=None):
     width = 1080
     height = 720
     speed = 10
+    rayon_vision = 300
 
     
     map_manager = Map_Manager()
@@ -318,6 +320,7 @@ def lancer(screen, font, save_data=None):
                
 
         if not paused :
+
             for monstree in list_ennemi:
                 if  monstree.pv > 0:
                     l = [m for m in list_ennemi if m != monstree]
@@ -328,9 +331,15 @@ def lancer(screen, font, save_data=None):
                         monstree.dash(player, liste_equipe, 8)
                     
             for monstree in list_ennemi:
-                monstree.draw(screen, follow, player)
+                dx = monstree.position.x - player.position.x
+                dy = monstree.position.y - player.position.y
+                distance = math.sqrt(dx**2 + dy**2)
+                if distance <= rayon_vision:
+                    
+                    monstree.draw(screen, follow, player)
                 if pygame.key.get_pressed()[pygame.K_t]:
                     pygame.draw.rect(screen, (255,0,0), (monstree.rect.x - int(cam.offset.x), monstree.rect.y - int(cam.offset.y), monstree.rect.width, monstree.rect.height),2)
+                    pygame.draw.rect(screen, (0,255,0), (player.rect.x - int(cam.offset.x), player.rect.y - int(cam.offset.y), player.rect.width, player.rect.height),2)
                 
 
         if not paused and player.pv > 0 and not inventory:
@@ -355,6 +364,9 @@ def lancer(screen, font, save_data=None):
 
         if inventory and player.pv > 0 and not paused:
             Inventaire.les_pieds_de_louis(screen, font, liste_equipe, mon_inventaire, image_invent)
+
+        if not inventory and not paused:
+            dessiner_vision(screen, follow, player)
                 
         pygame.display.update()  
     pygame.quit()
