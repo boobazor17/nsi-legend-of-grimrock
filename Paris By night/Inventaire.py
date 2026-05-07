@@ -72,12 +72,20 @@ class inventaire:
                                         self.y = case_y
 
         else:
+                    case_touchee = False # on définit une variable pour vérifier si une case a été touchée
                     for elem in range(len(liste_equipe)):
                         case_xx = 270 
                         case_jj = 240 + elem*55
                         elem_rect= pygame.Rect(case_xx, case_jj, 100, 100)
                         if elem_rect.collidepoint(pos_souris):
-                            self.perso_choisi = liste_equipe[elem]                 
+                            self.perso_choisi = liste_equipe[elem] 
+                            case_touchee = True # si une case a été touchée, on change la variable à True
+                    if not case_touchee: # si aucune case n'a été touchée, on réinitialise les variables pour annuler l'utilisation de l'item
+                        self.item_utilise = None
+                        self.perso_choisi = None
+                        self.index = None
+                        self.x = None
+                        self.y = None
         if self.perso_choisi and self.item_utilise:
             self.perso_choisi.pv += self.item_utilise.effet
             if self.perso_choisi.pv > self.perso_choisi.pvmax:
