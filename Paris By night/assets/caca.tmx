@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="16" tileheight="16" infinite="0" nextlayerid="3" nextobjectid="33">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="16" tileheight="16" infinite="0" nextlayerid="3" nextobjectid="35">
  <tileset firstgid="1" source="Plateforme.tsx"/>
  <tileset firstgid="2561" source="mur.tsx"/>
  <layer id="1" name="Calque de Tuiles 1" width="50" height="50">
@@ -135,6 +135,12 @@
     <property name="obj_type" value="sanglichon"/>
    </properties>
    <point/>
+  </object>
+  <object id="34" x="703.759" y="722.473" width="30" height="30">
+   <properties>
+    <property name="map" value="assets/map2.tmx"/>
+    <property name="obj_type" value="changement_map"/>
+   </properties>
   </object>
  </objectgroup>
 </map>
