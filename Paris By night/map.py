@@ -26,12 +26,15 @@ class Map_Manager:
         self.list_object = []  # compatible avec le système de collisions
         self.ennemis_to_spawn = []
         self.spawnpoint_joueur = pygame.math.Vector2(0, 0)
+        self.transitions = []
+        self.vide_tiles = []
+
 
     def load_map(self, path):
         chemin = os.path.join(os.path.dirname(__file__), path)
         tmx_data = pytmx.load_pygame(chemin, pixelalpha=True)
         self.tiles, self.collision_tiles, self.ennemis_to_spawn, \
-        self.spawnpoint_joueur, self.objets_interactifs, self.obj_porte, self.plaques = create_map(tmx_data)
+        self.spawnpoint_joueur, self.objets_interactifs, self.obj_porte, self.plaques, self.transitions, self.vide_tiles= create_map(tmx_data)
         self.list_object = self.collision_tiles + self.objets_interactifs + self.obj_porte # on garde les objets Tile entiers 
         for tile in self.tiles:
             tile.image = pygame.transform.scale(tile.image, (TILE_SIZE * SCALE, TILE_SIZE * SCALE))
@@ -54,6 +57,7 @@ def create_map(tmx_data):
     tiles = []
     collision_tiles = []
     ennemis_to_spawn = []
+    vide_tiles = []
     spawnpoint_joueur = pygame.math.Vector2(0, 0)
 
     # Tile layers 
@@ -76,10 +80,15 @@ def create_map(tmx_data):
                 t = CollisionTile(pos_x, pos_y, image)
                 tiles.append(t)
                 collision_tiles.append(t)
+            if tile_type == "vide":
+                    t = Tile(pos_x, pos_y, image)
+                    tiles.append(t)
+                    vide_tiles.append(t)
             else:
                 tiles.append(Tile(pos_x, pos_y, image))
 
     objets_interactifs = []  # nouveau
+    transitions = []
     objet_porte =["porte","porte_cle"] # liste des types de portes 
     obj_porte =[]
     plaques ={} 
@@ -120,6 +129,13 @@ def create_map(tmx_data):
         elif obj_type == "porte_plaque":
             nom = obj.properties.get("nom")
             portes_plaques_en_attente.append((nom, x * SCALE, y * SCALE))
+        
+        elif obj_type == "changement_map":
+            transitions.append({
+                "rect": pygame.Rect(x * SCALE, y * SCALE, int(obj.width) * SCALE, int(obj.height) * SCALE),
+                "map": obj.properties.get("map")
+            })
+
 
 
     for nom, x_porte, y_porte in portes_plaques_en_attente:
@@ -130,4 +146,5 @@ def create_map(tmx_data):
         
             
 
-    return tiles, collision_tiles, ennemis_to_spawn, spawnpoint_joueur, objets_interactifs, obj_porte, plaques
+    return tiles, collision_tiles, ennemis_to_spawn, spawnpoint_joueur, objets_interactifs, obj_porte, plaques, transitions, vide_tiles
+
