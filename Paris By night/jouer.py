@@ -1,7 +1,7 @@
 import pygame
 import math
 from camera import *
-from graphique import dessiner_vision
+from graphique import *
 from monstre import *
 from player import *
 from Physique import *
@@ -19,10 +19,11 @@ def lancer(screen, font, save_data=None):
     height = 720
     speed = 10
     rayon_vision = 300
+    temps_entree_vide = None
 
     
     map_manager = Map_Manager()
-    map_manager.load_map("assets/caca.tmx")
+    map_manager.load_map("assets/map3.tmx")
     list_object = map_manager.list_object
     vases = map_manager.objets_interactifs
 
@@ -42,6 +43,7 @@ def lancer(screen, font, save_data=None):
 
     liste_portes = map_manager.obj_porte
     plaques = map_manager.plaques
+    transitions = map_manager.transitions
 
     list_ennemi = []
     for e in map_manager.ennemis_to_spawn:
@@ -102,8 +104,17 @@ def lancer(screen, font, save_data=None):
 
     son_death_joue = False
 
+    def scene_actuelle():
+        dessiner_scene(
+            screen, map_manager, follow, player, vases, mon_coffre,
+            liste_portes, liste_items_au_sol, list_ennemi,
+            rayon_vision, paused, inventory, liste_equipe
+        )
+
+
 
     while running: # boucle du jeu boucle infinie while true 
+        transition_a_faire = None
         clock.tick(60) # permet d'actualiser 60 fois le jeu par seconde (60 fps)
         events = pygame.event.get()
         for event in events:
@@ -185,6 +196,12 @@ def lancer(screen, font, save_data=None):
             player.position.y += player.velocity.y
             player.rect.center = player.position
             player.collisions_y(list_object)
+            for transition in transitions:
+                if player.rect.colliderect(transition["rect"]):
+                    transition_a_faire = transition
+                    break
+
+
             for vase in vases:
                 vase.interaction(player, screen, font, follow, mon_inventaire, joueur_or, events)
                 cam.scroll()
@@ -367,6 +384,50 @@ def lancer(screen, font, save_data=None):
 
         if not inventory and not paused:
             dessiner_vision(screen, follow, player)
+
+        joueur_dans_vide = False
+        for tile in map_manager.vide_tiles:
+            if player.rect.colliderect(tile.rect):
+                joueur_dans_vide = True
+                break
+        temps_entree_vide = vide( screen, joueur_dans_vide, player, follow, map_manager, cam, temps_entree_vide, scene_actuelle )
+                    
+
+        if transition_a_faire is not None:
+
+            fade_out(screen, scene_actuelle)
+
+            map_manager.load_map(transition_a_faire["map"])
+
+            list_object = map_manager.list_object
+            vases = map_manager.objets_interactifs
+            liste_portes = map_manager.obj_porte
+            plaques = map_manager.plaques
+            transitions = map_manager.transitions
+
+            coffres = [obj for obj in map_manager.objets_interactifs if isinstance(obj, Boutique.Coffre)]
+            mon_coffre = coffres[0] if coffres else None
+
+            list_ennemi = []
+            for e in map_manager.ennemis_to_spawn:
+                classe = CLASSES_ENNEMIS.get(e["nom"])
+                if classe:
+                    list_ennemi.append(classe(e["x"], e["y"]))
+
+            player.position = map_manager.spawnpoint_joueur.copy()
+            player.rect.center = player.position
+
+            cam.offset_float.x = player.rect.x + cam.CONST.x
+            cam.offset_float.y = player.rect.y + cam.CONST.y
+            cam.offset.x = int(cam.offset_float.x)
+            cam.offset.y = int(cam.offset_float.y)
+
+            fade_in(screen, scene_actuelle)
+
+            transition_a_faire = None
+            continue
+
+
                 
         pygame.display.update()  
     pygame.quit()
