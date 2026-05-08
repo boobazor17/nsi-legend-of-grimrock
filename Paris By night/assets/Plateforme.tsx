@@ -5638,22 +5638,22 @@
  </tile>
  <tile id="1127">
   <properties>
-   <property name="type" value="sol"/>
+   <property name="type" value="vide"/>
   </properties>
  </tile>
  <tile id="1128">
   <properties>
-   <property name="type" value="sol"/>
+   <property name="type" value="vide"/>
   </properties>
  </tile>
  <tile id="1129">
   <properties>
-   <property name="type" value="sol"/>
+   <property name="type" value="vide"/>
   </properties>
  </tile>
  <tile id="1130">
   <properties>
-   <property name="type" value="sol"/>
+   <property name="type" value="vide"/>
   </properties>
  </tile>
  <tile id="1131">
@@ -5958,22 +5958,22 @@
  </tile>
  <tile id="1191">
   <properties>
-   <property name="type" value="sol"/>
+   <property name="type" value="vide"/>
   </properties>
  </tile>
  <tile id="1192">
   <properties>
-   <property name="type" value="sol"/>
+   <property name="type" value="vide"/>
   </properties>
  </tile>
  <tile id="1193">
   <properties>
-   <property name="type" value="sol"/>
+   <property name="type" value="vide"/>
   </properties>
  </tile>
  <tile id="1194">
   <properties>
-   <property name="type" value="sol"/>
+   <property name="type" value="vide"/>
   </properties>
  </tile>
  <tile id="1195">
@@ -6278,22 +6278,22 @@
  </tile>
  <tile id="1255">
   <properties>
-   <property name="type" value="sol"/>
+   <property name="type" value="vide"/>
   </properties>
  </tile>
  <tile id="1256">
   <properties>
-   <property name="type" value="sol"/>
+   <property name="type" value="vide"/>
   </properties>
  </tile>
  <tile id="1257">
   <properties>
-   <property name="type" value="sol"/>
+   <property name="type" value="vide"/>
   </properties>
  </tile>
  <tile id="1258">
   <properties>
-   <property name="type" value="sol"/>
+   <property name="type" value="vide"/>
   </properties>
  </tile>
  <tile id="1259">
@@ -6598,22 +6598,22 @@
  </tile>
  <tile id="1319">
   <properties>
-   <property name="type" value="sol"/>
+   <property name="type" value="vide"/>
   </properties>
  </tile>
  <tile id="1320">
   <properties>
-   <property name="type" value="sol"/>
+   <property name="type" value="vide"/>
   </properties>
  </tile>
  <tile id="1321">
   <properties>
-   <property name="type" value="sol"/>
+   <property name="type" value="vide"/>
   </properties>
  </tile>
  <tile id="1322">
   <properties>
-   <property name="type" value="sol"/>
+   <property name="type" value="vide"/>
   </properties>
  </tile>
  <tile id="1323">
