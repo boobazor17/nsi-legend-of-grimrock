@@ -98,13 +98,23 @@ class item(Object): # tout ce qui est dans l'inventaire
             if distance < 100:
                 self.au_sol = False
                 mon_inventaire.ajouter(self)
-                liste_items_au_sol[:] = [ items for items in liste_items_au_sol if items != self ] # les 2 points permette de modifier la liste originale, au lieu de créer une nouvelle liste séparée.
+                liste_items_au_sol[:] = [ items for items in liste_items_au_sol if items != self ] # les 2 points permettent de modifier la liste originale, au lieu de créer une nouvelle liste séparée.
                 # la liste_items_au_sol retire l'item que l'on vient d'ajouter a l'inventaire
 
+class item_consommable(item): # potions, boosts s'utilisent sur un personnage et disparaissent
+    def __init__(self, nom, height, width, effet, couleur=(255,255,255), Image=None): 
+        super().__init__(nom, height, width, effet, couleur, Image)
 
-    # potion_de_soin = item("potion de soin", 50)
-    
+class item_equipement(item):  # épées, armures...
+    def __init__(self, nom, height, width, effet, couleur, Image=None):
+        super().__init__(nom, height, width, effet, couleur, Image)
+        self.equipe = False  # True si porté par un personnage
+       
 
+class item_objet(item):  # clé, caillou
+    def __init__(self, nom, height, width, effet, couleur, Image=None):
+        super().__init__(nom, height, width, effet, couleur, Image)
+        
 
                     
 class projectile:                
