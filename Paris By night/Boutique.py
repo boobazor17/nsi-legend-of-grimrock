@@ -18,7 +18,7 @@ CATALOGUE = [
  
 class Coffre(Object):
     def __init__(self, x, y):
-        super().__init__(x, y, 60, 60, (180, 120, 40), "assets/coffre.png")
+        super().__init__(x, y, 60, 60, (180, 120, 40), "assets/vase.png")
         self.image_originale = self.image
         self.position = pygame.math.Vector2(x, y)
         self.distance = 200          # distance max d'interaction
@@ -150,3 +150,11 @@ class Coffre(Object):
                 mon_inventaire.ajouter(nouvel_item)
                 joueur_or[0] -= article["prix"]
                 break
+
+
+def afficher_or(screen, joueur_or):
+    font = pygame.font.Font(None, 40)
+
+    texte = font.render(f"Or : {joueur_or[0]}", True, (255, 215, 0))
+
+    screen.blit(texte, (20, 20))
