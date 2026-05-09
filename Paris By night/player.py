@@ -6,7 +6,7 @@ import math
 import os
 from random import randint
     
-speed = 6
+speed = 4
 
 class Player(Physique):
         def __init__(self, x, y, radius=20,):
