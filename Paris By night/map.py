@@ -1,7 +1,7 @@
 import pygame
 import pytmx
 from Boutique import Coffre
-from Physique import Vase, Porte_normale, Porte_plaque, Porte_clé
+from Physique import Vase, Porte_normale, Porte_plaque, Porte_clé, item
 import os 
 from Boutique import Coffre
 pygame.init()
@@ -52,6 +52,14 @@ CLASSES_PORTES = {
     "porte": Porte_normale,
     "porte_cle": Porte_clé,
 }         
+def creer_item_depuis_nom(nom):
+    if nom == "potion_vie":
+        return item("potion de soin", 50, 50, 20, (255, 0, 255), "assets/potion_vie.png")
+    elif nom == "potion_degat":
+        return item("potion de dégats", 50, 50, -20, (255, 0, 255), "assets/potion_degat.png")
+    elif nom == "cle":
+        return item("clé", 50, 50, 0, (255, 255, 0), "assets/cle.png")
+    return None
 
 def create_map(tmx_data):
     tiles = []
@@ -94,14 +102,22 @@ def create_map(tmx_data):
     plaques ={} 
     portes_plaques_en_attente = [] # on créé une liste pour stocker les portes plaques en attente de leur plaque associée car sinon on risque de ne pas trouver la plaque associée si elle est définie après la porte 
     #  Object layers 
-    types_ennemis =["ennemi1","araignee","necromancien", "sanglichon"]
+    types_ennemis =["ennemi1","araignee","necromancien", "sanglichon","bat"]
     for obj in tmx_data.objects:
         obj_type = obj.properties.get("obj_type")
         x = int(obj.x)
         y = int(obj.y)
         
         if obj_type == "vase":
-            objets_interactifs.append(Vase(x * SCALE, y * SCALE))  #  Vase existant de Physique.py
+            contenu_texte = obj.properties.get("contenu", "")
+            contenu = []
+
+            for nom_item in contenu_texte.split(","):
+                nom_item = nom_item.strip()
+                nouvel_item = creer_item_depuis_nom(nom_item)
+                if nouvel_item is not None:
+                    contenu.append(nouvel_item)
+            objets_interactifs.append(Vase(x * SCALE, y * SCALE, contenu))  #  Vase existant de Physique.py
         
         elif obj_type == "spawnpoint_joueur":
             spawnpoint_joueur = pygame.math.Vector2(x * SCALE, y * SCALE)
