@@ -23,7 +23,7 @@ def lancer(screen, font, save_data=None, equipe_cles=None):
 
     
     map_manager = Map_Manager()
-    map_manager.load_map("assets/map3.tmx")
+    map_manager.load_map("assets/caca.tmx")
     list_object = map_manager.list_object
     vases = map_manager.objets_interactifs
 
@@ -352,7 +352,8 @@ def lancer(screen, font, save_data=None, equipe_cles=None):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if bouton_reprendre.collidepoint(event.pos):
                     paused = False
-            
+
+        Boutique.afficher_or(screen, joueur_or)   
 
         
         # si le jeu n'est pas en pause ça continue 
@@ -399,7 +400,7 @@ def lancer(screen, font, save_data=None, equipe_cles=None):
             if temps - elem.attaque.attaque_dernier_temps < 150 :
                 elem.attaque.draw_proj(screen, follow)  
             
-        liste(list_ennemi)
+        liste(list_ennemi, joueur_or)
 
 
 
