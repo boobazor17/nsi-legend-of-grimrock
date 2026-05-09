@@ -48,12 +48,13 @@ class Object:
     
     
 class Vase(Object): # tout ce qui est physique
-    def __init__(self, x, y):
+    def __init__(self, x, y, contenu=None):
         super().__init__(x, y, 50, 50, (255, 0, 0),"assets/vase.png")
         self.image_originale = self.image
         self.position = pygame.math.Vector2(x,y)
         self.distance = 200
         self.ouvert = False
+        self.contenu = contenu if contenu is not None else []
 
 
     def interaction (self,player,screen, font, follow, mon_inventaire,joueur_or,events):
@@ -72,17 +73,12 @@ class Vase(Object): # tout ce qui est physique
             self.image = pygame.transform.scale(self.image_originale, (int(self.width), int(self.height)))
             touches = pygame.key.get_pressed()
             if touches[pygame.K_e]:
-                    potion_vie = item("potion de soin", 50, 50, 20, (255, 0, 255), "assets/potion_vie.png")
-                    potion_degat = item("potion de dégats", 50, 50, -20, (255, 0, 255), "assets/potion_degat.png")
-                    cle= item("clé", 50, 50, 0, (255, 255, 0), "assets/cle.png")
-                    self.ouvert = True
-                    
-                    self.image = self.image_originale
-                    
-                    mon_inventaire.ajouter(potion_vie) # Appelle la méthode sur l'instance car sinon appelle inventaire.ajouter sur la classe elle-même au lieu d'une instance de la classe.
-                    mon_inventaire.ajouter(potion_degat)
-                    mon_inventaire.ajouter(cle)
-                    print (mon_inventaire.items[0].nom) 
+                    for objet in self.contenu:
+                        mon_inventaire.ajouter(objet)
+
+                        self.ouvert = True
+                        self.image = self.image_originale
+                        print (mon_inventaire.items[0].nom) 
         else:           
             self.image = self.image_originale
                         
