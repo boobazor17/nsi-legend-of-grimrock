@@ -13,7 +13,7 @@ import Boutique
 import sauvegarde
 
 
-def lancer(screen, font, save_data=None):
+def lancer(screen, font, save_data=None, equipe_cles=None):
     pygame.init()
     width = 1080
     height = 720
@@ -57,12 +57,26 @@ def lancer(screen, font, save_data=None):
     # personage
     fantome_perso1 = equipe.equipe(0,0,"fantome",100,100,20,100,10,"assets/personnage log/fantome.png")             
     rat_perso2 =  equipe.equipe(0,0,"rat", 50, 50,20,20,10,"assets/personnage log/rat.png")       
-    pigeon_perso3 = equipe.equipe(0,0,"nom",100,100,20,20,10,"assets/personnage log/pigeon.png")         
-    perso4 = equipe.equipe(0,0,"nom", 100, 100,20,20,10,"assets/personnage log/escargot.png")
+    pigeon_perso3 = equipe.equipe(0,0,"pigeon",100,100,20,20,10,"assets/personnage log/pigeon.png")         
+    perso4 = equipe.equipe(0,0,"escargot", 100, 100,20,20,10,"assets/personnage log/escargot.png")
     
-    liste_ts = [fantome_perso1,rat_perso2,pigeon_perso3,perso4 ]
-    liste_equipe = liste_ts[:4] #définit une équipe de base que l'on pourra modifier par la suite
-   
+    CLE_VERS_PERSO = {
+        "fantome":  fantome_perso1,
+        "rat":      rat_perso2,
+        "pigeon":   pigeon_perso3,
+        "escargot": perso4,
+    }
+    
+    liste_ts = [fantome_perso1, rat_perso2, pigeon_perso3, perso4]
+
+
+    if equipe_cles and save_data is None:
+        
+        liste_ts = [CLE_VERS_PERSO.get(c, fantome_perso1) for c in equipe_cles]
+
+    liste_equipe = liste_ts[:4]
+
+
      #attaque
     attaque_cac = equipe.attaque("cac", 20, 200, 0, 0, 1000)
     attaque_distance = equipe.attaque("distance", 10, 300, 0, 0, 1000) 
@@ -95,7 +109,16 @@ def lancer(screen, font, save_data=None):
     mon_inventaire = Inventaire.inventaire()
     
     if save_data is not None:
-        sauvegarde.appliquer_chargement(save_data, player, liste_equipe, mon_inventaire, joueur_or)
+        cles_sauvegardees= sauvegarde.appliquer_chargement(save_data, player, liste_equipe, mon_inventaire, joueur_or)
+        if cles_sauvegardees:
+            equipe_cles = cles_sauvegardees
+            liste_equipe[:] = [CLE_VERS_PERSO.get(c, fantome_perso1) for c in equipe_cles]
+            for i, perso_data in enumerate(save_data["equipe"]):
+                if i < len(liste_equipe):
+                    liste_equipe[i].pv     = perso_data["pv"]
+                    liste_equipe[i].pvmax  = perso_data["pvmax"]
+                    liste_equipe[i].mana   = perso_data["mana"]
+                    liste_equipe[i].manamax = perso_data["manamax"]
 
     try:
         sound_death = pygame.mixer.Sound("assets/sounds/morxane.mp3")
