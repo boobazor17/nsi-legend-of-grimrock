@@ -1,7 +1,7 @@
 import pygame
 import pytmx
 from Boutique import Coffre
-from Physique import Vase, Porte_normale, Porte_plaque, Porte_clé, item
+from Physique import Vase, Porte_normale, Porte_plaque, Porte_clé, item, item_consommable, item_objet
 import os 
 from Boutique import Coffre
 pygame.init()
@@ -54,11 +54,13 @@ CLASSES_PORTES = {
 }         
 def creer_item_depuis_nom(nom):
     if nom == "potion_vie":
-        return item("potion de soin", 50, 50, 20, (255, 0, 255), "assets/potion_vie.png")
+        return item_consommable("potion de soin", 50, 50, 20, (255, 0, 255), "assets/potion_vie.png")
     elif nom == "potion_degat":
-        return item("potion de dégats", 50, 50, -20, (255, 0, 255), "assets/potion_degat.png")
+        return item_consommable("potion de dégats", 50, 50, -20, (255, 0, 255), "assets/potion_degat.png")
     elif nom == "cle":
-        return item("clé", 50, 50, 0, (255, 255, 0), "assets/cle.png")
+        return item_objet("clé", 50, 50, 0, (255, 255, 0), "assets/cle.png")
+    elif nom == "cailloux":
+        return item_objet("caillou", 50, 50, 0, (100, 100, 100), "assets/cailloux.png")
     return None
 
 def create_map(tmx_data):
