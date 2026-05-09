@@ -3,7 +3,7 @@ import pygame
 import math
 from camera import *
 import equipe 
-
+from Physique import item, item_consommable, item_equipement
 
 pygame.init()
 
@@ -87,10 +87,13 @@ class inventaire:
                         self.x = None
                         self.y = None
         if self.perso_choisi and self.item_utilise:
-            self.perso_choisi.pv += self.item_utilise.effet
-            if self.perso_choisi.pv > self.perso_choisi.pvmax:
-                self.perso_choisi.pv = self.perso_choisi.pvmax
-            self.items.pop(self.index) 
+            if isinstance(self.item_utilise, item_consommable):
+                self.perso_choisi.pv += self.item_utilise.effet
+                if self.perso_choisi.pv > self.perso_choisi.pvmax:
+                    self.perso_choisi.pv = self.perso_choisi.pvmax
+                self.items.pop(self.index) 
+            elif isinstance(self.item_utilise, item_equipement):
+                self.item_utilise.equipe = True
             self.perso_choisi = None   
             self.item_utilise = None
             self.index = None
