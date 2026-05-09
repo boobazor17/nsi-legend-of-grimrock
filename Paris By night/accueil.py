@@ -4,6 +4,7 @@ import credits
 import sauvegarde
 import jouer
 import assetss
+import menu_equipe
 
 # generer la fenetre du jeu 
 pygame.display.set_caption("caca")
@@ -25,6 +26,7 @@ images = assetss.charger_images()
 etat = "menu"
 running = True
 save_a_charger = None 
+equipe_choisie = None
 
 while running == True:
     for event in pygame.event.get():
@@ -48,7 +50,7 @@ while running == True:
                 etat = "menu"
 
             elif event.key == pygame.K_SPACE and etat == "intro":
-                etat = "jouer"
+                etat = "choix_equipe"
 
 
     screen.blit(fond, (0, 0))
@@ -91,10 +93,21 @@ while running == True:
             _, slot, save_data = resultat
             save_a_charger = save_data
             etat = "jouer"
+                
+            
+    elif etat == "choix_equipe":
+        equipe_choisie = menu_equipe.afficher_menu_equipe(screen)
+        if equipe_choisie is None:
+            etat = "menu"
+        else:
+            etat = "jouer"
+            
+
 
     elif etat == "jouer":
-        resultat = jouer.lancer(screen, font, save_a_charger)
+        resultat = jouer.lancer(screen, font, save_a_charger, equipe_choisie)
         save_a_charger = None
+        equipe_choisie = None
         if resultat == "menu":
             etat = "menu"
         elif resultat == "sauvegarde":  
