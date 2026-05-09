@@ -179,7 +179,7 @@ def lancer(screen, font, save_data=None):
                 if inventory:
                     mon_inventaire.drop(liste_items_au_sol, player)
 
-        screen.fill((201, 158, 89))
+        screen.fill((0, 0, 0))
         touches = pygame.key.get_pressed()
         player.mouvement(touches)
 
