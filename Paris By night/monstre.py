@@ -7,10 +7,11 @@ from Physique import projectile
 from Physique import Cac
 import os
 from random import randint
+import jouer
 
                 
 class monstre(Physique):
-    def __init__(self, x, y, nom, pv, pvmax, attaque, distance, distance_attaque, attaque_cooldown, speed):
+    def __init__(self, x, y, nom, pv, pvmax, attaque, distance, distance_attaque, attaque_cooldown, speed, or_drop):
         super().__init__(x,y,40,40)
         self.position = pygame.math.Vector2(x,y)
         self.direction = pygame.math.Vector2(0, 0)
@@ -25,6 +26,7 @@ class monstre(Physique):
         self.attaque_cooldown = attaque_cooldown
         self.speed = speed
         self.direction_choisie = 0
+        self.or_drop = or_drop
 
     def deplacement(self,player,l,list_object):
             self.velocity.x = 0
@@ -64,14 +66,14 @@ class monstre(Physique):
                 self.direction = self.velocity.normalize()
 
 class semi_boss(monstre):
-    def __init__(self, x, y, nom, pv, pvmax, attaque, distance, distance_attaque, attaque_cooldown, speed):
-        super().__init__(x, y, nom, pv, pvmax, attaque, distance, distance_attaque, attaque_cooldown, speed)
+    def __init__(self, x, y, nom, pv, pvmax, attaque, distance, distance_attaque, attaque_cooldown, speed, or_drop):
+        super().__init__(x, y, nom, pv, pvmax, attaque, distance, distance_attaque, attaque_cooldown, speed, or_drop)
         self.speed = speed
         self.phase = 0
 
 class sanglichon(semi_boss):
     def __init__(self, x, y):
-        super().__init__(x, y, "sanglichon", 200, 200, 20, 300, 80, 500, 4)
+        super().__init__(x, y, "sanglichon", 200, 200, 20, 300, 80, 500, 4, 50)
         self.ligne = 0
         self.colonne = 0
         chemin = os.path.join(os.path.dirname(__file__), "assets/sanglichon1.png")
@@ -222,8 +224,8 @@ class sanglichon(semi_boss):
         screen.blit(image, (x, y))
         
 class monstre_summoner(monstre):
-    def __init__(self, x, y, nom, pv, pvmax, attaque, distance, distance_attaque, attaque_cooldown, speed, summon_max, summon_cooldown,ligne,colonne, classe, Image= None ):
-        super().__init__(x, y, nom, pv, pvmax, attaque, distance, distance_attaque, attaque_cooldown, speed)
+    def __init__(self, x, y, nom, pv, pvmax, attaque, distance, distance_attaque, attaque_cooldown, speed, or_drop, summon_max, summon_cooldown,ligne,colonne, classe, Image= None ):
+        super().__init__(x, y, nom, pv, pvmax, attaque, distance, distance_attaque, attaque_cooldown, speed, or_drop)
         self.speed =speed
         self.summon_cooldown = summon_cooldown  # 5 secondes
         self.summon_dernier_temps = -1000
@@ -256,7 +258,7 @@ class monstre_summoner(monstre):
 
 class bat_summoner(monstre_summoner):
     def __init__(self, x, y):
-        super().__init__(x, y, "necromancien", 100, 100, 0, 300, 200, 500, 4, 4, 5000, 4, 4, bat)
+        super().__init__(x, y, "necromancien", 100, 100, 0, 300, 200, 500, 4, 30, 4, 5000, 4, 4, bat)
         chemin = os.path.join(os.path.dirname(__file__), "assets/necromancien.png")
         spritesheet = pygame.image.load(chemin).convert_alpha()
         self.rect = pygame.Rect(x, y, 40, 60)
@@ -322,7 +324,7 @@ class bat_summoner(monstre_summoner):
 
 class bat(monstre):
     def __init__(self, x, y):
-        super().__init__(x, y, "bat", 30, 30, 10, 200, 90, 500, 8 )
+        super().__init__(x, y, "bat", 30, 30, 10, 200, 90, 500, 8, 5)
         self.summon_dernier_temps = -1000
         self.cac = Cac(0, 0, 50, 50, 10, 50) 
         chemin = os.path.join(os.path.dirname(__file__), "assets/bat-sprite.png")
@@ -421,8 +423,8 @@ class bat(monstre):
      
 
 class monstre_rodeur(monstre):
-    def __init__(self, x, y, nom, pv, pvmax, attaque, distance, distance_attaque, attaque_cooldown, speed):
-        super().__init__(x, y, nom, pv, pvmax, attaque, distance, distance_attaque, attaque_cooldown, speed)
+    def __init__(self, x, y, nom, pv, pvmax, attaque, distance, distance_attaque, attaque_cooldown, speed, or_drop):
+        super().__init__(x, y, nom, pv, pvmax, attaque, distance, distance_attaque, attaque_cooldown, speed, or_drop)
         self.waypoints = [self.position.copy(), self.position+(200,0), self.position+(200,200), self.position+(0,200)]  # patrouille ici
         self.waypoint_actuel = 0
         self.speed =speed
@@ -433,7 +435,7 @@ class monstre_rodeur(monstre):
 
 class araignee(monstre_rodeur):
     def __init__(self, x, y):
-        super().__init__(x, y, "araignee", 80, 80, 15, 200, 100, 700, 6)
+        super().__init__(x, y, "araignee", 80, 80, 15, 200, 100, 700, 6, 25)
         self.cac = Cac(0, 0, 35, 35, 10, 100)
         self.rect = pygame.Rect(x, y, 40, 40)
         self.a = None # variable
@@ -586,7 +588,7 @@ class araignee(monstre_rodeur):
 
 class ennemi1(monstre_rodeur):
     def __init__(self, x, y):
-        super().__init__(x, y, "ennemi1", 100, 100, 10, 250, 130, 600, 10)
+        super().__init__(x, y, "ennemi1", 100, 100, 10, 250, 130, 600, 10, 15)
         self.proj = projectile(x, y, 5, 8, 0, 0, 10,0) # initialisation du projectile (position(x,y)  vitesse , rayon, vitesse_x, vitesse_y, degat)
         self.rect = pygame.Rect(x, y, 40, 40)
         self.speed = 10
@@ -656,5 +658,10 @@ class ennemi1(monstre_rodeur):
 
 
 
-def liste(list_ennemi):            # pour supprimer les ennemis morts de la liste des ennemis
-                    list_ennemi[:] = [monstreee for monstreee in list_ennemi if monstreee.pv >0] # notation slice pour modifier la liste originale , pop l'index créait des bug car on manipule un index qui n'existe plus 
+def liste(list_ennemi, joueur_or, ):            # pour supprimer les ennemis morts de la liste des ennemis
+    liste_mort = [monstreee for monstreee in list_ennemi if monstreee.pv <= 0]               
+    for monstreee in liste_mort:
+                  
+        joueur_or[0] += monstreee.or_drop 
+
+    list_ennemi[:] = [monstreee for monstreee in list_ennemi if monstreee.pv >0] # notation slice pour modifier la liste originale , pop l'index créait des bug car on manipule un index qui n'existe plus 
