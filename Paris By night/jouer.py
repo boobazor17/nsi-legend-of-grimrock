@@ -38,7 +38,8 @@ def lancer(screen, font, save_data=None):
     "ennemi1": ennemi1,
     "araignee": araignee,
     "necromancien": bat_summoner,
-    "sanglichon" : sanglichon
+    "sanglichon" : sanglichon,
+    "bat" : bat
     }
 
     liste_portes = map_manager.obj_porte
@@ -426,8 +427,6 @@ def lancer(screen, font, save_data=None):
 
             transition_a_faire = None
             continue
-
-
                 
         pygame.display.update()  
     pygame.quit()
