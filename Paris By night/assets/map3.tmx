@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="4">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="7">
  <tileset firstgid="1" source="Plateforme.tsx"/>
  <layer id="1" name="Calque de Tuiles 1" width="50" height="50">
   <data encoding="csv">
@@ -127,6 +127,20 @@
     <property name="map" value="assets/caca.tmx"/>
     <property name="obj_type" value="changement_map"/>
    </properties>
+  </object>
+  <object id="4" x="362.907" y="662.322">
+   <properties>
+    <property name="nom" value="bat"/>
+    <property name="obj_type" value="bat"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="5" x="454.47" y="664.327">
+   <properties>
+    <property name="nom" value="bat"/>
+    <property name="obj_type" value="bat"/>
+   </properties>
+   <point/>
   </object>
  </objectgroup>
 </map>
