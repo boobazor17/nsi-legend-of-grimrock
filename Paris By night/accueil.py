@@ -28,17 +28,28 @@ save_a_charger = None
 
 while running == True:
     for event in pygame.event.get():
-        if event.type == pygame.MOUSEBUTTONDOWN:
+        if event.type == pygame.QUIT:
+            running = False
+
+        elif event.type == pygame.MOUSEBUTTONDOWN:
             if etat == "menu":
                 if bouton_credits.collidepoint(event.pos):
                     etat = "credits"
                 elif bouton_sauvegarde.collidepoint(event.pos):
                     etat = "sauvegarde"
                 elif bouton_jouer.collidepoint(event.pos):
-                    etat = "jouer"
+                    etat = "intro"
+
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE and etat == "credits":
                 etat = "menu"
+
+            elif event.key == pygame.K_ESCAPE and etat == "intro":
+                etat = "menu"
+
+            elif event.key == pygame.K_SPACE and etat == "intro":
+                etat = "jouer"
+
 
     screen.blit(fond, (0, 0))
     if etat == "menu":
@@ -88,6 +99,26 @@ while running == True:
             etat = "menu"
         elif resultat == "sauvegarde":  
             etat = "sauvegarde"
+
+    elif etat == "intro":
+        screen.fill((10, 8, 20))
+
+        lignes = [
+            "Paris, By Night.",
+            "En dessous des rues paisibles de la capitales",
+            "vous vous êtes égarés dans les catacombes.",
+            "Des créatures y rodent, attirées par une magie oubliée.",
+            "avec votre équipe descendez dans les profondeurs",
+            "pour retrouver la source du mal.",
+            "",
+            "Appuyez sur ESPACE pour commencer."
+        ]
+
+        y = 140
+        for ligne in lignes:
+            texte = font.render(ligne, True, (230, 220, 190))
+            screen.blit(texte, (30, y))
+            y += 45
         
        
     if etat == "credits" or etat == "sauvegarde":
