@@ -56,8 +56,8 @@ def lancer(screen, font, save_data=None, equipe_cles=None):
 
     # personage
     fantome_perso1 = equipe.equipe(0,0,"fantome",100,100,20,100,10,"assets/personnage log/fantome.png")             
-    rat_perso2 =  equipe.equipe(0,0,"rat", 50, 50,20,20,10,"assets/personnage log/rat.png")       
-    pigeon_perso3 = equipe.equipe(0,0,"pigeon",100,100,20,20,10,"assets/personnage log/pigeon.png")         
+    rat_perso2 =  equipe.equipe(0,0,"rat", 50, 50,40,20,10,"assets/personnage log/rat.png")       
+    pigeon_perso3 = equipe.equipe(0,0,"pigeon",200,200,20,20,10,"assets/personnage log/pigeon.png")         
     perso4 = equipe.equipe(0,0,"escargot", 100, 100,20,20,10,"assets/personnage log/escargot.png")
     
     CLE_VERS_PERSO = {
