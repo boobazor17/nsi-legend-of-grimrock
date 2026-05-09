@@ -71,7 +71,7 @@ class semi_boss(monstre):
 
 class sanglichon(semi_boss):
     def __init__(self, x, y):
-        super().__init__(x, y, "sanglichon", 200, 200, 20, 300, 80, 500, 5)
+        super().__init__(x, y, "sanglichon", 200, 200, 20, 300, 80, 500, 4)
         self.ligne = 0
         self.colonne = 0
         chemin = os.path.join(os.path.dirname(__file__), "assets/sanglichon1.png")
@@ -324,7 +324,7 @@ class bat(monstre):
     def __init__(self, x, y):
         super().__init__(x, y, "bat", 30, 30, 10, 200, 90, 500, 8 )
         self.summon_dernier_temps = -1000
-        self.cac = Cac(0, 0, 20, 20, 10, 50) 
+        self.cac = Cac(0, 0, 50, 50, 10, 50) 
         chemin = os.path.join(os.path.dirname(__file__), "assets/bat-sprite.png")
         spritesheet = pygame.image.load(chemin).convert_alpha()
 
