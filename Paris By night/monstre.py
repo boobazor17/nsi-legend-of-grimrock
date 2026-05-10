@@ -9,7 +9,9 @@ import os
 from random import randint
 import jouer
 
-                
+
+
+
 class monstre(Physique):
     def __init__(self, x, y, nom, pv, pvmax, attaque, distance, distance_attaque, attaque_cooldown, speed, or_drop):
         super().__init__(x,y,40,40)
@@ -594,7 +596,7 @@ class grand_slime(monstre_rodeur):
         self.speed = 10
         self.dash_actif = False
         self.dash_debut = 0
-        self.dash_duree = 350  # 3 secondes
+        self.dash_duree = 350  
         self.acceleration_dash = 40
         chemin1 = os.path.join(os.path.dirname(__file__), "assets/slime_bullet.png")
         self.spritesheet_attaque = pygame.image.load(chemin1).convert_alpha()
@@ -604,6 +606,10 @@ class grand_slime(monstre_rodeur):
         self.frames = []
         frame_width = 16
         frame_height = 16
+        self.son_grand_slime = pygame.mixer.Sound("assets/sounds/gros_slime.mp3")
+        self.son_grand_slime.set_volume(0.1)
+        
+        self.son_dernier_temps = -1000
 
         for ligne in range(3):
             ligne_frames = []
@@ -633,9 +639,19 @@ class grand_slime(monstre_rodeur):
             x = pos[0] - image.get_width() // 2
             y = pos[1] - image.get_height() // 2
             screen.blit(image, (x, y))
+            t = pygame.time.get_ticks()
+            if self.frame_index == 2 and t - self.son_dernier_temps >= 1000:
+                self.son_grand_slime.play()
+                self.son_dernier_temps = t
+                 
+                
 
-        if self.proj.proj_actif and self.pv > 0:
-            screen.blit(self.spritesheet_attaque, follow.appliquer(self.proj.position_proj))
+            if self.pv <= 0 :
+                self.son_grand_slime.stop()
+                
+             
+            if self.proj.proj_actif and self.pv > 0:
+                screen.blit(self.spritesheet_attaque, follow.appliquer(self.proj.position_proj))
     
     def attaque_m(self, player, liste_equipe, list_object, list_ennemi, classe):
             if self.pv > 0:
@@ -700,7 +716,9 @@ class slime(grand_slime):
         self.spritesheet_attaque = pygame.image.load(chemin1).convert_alpha()
         self.spritesheet_attaque = pygame.transform.scale(self.spritesheet_attaque, (16, 16))
         self.speed = 6
-
+        self.son_slime = pygame.mixer.Sound("assets/sounds/petit_slime.mp3")
+        self.son_slime.set_volume(0.1)
+        self.son_dernier_temps = -1000
         nb_colonnes_par_ligne = [3, 3, 1]  # ligne 0: 3, ligne 1: 3, ligne 2: 1 seule case valide
         for ligne in range(3):
             ligne_frames = []
@@ -730,10 +748,16 @@ class slime(grand_slime):
             x = pos[0] - image.get_width() // 2
             y = pos[1] - image.get_height() // 2
             screen.blit(image, (x, y))
-        if self.proj.proj_actif and self.pv > 0:
-            screen.blit(self.spritesheet_attaque, follow.appliquer(self.proj.position_proj))
-        
 
+            t = pygame.time.get_ticks()
+            if self.frame_index == 0 and t - self.son_dernier_temps >= 1000:
+                self.son_slime.play()
+                self.son_dernier_temps = t
+        
+        
+            
+        
+            
 
 
 def liste(list_ennemi, joueur_or, ):            # pour supprimer les ennemis morts de la liste des ennemis
