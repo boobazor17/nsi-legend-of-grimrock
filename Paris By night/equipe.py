@@ -23,8 +23,7 @@ class equipe :
                 self.slots = {
                     "arme": None,
                     "armure": None,
-                    "rune": None,
-                    "bouclier": None
+                    "rune": None
                 }
                 if Image: # s'il y a une image
                     chemin = os.path.join(os.path.dirname(__file__), Image) #os.path.dirname(__file__) récupère le dossier où se trouve physique.py, puis os.path.join colle le chemin de l'image dessus
@@ -82,7 +81,7 @@ class attaque:
                 dy = monstre.position.y - player.rect.centery
                 distance_reelle = math.sqrt(int(dx**2 + dy**2))
                 l.append((distance_reelle, monstre))
-            l.sort()  #trie par distance
+            l.sort(key=lambda x: x[0])  # trie uniquement par distance, pas par l'objet  #trie par distance l.sort créait des bugs quand 2 monstres avaient la même distance
             monstre = l[0][1] # on récupère le monstre
             self.monstre =  monstre
             temps =  pygame.time.get_ticks() 
