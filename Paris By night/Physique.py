@@ -318,7 +318,7 @@ class Porte_plaque(porte):
         return image_plaque
 
 
-class Porte_clé(porte):
+class Porte_clé(porte):  #c'est une porte qui s'ouvre avec une clé mais pas un porte clé qu'on met sur ses clés
     def __init__(self, x, y):
         super().__init__(x, y, "porte_cle", 50, 100, 150)
         self.image_originale = self.image
