@@ -5,6 +5,7 @@ from Physique import Physique
 import math
 import os
 from random import randint
+pygame.mixer.init()
     
 speed = 4
 
@@ -28,6 +29,13 @@ class Player(Physique):
             frame_width =964 // 8
             frame_height = 596//4
             self.scale = 0.55 
+            try:
+                chemin_son = os.path.join(os.path.dirname(__file__), "assets/sounds/pas.mp3")
+                self.son_pas = pygame.mixer.Sound(chemin_son)
+                self.son_pas.set_volume(0.5)
+            except:
+                self.son_pas = None
+            self.son_pas_joue = False
 
             for ligne in range(4): # on a 4 lignes d'animation dans la spritesheet
                 ligne_frames = []
@@ -86,7 +94,15 @@ class Player(Physique):
                     else:
                         self.velocity.x = speed
             if self.velocity.length() > 0:
-                    self.direction = self.velocity.normalize()
+                self.direction = self.velocity.normalize()
+                if not self.son_pas_joue and self.son_pas:
+                    self.son_pas.play(-1)
+                    self.son_pas_joue = True
+            else:
+                if self.son_pas_joue and self.son_pas:
+                    self.son_pas.stop()
+                    self.son_pas_joue = False
+
             return self.velocity.x, self.velocity.y
 
         def draw(self, screen, follow):
