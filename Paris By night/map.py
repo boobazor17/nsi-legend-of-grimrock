@@ -62,7 +62,13 @@ def creer_item_depuis_nom(nom):
     elif nom == "cailloux":
         return item_objet("caillou", 50, 50, 0, (100, 100, 100), "assets/cailloux.png")
     elif nom == "epee":
-        return item_equipement("épée", 50, 50, (150, 150, 150), "assets/cailloux.png", "arme", bonus_attaque=10)
+        return item_equipement("épée", 50, 50, (150, 150, 150), "assets/épée.png", "arme", bonus_attaque=10)
+    elif nom == "rune_degat":
+        return item_equipement("rune de dégats", 50, 50, (255, 0, 0), "assets/rune_degat.png", "rune", bonus_attaque=5)
+    elif nom == "rune_vie":
+        return item_equipement("rune de vie", 50, 50, (0, 255, 0), "assets/rune_vie.png", "rune", bonus_pv=20)
+    elif nom == "rune_mana":
+        return item_equipement("rune de mana", 50, 50, (0, 0, 255), "assets/rune_mana.png", "rune", bonus_mana=20)
     return None
 
 def create_map(tmx_data):
