@@ -35,11 +35,12 @@ def lancer(screen, font, save_data=None, equipe_cles=None):
     cam.setmethod(follow)
 
     CLASSES_ENNEMIS = {
-    "ennemi1": ennemi1,
+    "slime": slime,
     "araignee": araignee,
     "necromancien": bat_summoner,
     "sanglichon" : sanglichon,
-    "bat" : bat
+    "bat" : bat,
+    "grand_slime" : grand_slime
     }
 
     liste_portes = map_manager.obj_porte
