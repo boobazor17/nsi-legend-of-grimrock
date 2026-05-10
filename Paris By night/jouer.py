@@ -20,6 +20,7 @@ def lancer(screen, font, save_data=None, equipe_cles=None):
     speed = 10
     rayon_vision = 300
     temps_entree_vide = None
+    fin_lancee = False #  variable pour s'assurer que la fin du jeu ne se lance qu'une seule fois
 
     
     map_manager = Map_Manager()
@@ -396,7 +397,11 @@ def lancer(screen, font, save_data=None, equipe_cles=None):
                 elem.attaque.draw_proj(screen, follow)  
             
         liste(list_ennemi, joueur_or)
-
+        if map_manager.current_map == "assets/map2.tmx" and not any(isinstance(m, sanglichon) for m in list_ennemi):
+            if not fin_lancee:
+                fin_lancee = True
+                import credit_fin_jeu
+                credit_fin_jeu.lancer_fin()
 
 
         if inventory and player.pv > 0 and not paused:
