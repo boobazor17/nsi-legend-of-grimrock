@@ -23,7 +23,7 @@ class equipe :
                 self.slots = {
                     "arme": None,
                     "armure": None,
-                    "casque": None,
+                    "rune": None,
                     "bouclier": None
                 }
                 if Image: # s'il y a une image
@@ -42,20 +42,19 @@ class equipe :
             self.dernier_regen = temps
 
     def attaque_totale(self):
-        for slot in self.slots:
-            item = self.slots[slot]
-            if item is not None:
-                self.degat_attaque+= item.bonus_attaque
-    
-        return self.degat_attaque
+        total = self.degat_attaque
+        for slot in self.slots.values():
+            if slot is not None:
+                total += slot.bonus_attaque
+        return total
     
     def defense_total(self):
-        for slot in self.slots:
-            item =self.slots[slot]
-            if item is not None:
-                self.pvmax += item.bonus_defense
-                self.pv += item.bonus_defense
-        return self.pvmax, self.pv
+        bonus = 0
+        for slot in self.slots.values():
+            if slot is not None:
+                bonus += slot.bonus_defense
+        return self.pvmax + bonus, self.pv
+    
 class attaque:
     def __init__(self,nom,degat,portée,rayon,ralentissement,temps_recharge): 
         self.nom = nom
@@ -88,12 +87,9 @@ class attaque:
             self.monstre =  monstre
             temps =  pygame.time.get_ticks() 
             if self.nom == "cac":
-                print("attaque cac")
                 if l[0][0] <= self.portée and temps - self.attaque_dernier_temps >= self.temps_recharge :
                     self.attaque_dernier_temps = temps
                     if attaquant.pv >= 0:
-                        degat =attaquant.attaque_totale()
-                        self.cac.degat = degat
                         self.cac.lancer(pygame.math.Vector2(player.position), monstre)
                         self.case_rect = case_rect
                         attaquant.mana -= self.cout_mana
@@ -102,8 +98,6 @@ class attaque:
                 if l[0][0] <= self.portée and temps - self.attaque_dernier_temps >= self.temps_recharge :
                         self.attaque_dernier_temps = temps
                         if attaquant.pv >= 0: 
-                            degat = attaquant.attaque_totale()
-                            self.proj.degat = degat
                             self.proj.lancer(pygame.math.Vector2(player.position),monstre)
                             self.case_rect = case_rect
                             attaquant.mana -= self.cout_mana
@@ -111,27 +105,26 @@ class attaque:
                 if l[0][0] <= self.portée and temps - self.attaque_dernier_temps >= self.temps_recharge :
                         self.attaque_dernier_temps = temps
                         if attaquant.pv >= 0: 
-                            degat = attaquant.attaque_totale()
-                            self.proj.degat = degat
                             self.proj.lancer(pygame.math.Vector2(player.position), monstre)
                             self.case_rect = case_rect
                             attaquant.mana -= self.cout_mana
 
 
 
-    def update(self, liste_equipe,list_object,temps,screen,list_ennemi,follow):
+    def update(self, liste_equipe, list_object, temps, screen, list_ennemi, follow, attaquant=None):
             if self.nom == "distance" or self.nom == "mage":
                 if self.proj.proj_actif:
                     if self.monstre is not None :
                         if temps - self.attaque_dernier_temps <= self.temps_recharge:
                                 self.proj.position_proj += (self.proj.proj_vitesse_x, self.proj.proj_vitesse_y)
-                                self.proj.collisions(self.monstre,liste_equipe)
+                                bonus_attaque=attaquant.attaque_totale() - attaquant.degat_attaque
+                                self.proj.collisions(self.monstre, liste_equipe, bonus_attaque)
                                 if self.nom == "mage":
-                                   self.proj.collisions_zone(list_ennemi,screen,follow) 
+                                   self.proj.collisions_zone(list_ennemi, screen, follow) 
                         else:
                                 self.proj.proj_actif = False 
                                 if self.nom == "mage":
-                                    self.proj.collisions_zone(list_ennemi,screen,follow)
+                                    self.proj.collisions_zone(list_ennemi, screen, follow)
                     for object in list_object: # check tous les objets de la liste pour voir s'il y a une collision avec le projectile
                         if object.rect.collidepoint(self.proj.position_proj):    
                                     self.proj.proj_actif = False       
@@ -145,7 +138,8 @@ class attaque:
                 if self.cac.cac_actif:
                     if self.monstre is not None:
                         if temps - self.attaque_dernier_temps <= self.temps_recharge:
-                            self.cac.collisions(self.monstre,list_ennemi,liste_equipe)
+                            bonus_attaque = attaquant.attaque_totale() - attaquant.degat_attaque
+                            self.cac.collisions(self.monstre, list_ennemi, liste_equipe, bonus_attaque)
                             overlay = pygame.Surface((100, 100))
                             overlay.set_alpha(100)  # 0 = invisible, 255 = opaque
                             overlay.fill((50, 50, 50))  
