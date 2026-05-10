@@ -22,6 +22,9 @@ font = pygame.font.Font(None,40)
 font_titre = pygame.font.Font(None,220)
 images = assetss.charger_images()  
 
+#son d'intro avec la voix d'un mec trop charismatique
+son = pygame.mixer.Sound("assets/sounds/audio_intro.mp3")
+son_lance = False
 
 etat = "menu"
 running = True
@@ -115,7 +118,10 @@ while running == True:
 
     elif etat == "intro":
         screen.fill((10, 8, 20))
-
+        if son_lance == False:
+            son.play()
+            son_lance = True
+            
         lignes = [
             "Paris, By Night.",
             "En dessous des rues paisibles de la capitales",
