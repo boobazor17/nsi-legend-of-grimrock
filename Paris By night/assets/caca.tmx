@@ -86,8 +86,8 @@
   </object>
   <object id="12" x="604.845" y="198.496">
    <properties>
-    <property name="nom" value="ennemi1"/>
-    <property name="obj_type" value="ennemi1"/>
+    <property name="nom" value="grand_slime"/>
+    <property name="obj_type" value="grand_slime"/>
    </properties>
    <point/>
   </object>
@@ -107,8 +107,8 @@
   </object>
   <object id="22" x="609.524" y="345.53">
    <properties>
-    <property name="nom" value="ennemi1"/>
-    <property name="obj_type" value="ennemi1"/>
+    <property name="nom" value="slime"/>
+    <property name="obj_type" value="slime"/>
    </properties>
    <point/>
   </object>
@@ -152,12 +152,12 @@
   </object>
   <object id="50" x="2530.98" y="46.0593">
    <properties>
-    <property name="nom" value="porte_1"/>
+    <property name="nom" value="porte_2"/>
     <property name="obj_type" value="porte_plaque"/>
    </properties>
    <point/>
   </object>
-  <object id="29" x="580.117" y="746.533">
+  <object id="29" x="640.267" y="320.802">
    <properties>
     <property name="nom" value="porte_1"/>
     <property name="obj_type" value="plaque"/>
@@ -184,16 +184,9 @@
    </properties>
    <point/>
   </object>
-  <object id="40" x="630.242" y="312.114">
-   <properties>
-    <property name="nom" value="porte_1"/>
-    <property name="obj_type" value="plaque"/>
-   </properties>
-   <point/>
-  </object>
   <object id="51" x="2447.94" y="157.326">
    <properties>
-    <property name="nom" value="porte_1"/>
+    <property name="nom" value="porte_2"/>
     <property name="obj_type" value="plaque"/>
    </properties>
    <point/>
