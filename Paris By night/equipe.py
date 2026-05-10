@@ -20,6 +20,12 @@ class equipe :
                 self.manamax = 100
                 self.mana_regen = 2        # points récupérés par seconde
                 self.dernier_regen = 0     # timestamp du dernier tick de regen
+                self.slots = {
+                    "arme": None,
+                    "armure": None,
+                    "casque": None,
+                    "bouclier": None
+                }
                 if Image: # s'il y a une image
                     chemin = os.path.join(os.path.dirname(__file__), Image) #os.path.dirname(__file__) récupère le dossier où se trouve physique.py, puis os.path.join colle le chemin de l'image dessus
                     self.image = pygame.image.load(chemin).convert_alpha()
@@ -35,8 +41,21 @@ class equipe :
             self.mana = min(self.mana + self.mana_regen, self.manamax)
             self.dernier_regen = temps
 
+    def attaque_totale(self):
+        for slot in self.slots:
+            item = self.slots[slot]
+            if item is not None:
+                self.degat_attaque+= item.bonus_attaque
     
-
+        return self.degat_attaque
+    
+    def defense_total(self):
+        for slot in self.slots:
+            item =self.slots[slot]
+            if item is not None:
+                self.pvmax += item.bonus_defense
+                self.pv += item.bonus_defense
+        return self.pvmax, self.pv
 class attaque:
     def __init__(self,nom,degat,portée,rayon,ralentissement,temps_recharge): 
         self.nom = nom
@@ -73,6 +92,8 @@ class attaque:
                 if l[0][0] <= self.portée and temps - self.attaque_dernier_temps >= self.temps_recharge :
                     self.attaque_dernier_temps = temps
                     if attaquant.pv >= 0:
+                        degat =attaquant.attaque_totale()
+                        self.cac.degat = degat
                         self.cac.lancer(pygame.math.Vector2(player.position), monstre)
                         self.case_rect = case_rect
                         attaquant.mana -= self.cout_mana
@@ -81,6 +102,8 @@ class attaque:
                 if l[0][0] <= self.portée and temps - self.attaque_dernier_temps >= self.temps_recharge :
                         self.attaque_dernier_temps = temps
                         if attaquant.pv >= 0: 
+                            degat = attaquant.attaque_totale()
+                            self.proj.degat = degat
                             self.proj.lancer(pygame.math.Vector2(player.position),monstre)
                             self.case_rect = case_rect
                             attaquant.mana -= self.cout_mana
@@ -88,6 +111,8 @@ class attaque:
                 if l[0][0] <= self.portée and temps - self.attaque_dernier_temps >= self.temps_recharge :
                         self.attaque_dernier_temps = temps
                         if attaquant.pv >= 0: 
+                            degat = attaquant.attaque_totale()
+                            self.proj.degat = degat
                             self.proj.lancer(pygame.math.Vector2(player.position), monstre)
                             self.case_rect = case_rect
                             attaquant.mana -= self.cout_mana
