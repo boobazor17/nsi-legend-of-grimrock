@@ -105,10 +105,13 @@ class item_consommable(item): # potions, boosts s'utilisent sur un personnage et
     def __init__(self, nom, height, width, effet, couleur=(255,255,255), Image=None): 
         super().__init__(nom, height, width, effet, couleur, Image)
 
-class item_equipement(item):  # épées, armures...
-    def __init__(self, nom, height, width, effet, couleur, Image=None):
-        super().__init__(nom, height, width, effet, couleur, Image)
-        self.equipe = False  # True si porté par un personnage
+class item_equipement(item):
+    def __init__(self, nom, height, width, couleur, Image=None, slot = "arme", bonus_attaque=0, bonus_defense=0):
+        super().__init__(nom, height, width, 0, couleur, Image)
+        self.equipe = False
+        self.slot = slot
+        self.bonus_attaque = bonus_attaque
+        self.bonus_defense = bonus_defense
        
 
 class item_objet(item):  # clé, caillou
