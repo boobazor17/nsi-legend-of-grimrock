@@ -6,6 +6,17 @@ pygame.init()
 
 FICHIER_SAUVEGARDE = "sauvegardes.json"
 NB_SLOTS = 3
+CATALOGUES = [
+    {"nom": "Potion de soin",   "effet":  20, "image": "assets/potion_vie.png"},
+    {"nom": "Potion de dégâts",   "effet": -20, "image": "assets/potion_degat.png"},
+    {"nom": "Grande potion",      "effet":  50, "image": "assets/potion_vie.png"},
+    {"nom": "clé",     "effet":  0, "image": "assets/cle.png"},
+    {"nom": "caillou",  "effet":  0, "image": "assets/cailloux.png"},
+    {"nom": "épée",     "effet":  0, "image": "assets/épée.png"},
+    {"nom": "rune de dégats", "effet": 0, "image": "assets/rune_degat.png"},
+    {"nom": "rune de vie", "effet": 0, "image": "assets/rune_vie.png"},
+    {"nom": "rune de mana", "effet": 0, "image": "assets/rune_mana.png"},
+]
 
 fond = pygame.image.load("assets/bg_sauvegarde.png")
 fond = pygame.transform.scale(fond, (1080, 720))
@@ -44,8 +55,7 @@ def sauvegarder(slot, player, liste_equipe, mon_inventaire, joueur_or, equipe_cl
                 chemin_image = getattr(it, attr)
                 break
         if not chemin_image:
-            from Boutique import CATALOGUE
-            for article in CATALOGUE:
+            for article in CATALOGUES:
                 if article["nom"] == it.nom:
                     chemin_image = article["image"]
                     break
@@ -76,7 +86,6 @@ def sauvegarder(slot, player, liste_equipe, mon_inventaire, joueur_or, equipe_cl
 
 def appliquer_chargement(save_data, player, liste_equipe, mon_inventaire, joueur_or):
     from Physique import item as PhysiqueItem
-    from Boutique import CATALOGUE
 
     j = save_data["joueur"]
     player.position.x = j["x"]
@@ -97,7 +106,7 @@ def appliquer_chargement(save_data, player, liste_equipe, mon_inventaire, joueur
             liste_equipe[i].manamax = perso_data["manamax"]
 
     mon_inventaire.items.clear()
-    catalogue_par_nom = {a["nom"]: a for a in CATALOGUE}
+    catalogue_par_nom = {a["nom"]: a for a in CATALOGUES}
     for it_data in save_data["inventaire"]:
         nom = it_data["nom"]
         effet = it_data["effet"]
