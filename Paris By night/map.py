@@ -1,7 +1,7 @@
 import pygame
 import pytmx
 from Boutique import Coffre
-from Physique import Vase, Porte_normale, Porte_plaque, Porte_clé, item, item_consommable, item_objet
+from Physique import Vase, Porte_normale, Porte_plaque, Porte_clé, item, item_consommable, item_objet, item_equipement
 import os 
 from Boutique import Coffre
 pygame.init()
@@ -61,6 +61,8 @@ def creer_item_depuis_nom(nom):
         return item_objet("clé", 50, 50, 0, (255, 255, 0), "assets/cle.png")
     elif nom == "cailloux":
         return item_objet("caillou", 50, 50, 0, (100, 100, 100), "assets/cailloux.png")
+    elif nom == "epee":
+        return item_equipement("épée", 50, 50, (150, 150, 150), "assets/cailloux.png", "arme", bonus_attaque=10)
     return None
 
 def create_map(tmx_data):
