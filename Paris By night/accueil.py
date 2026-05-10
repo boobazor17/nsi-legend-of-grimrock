@@ -124,7 +124,7 @@ while running == True:
             
         lignes = [
             "Paris, By Night.",
-            "En dessous des rues paisibles de la capitales",
+            "En dessous des rues paisibles de la capitale",
             "vous vous êtes égarés dans les catacombes.",
             "Des créatures y rodent, attirées par une magie oubliée.",
             "avec votre équipe descendez dans les profondeurs",
