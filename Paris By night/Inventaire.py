@@ -48,7 +48,7 @@ class inventaire:
             case_xx = 270 
             case_jj = 270 + i * 55
 
-            slots_ordre = ["arme", "armure", "rune", "bouclier"]
+            slots_ordre = ["arme", "armure", "rune"]
 
             for slot_index, nom_slot in enumerate(slots_ordre): #   Comme slots_ordre contient 4 éléments, slot_index vaut 0 pour "arme", 1 pour "armure", 2 pour "casque" et 3 pour "bouclier". Ca permet de calculer la position de chaque item équipé 
                 item_equipe = liste_equipe[i].slots.get(nom_slot) #  on récupère l'item équipé dans le slot correspondant du personnage i de la liste d'équipe. Si le slot est vide, item_equipe vaudra None et aucune image ne sera affichée pour ce slot.
@@ -89,6 +89,23 @@ class inventaire:
                                         self.x= case_x
                                         self.y = case_y
 
+                    slots_ordre = ["arme", "armure", "rune"]
+                    for i, perso in enumerate(liste_equipe):
+                        for k, nom_slot in enumerate(slots_ordre):
+                            slot_x = 270 + 60 + k * 45
+                            slot_y = 270 + i * 55 + 5
+                            slot_rect = pygame.Rect(slot_x, slot_y, 42, 42)
+                            if slot_rect.collidepoint(pos_souris):
+                                item_equipe = perso.slots.get(nom_slot)
+                                if item_equipe is not None:
+                                    self.items.append(item_equipe)
+                                    item_equipe.equipe = False
+                                    perso.pv -= item_equipe.bonus_pv
+                                    perso.pvmax -= item_equipe.bonus_pv
+                                    perso.mana -= item_equipe.bonus_mana
+                                    perso.manamax -= item_equipe.bonus_mana
+                                    perso.slots[nom_slot] = None
+
         else:
                     case_touchee = False # on définit une variable pour vérifier si une case a été touchée
                     for elem in range(len(liste_equipe)):
@@ -119,6 +136,10 @@ class inventaire:
                 # Équiper le nouvel item
                 self.perso_choisi.slots[slot] = self.item_utilise
                 self.item_utilise.equipe = True
+                self.perso_choisi.pv += self.item_utilise.bonus_pv
+                self.perso_choisi.pvmax += self.item_utilise.bonus_pv
+                self.perso_choisi.mana += self.item_utilise.bonus_mana
+                self.perso_choisi.manamax += self.item_utilise.bonus_mana
                 self.items.pop(self.index)
             self.perso_choisi = None   
             self.item_utilise = None
