@@ -206,12 +206,6 @@ def lancer(screen, font, save_data=None, equipe_cles=None):
         touches = pygame.key.get_pressed()
         player.mouvement(touches)
 
-        # effet assombri lorsque le joueur est dans son inventaire a retravailler
-        if inventory and player.pv and not paused> 0: 
-            overlay = pygame.Surface((width, height))
-            overlay.set_alpha(150)  # 0 = invisible, 255 = opaque
-            overlay.fill((171, 128, 59))  
-            screen.blit(overlay, (0, 0))
 
         if not paused and not inventory:
             player.position.x += player.velocity.x
@@ -393,10 +387,10 @@ def lancer(screen, font, save_data=None, equipe_cles=None):
             if elem.pv > 0 : 
                 elem.regenerer_mana()
             if (elem.attaque.nom == "distance" or elem.attaque.nom == "mage") and elem.attaque.proj : # priorité des opérations 
-                elem.attaque.update(liste_equipe, list_object, temps,screen,list_ennemi,follow)
+                elem.attaque.update(liste_equipe, list_object, temps,screen,list_ennemi,follow, attaquant=elem)
                 elem.attaque.draw_proj(screen, follow)
             elif elem.attaque.nom == "cac" and elem.attaque.cac.cac_actif:
-                elem.attaque.update(liste_equipe, list_object, temps,screen,list_ennemi,follow)
+                elem.attaque.update(liste_equipe, list_object, temps,screen,list_ennemi,follow, attaquant=elem)
             if temps - elem.attaque.attaque_dernier_temps < 150 :
                 elem.attaque.draw_proj(screen, follow)  
             
