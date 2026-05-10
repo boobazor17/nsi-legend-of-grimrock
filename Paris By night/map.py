@@ -31,6 +31,7 @@ class Map_Manager:
 
 
     def load_map(self, path):
+        self.current_map = path
         chemin = os.path.join(os.path.dirname(__file__), path)
         tmx_data = pytmx.load_pygame(chemin, pixelalpha=True)
         self.tiles, self.collision_tiles, self.ennemis_to_spawn, \
@@ -69,6 +70,8 @@ def creer_item_depuis_nom(nom):
         return item_equipement("rune de vie", 50, 50, (0, 255, 0), "assets/rune_vie.png", "rune", bonus_pv=20)
     elif nom == "rune_mana":
         return item_equipement("rune de mana", 50, 50, (0, 0, 255), "assets/rune_mana.png", "rune", bonus_mana=20)
+    elif nom == "armure":
+        return item_equipement("armure", 50, 50, (150, 150, 150), "assets/armure.png", "armure", bonus_pv=30)
     return None
 
 def create_map(tmx_data):
@@ -131,7 +134,6 @@ def create_map(tmx_data):
         
         elif obj_type == "spawnpoint_joueur":
             spawnpoint_joueur = pygame.math.Vector2(x * SCALE, y * SCALE)
-            print(f"Spawnpoint trouvé : {x * SCALE}, {y * SCALE}")
 
         elif obj_type in types_ennemis:
             ennemis_to_spawn.append({
@@ -150,7 +152,6 @@ def create_map(tmx_data):
         elif obj_type == "plaque":
             nom = obj.properties.get("nom")
             plaques[nom] = (x * SCALE, y * SCALE)
-            print("plaque trouvée :", nom)
 
         elif obj_type == "porte_plaque":
             nom = obj.properties.get("nom")
