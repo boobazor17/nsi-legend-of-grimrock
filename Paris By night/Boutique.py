@@ -1,7 +1,7 @@
 import pygame
 import os
 import math
-from Physique import Object, item
+from Physique import Object, item, item_consommable
  
 pygame.init()
  
@@ -143,7 +143,7 @@ class Coffre(Object):
         for btn, idx, peut_acheter in self.rects_acheter:
             if btn.collidepoint(pos_souris) and peut_acheter:
                 article = CATALOGUE[idx]
-                nouvel_item = item(
+                nouvel_item = item_consommable(
                     article["nom"], 50, 50, article["effet"],
                     (255, 200, 50), article["image"]
                 )
