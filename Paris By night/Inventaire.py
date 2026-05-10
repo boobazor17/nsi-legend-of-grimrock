@@ -46,6 +46,23 @@ class inventaire:
 
         for i in range(len(liste_equipe)):
             case_xx = 270 
+            case_jj = 270 + i * 55
+
+            slots_ordre = ["arme", "armure", "casque", "bouclier"]
+
+            for slot_index, nom_slot in enumerate(slots_ordre): #   Comme slots_ordre contient 4 éléments, slot_index vaut 0 pour "arme", 1 pour "armure", 2 pour "casque" et 3 pour "bouclier". Ca permet de calculer la position de chaque item équipé 
+                item_equipe = liste_equipe[i].slots.get(nom_slot) #  on récupère l'item équipé dans le slot correspondant du personnage i de la liste d'équipe. Si le slot est vide, item_equipe vaudra None et aucune image ne sera affichée pour ce slot.
+
+                if item_equipe is not None:
+                    slot_x = case_xx + 60 + slot_index * 45
+                    slot_y = case_jj + 5
+
+                    image_item = pygame.transform.scale(item_equipe.image, (42, 42))
+                    screen.blit(image_item, (slot_x, slot_y))
+                
+
+        for i in range(len(liste_equipe)):
+            case_xx = 270 
             case_jj = 240 + i*55
             image = liste_equipe[i].image
             screen.blit(image, (case_xx, case_jj))
@@ -55,7 +72,8 @@ class inventaire:
             overlay.set_alpha(100)  # 0 = invisible, 255 = opaque
             overlay.fill((50, 50, 50))  
             screen.blit(overlay, (self.x, self.y+10))
-                    
+
+                        
     def utiliser(self, pos_souris,liste_equipe):
         if self.item_utilise is None:
                     for i in range(4):
@@ -93,7 +111,15 @@ class inventaire:
                     self.perso_choisi.pv = self.perso_choisi.pvmax
                 self.items.pop(self.index) 
             elif isinstance(self.item_utilise, item_equipement):
+                slot = self.item_utilise.slot
+                # Si un item occupait déjà ce slot, il retourne dans l'inventaire
+                if self.perso_choisi.slots[slot] is not None:
+                    self.perso_choisi.slots[slot].equipe = False
+                    self.items.append(self.perso_choisi.slots[slot])
+                # Équiper le nouvel item
+                self.perso_choisi.slots[slot] = self.item_utilise
                 self.item_utilise.equipe = True
+                self.items.pop(self.index)
             self.perso_choisi = None   
             self.item_utilise = None
             self.index = None
