@@ -69,7 +69,10 @@ def creer_item_depuis_nom(nom):
         return item_equipement("rune de vie", 50, 50, (0, 255, 0), "assets/rune_vie.png", "rune", bonus_pv=20)
     elif nom == "rune_mana":
         return item_equipement("rune de mana", 50, 50, (0, 0, 255), "assets/rune_mana.png", "rune", bonus_mana=20)
+    elif nom == "grande_potion_vie":
+        return item_consommable("grande potion de soin", 50, 50, 50, (255, 0, 255), "assets/grande_potion_vie.png")
     return None
+    
 
 def create_map(tmx_data):
     tiles = []
@@ -112,7 +115,7 @@ def create_map(tmx_data):
     plaques ={} 
     portes_plaques_en_attente = [] # on créé une liste pour stocker les portes plaques en attente de leur plaque associée car sinon on risque de ne pas trouver la plaque associée si elle est définie après la porte 
     #  Object layers 
-    types_ennemis =["grand_slime","slime","araignee","necromancien", "sanglichon","bat"]
+    types_ennemis =["ennemi1","araignee","necromancien", "sanglichon","bat"]
     for obj in tmx_data.objects:
         obj_type = obj.properties.get("obj_type")
         x = int(obj.x)
@@ -173,4 +176,3 @@ def create_map(tmx_data):
             
 
     return tiles, collision_tiles, ennemis_to_spawn, spawnpoint_joueur, objets_interactifs, obj_porte, plaques, transitions, vide_tiles
-
