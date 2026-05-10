@@ -48,7 +48,7 @@ class inventaire:
             case_xx = 270 
             case_jj = 270 + i * 55
 
-            slots_ordre = ["arme", "armure", "casque", "bouclier"]
+            slots_ordre = ["arme", "armure", "rune", "bouclier"]
 
             for slot_index, nom_slot in enumerate(slots_ordre): #   Comme slots_ordre contient 4 éléments, slot_index vaut 0 pour "arme", 1 pour "armure", 2 pour "casque" et 3 pour "bouclier". Ca permet de calculer la position de chaque item équipé 
                 item_equipe = liste_equipe[i].slots.get(nom_slot) #  on récupère l'item équipé dans le slot correspondant du personnage i de la liste d'équipe. Si le slot est vide, item_equipe vaudra None et aucune image ne sera affichée pour ce slot.
