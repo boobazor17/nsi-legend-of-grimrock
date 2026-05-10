@@ -78,7 +78,6 @@ class Vase(Object): # tout ce qui est physique
 
                         self.ouvert = True
                         self.image = self.image_originale
-                        print (mon_inventaire.items[0].nom) 
         else:           
             self.image = self.image_originale
                         
@@ -106,12 +105,13 @@ class item_consommable(item): # potions, boosts s'utilisent sur un personnage et
         super().__init__(nom, height, width, effet, couleur, Image)
 
 class item_equipement(item):
-    def __init__(self, nom, height, width, couleur, Image=None, slot = "arme", bonus_attaque=0, bonus_defense=0):
+    def __init__(self, nom, height, width, couleur, Image=None, slot = "arme", bonus_attaque=0, bonus_pv=0, bonus_mana=0):
         super().__init__(nom, height, width, 0, couleur, Image)
         self.equipe = False
         self.slot = slot
         self.bonus_attaque = bonus_attaque
-        self.bonus_defense = bonus_defense
+        self.bonus_pv = bonus_pv
+        self.bonus_mana = bonus_mana
        
 
 class item_objet(item):  # clé, caillou
@@ -169,7 +169,6 @@ class projectile:
                     if cible.rect.collidepoint(self.position_proj):
                         cible.pv -=self.proj_degat + bonus_attaque  
                         self.proj_actif = False
-                        print (cible.pv)
 
         def collisions_zone(self,list_ennemi,screen,follow):
             l = []
@@ -178,7 +177,6 @@ class projectile:
                     dx = monstre.position.x - self.position_proj.x
                     dy = monstre.position.y - self.position_proj.y
                     distance_reelle = math.sqrt(int(dx**2 + dy**2))
-                    print (distance_reelle)
                     if monstre.rect.collidepoint(self.position_proj):
                         self.proj_actif = False
                         pygame.draw.circle(screen, (190, 65, 65), (follow.appliquer(self.position_proj) ), self.zone)
@@ -198,7 +196,7 @@ class projectile:
                         
             for i in range (len(l)):
                 l[i].pv -=self.proj_degat 
-                print (l[i].pv)
+                
         
             
 class Cac:
@@ -241,7 +239,6 @@ class Cac:
                     if monstre.rect.colliderect(self.cac_rect):
                         monstre.pv -=self.cac_degat  + bonus_attaque   
                         self.cac_actif = False
-                        print (monstre.pv)
                         self.t = pygame.time.get_ticks()     
 
 class porte(Object):             
@@ -296,7 +293,8 @@ class Porte_plaque(porte):
             
             for item in liste_items_au_sol:
                 if item.rect.colliderect(self.rect_plaque):
-                    self.plaque_appuyé = True
+                    if isinstance(item, item_objet): # la condition est validé seulement si l'item appartient a la classe item_objet
+                        self.plaque_appuyé = True
                 else:
                     pass
             
