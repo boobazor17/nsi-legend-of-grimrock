@@ -154,7 +154,7 @@ class sanglichon(semi_boss):
                             self.animation_cac_debut = pygame.time.get_ticks()
                             self.direction_attaque = self.direction_choisie
             if self.cac.cac_actif and temps - self.attaque_dernier_temps <= 500:
-                self.cac.collisions(player,list_ennemi,liste_equipe)            
+                self.cac.collisions(player, list_ennemi, liste_equipe, bonus_attaque=0)            
             else:
                 self.cac.cac_actif = False
 
@@ -366,7 +366,7 @@ class bat(monstre):
                             self.animation_cac_debut = pygame.time.get_ticks()
                             self.direction_attaque = self.direction_choisie
             if self.cac.cac_actif and temps - self.attaque_dernier_temps <= 500:
-                self.cac.collisions(player,list_ennemi,liste_equipe)            
+                self.cac.collisions(player,list_ennemi,liste_equipe,bonus_attaque=0)            
             else:
                 self.cac.cac_actif = False
 
@@ -509,7 +509,7 @@ class araignee(monstre_rodeur):
                             self.animation_cac_debut = pygame.time.get_ticks()
                             self.direction_attaque = self.direction_choisie
             if self.cac.cac_actif and temps - self.attaque_dernier_temps <= 500:
-                self.cac.collisions(player,list_ennemi,liste_equipe)            
+                self.cac.collisions(player, list_ennemi, liste_equipe, bonus_attaque=0)            
             else:
                 self.cac.cac_actif = False
                         
@@ -619,7 +619,7 @@ class ennemi1(monstre_rodeur):
                     self.proj.position_proj += (self.proj.proj_vitesse_x, self.proj.proj_vitesse_y)
                     self.proj.rect.x = self.proj.position_proj.x - self.proj.proj_rayon
                     self.proj.rect.y = self.proj.position_proj.y - self.proj.proj_rayon
-                    self.proj.collisions(player,liste_equipe) 
+                    self.proj.collisions(player,liste_equipe,bonus_attaque=0) 
                     for object in list_object: # check tous les objets de la liste pour voir s'il y a une collision avec le projectile
                         if object.rect.colliderect(self.proj.rect):    
                                 self.proj.proj_actif = False           
