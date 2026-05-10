@@ -23,7 +23,7 @@ def lancer(screen, font, save_data=None, equipe_cles=None):
 
     
     map_manager = Map_Manager()
-    map_manager.load_map("assets/caca.tmx")
+    map_manager.load_map("assets/map3.tmx")
     list_object = map_manager.list_object
     vases = map_manager.objets_interactifs
 
