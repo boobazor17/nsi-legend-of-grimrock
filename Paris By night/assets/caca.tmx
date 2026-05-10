@@ -65,7 +65,7 @@
   </object>
   <object id="7" x="368.923" y="287.385">
    <properties>
-    <property name="contenu" value="cailloux"/>
+    <property name="contenu" value="epee"/>
     <property name="obj_type" value="vase"/>
    </properties>
    <point/>
