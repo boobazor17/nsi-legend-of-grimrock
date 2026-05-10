@@ -224,7 +224,14 @@ class sanglichon(semi_boss):
         x = pos[0] - image.get_width() // 2
         y = pos[1] - image.get_height() 
         screen.blit(image, (x, y))
-        
+
+    def fin_jeu(self):
+            if self.pv <= 0 and not hasattr(self, "fin_lancee"):
+                self.fin_lancee = True
+                import subprocess
+                import sys
+                subprocess.Popen([sys.executable, os.path.join(os.path.dirname(__file__), "fin.py")])
+                
 class monstre_summoner(monstre):
     def __init__(self, x, y, nom, pv, pvmax, attaque, distance, distance_attaque, attaque_cooldown, speed, or_drop, summon_max, summon_cooldown,ligne,colonne, classe, Image= None ):
         super().__init__(x, y, nom, pv, pvmax, attaque, distance, distance_attaque, attaque_cooldown, speed, or_drop)
@@ -693,7 +700,6 @@ class grand_slime(monstre_rodeur):
                     player.recevoir_degat(degat, liste_equipe)
 
                     self.dash_actif = True
-                    print("dash activé")
                     self.dash_debut = temps
                     self.speed += self.acceleration_dash
 
@@ -702,7 +708,7 @@ class grand_slime(monstre_rodeur):
                     if temps - self.dash_debut >= self.dash_duree:
                         self.speed -= self.acceleration_dash
                         self.dash_actif = False
-                        print("dash désactivé")
+                        
 
 class slime(grand_slime):
     def __init__(self, x, y):
