@@ -159,7 +159,7 @@ class projectile:
             if self.sound_lancer is not None:
                 self.sound_lancer.play()
 
-        def collisions(self,cible,liste_equipe):    
+        def collisions(self, cible, liste_equipe, bonus_attaque):    
             if self.proj_actif == True:
                 if type(cible).__name__ == "Player":
                     if cible.rect.collidepoint(self.position_proj):
@@ -167,7 +167,7 @@ class projectile:
                         self.proj_actif = False
                 else:
                     if cible.rect.collidepoint(self.position_proj):
-                        cible.pv -=self.proj_degat     
+                        cible.pv -=self.proj_degat + bonus_attaque  
                         self.proj_actif = False
                         print (cible.pv)
 
@@ -231,7 +231,7 @@ class Cac:
 
         self.cac_rect = pygame.Rect(rect_x, rect_y, self.cac_largeur, self.cac_hauteur)
 
-    def collisions(self,cible,list_ennemi,liste_equipe):
+    def collisions(self, cible, list_ennemi, liste_equipe, bonus_attaque):
             if type(cible).__name__ == "Player":
                 if cible.rect.colliderect(self.cac_rect) and self.cac_actif == True:
                     cible.recevoir_degat(self.cac_degat, liste_equipe)
@@ -239,19 +239,10 @@ class Cac:
             else : 
                 for monstre in list_ennemi :
                     if monstre.rect.colliderect(self.cac_rect):
-                        monstre.pv -=self.cac_degat     
+                        monstre.pv -=self.cac_degat  + bonus_attaque   
                         self.cac_actif = False
                         print (monstre.pv)
-                        self.t = pygame.time.get_ticks()
-
-
-
-
-class Mur(Object):
-    def __init__(self, x, y, width, height):
-        super().__init__(x, y, width, height, (100, 80, 60), "assets/murr.png")
-        self.image_originale = self.image
-        self.position = pygame.math.Vector2(x, y)       
+                        self.t = pygame.time.get_ticks()     
 
 class porte(Object):             
     def __init__(self, x, y, nom, width, height, distance_interaction):
