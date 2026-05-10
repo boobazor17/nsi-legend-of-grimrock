@@ -1,7 +1,7 @@
 import pygame
 import os
 import math
-from Physique import Object, item, item_consommable
+from Physique import Object, item
  
 pygame.init()
  
@@ -12,7 +12,7 @@ height = 720
 CATALOGUE = [
     {"nom": "Potion de soin",   "prix": 30,  "effet":  20, "image": "assets/potion_vie.png"},
     {"nom": "Potion de dégâts", "prix": 30,  "effet": -20, "image": "assets/potion_degat.png"},
-    {"nom": "Grande potion",    "prix": 60,  "effet":  50, "image": "assets/potion_vie.png"},
+    {"nom": "Grande potion",    "prix": 60,  "effet":  50, "image": "assets/grande_potion.png"},
 ]
  
  
@@ -62,7 +62,7 @@ class Coffre(Object):
         pygame.draw.rect(screen, (200, 160, 80), (bx, by, bw, bh), 3, border_radius=12)
  
         # titre
-        titre = self.font_titre.render("⚒  Boutique", True, (255, 215, 0))
+        titre = self.font_titre.render("Boutique", True, (255, 215, 0))
         screen.blit(titre, (bx + bw // 2 - titre.get_width() // 2, by + 14))
  
         # or du joueur
@@ -143,7 +143,7 @@ class Coffre(Object):
         for btn, idx, peut_acheter in self.rects_acheter:
             if btn.collidepoint(pos_souris) and peut_acheter:
                 article = CATALOGUE[idx]
-                nouvel_item = item_consommable(
+                nouvel_item = item(
                     article["nom"], 50, 50, article["effet"],
                     (255, 200, 50), article["image"]
                 )
