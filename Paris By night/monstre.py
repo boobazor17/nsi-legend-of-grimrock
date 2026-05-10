@@ -586,9 +586,9 @@ class araignee(monstre_rodeur):
                             self.animation_cac_active = False
 
 
-class ennemi1(monstre_rodeur):
+class grand_slime(monstre_rodeur):
     def __init__(self, x, y):
-        super().__init__(x, y, "ennemi1", 100, 100, 10, 250, 130, 600, 10, 15)
+        super().__init__(x, y, "slime", 100, 100, 10, 250, 130, 600, 10, 15)
         self.proj = projectile(x, y, 5, 8, 0, 0, 10,0) # initialisation du projectile (position(x,y)  vitesse , rayon, vitesse_x, vitesse_y, degat)
         self.rect = pygame.Rect(x, y, 40, 40)
         self.speed = 10
@@ -596,14 +596,46 @@ class ennemi1(monstre_rodeur):
         self.dash_debut = 0
         self.dash_duree = 350  # 3 secondes
         self.acceleration_dash = 40
+        chemin1 = os.path.join(os.path.dirname(__file__), "assets/slime_bullet.png")
+        self.spritesheet_attaque = pygame.image.load(chemin1).convert_alpha()
+        self.spritesheet_attaque = pygame.transform.scale(self.spritesheet_attaque, (32, 32))  # ajuste la taille
+        chemin = os.path.join(os.path.dirname(__file__), "assets/slime.png")
+        spritesheet = pygame.image.load(chemin).convert_alpha()
+        self.frames = []
+        frame_width = 16
+        frame_height = 16
+
+        for ligne in range(3):
+            ligne_frames = []
+            nb_colonnes = 1 if ligne == 2 else 3
+            for colonne in range(nb_colonnes):
+                frame = spritesheet.subsurface(
+                    pygame.Rect(colonne * frame_width, ligne * frame_height, frame_width, frame_height)
+                )
+                frame = pygame.transform.scale(frame, (64, 64))  # ajuste la taille si besoin
+                ligne_frames.append(frame)
+            self.frames.append(ligne_frames)
+
+        self.frame_index = 0
+        self.derniere_frame = 0
+        self.direction_choisie = 0
 
     def draw(self, screen, follow, player):
-                if self.pv > 0:
-                    pygame.draw.circle(screen, (99, 69, 45), follow.appliquer(self.position), 20)
+        if self.pv > 0:
+            temps = pygame.time.get_ticks()
+            if temps - self.derniere_frame > 240:
+                nb_frames = len(self.frames[self.direction_choisie])
+                self.frame_index = (self.frame_index + 1) % nb_frames
+                self.derniere_frame = temps
 
-                if self.proj.proj_actif and self.pv > 0:
-                    pygame.draw.circle(screen, (255, 165, 0), follow.appliquer(self.proj.position_proj), self.proj.proj_rayon)
+            image = self.frames[self.direction_choisie][self.frame_index]
+            pos = follow.appliquer(self.position)
+            x = pos[0] - image.get_width() // 2
+            y = pos[1] - image.get_height() // 2
+            screen.blit(image, (x, y))
 
+        if self.proj.proj_actif and self.pv > 0:
+            screen.blit(self.spritesheet_attaque, follow.appliquer(self.proj.position_proj))
     
     def attaque_m(self, player, liste_equipe, list_object, list_ennemi, classe):
             if self.pv > 0:
@@ -655,6 +687,52 @@ class ennemi1(monstre_rodeur):
                         self.speed -= self.acceleration_dash
                         self.dash_actif = False
                         print("dash désactivé")
+
+class slime(grand_slime):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        chemin = os.path.join(os.path.dirname(__file__), "assets/slime.png")
+        spritesheet = pygame.image.load(chemin).convert_alpha()
+        self.frames = []
+        frame_width = 16
+        frame_height = 16
+        chemin1 = os.path.join(os.path.dirname(__file__), "assets/slime_bullet.png")
+        self.spritesheet_attaque = pygame.image.load(chemin1).convert_alpha()
+        self.spritesheet_attaque = pygame.transform.scale(self.spritesheet_attaque, (16, 16))
+        self.speed = 6
+
+        nb_colonnes_par_ligne = [3, 3, 1]  # ligne 0: 3, ligne 1: 3, ligne 2: 1 seule case valide
+        for ligne in range(3):
+            ligne_frames = []
+            for colonne in range(nb_colonnes_par_ligne[ligne]):
+                frame = spritesheet.subsurface(
+                    pygame.Rect(colonne * frame_width, ligne * frame_height, frame_width, frame_height)
+                )
+                frame = pygame.transform.scale(frame, (32, 32))
+                ligne_frames.append(frame)
+            self.frames.append(ligne_frames)
+
+        self.frame_index = 0
+        self.direction_choisie = 0
+
+    def draw(self, screen, follow, player):
+        if self.pv > 0:
+            temps = pygame.time.get_ticks()
+            if temps - self.derniere_frame > 120:
+                nb_frames = len(self.frames[self.direction_choisie])
+                self.frame_index = (self.frame_index + 1) % nb_frames
+                if self.frame_index == 0:  # on a fini une ligne, on passe à la suivante
+                    self.direction_choisie = (self.direction_choisie + 1) % 3
+                self.derniere_frame = temps
+
+            image = self.frames[self.direction_choisie][self.frame_index]
+            pos = follow.appliquer(self.position)
+            x = pos[0] - image.get_width() // 2
+            y = pos[1] - image.get_height() // 2
+            screen.blit(image, (x, y))
+        if self.proj.proj_actif and self.pv > 0:
+            screen.blit(self.spritesheet_attaque, follow.appliquer(self.proj.position_proj))
+        
 
 
 
