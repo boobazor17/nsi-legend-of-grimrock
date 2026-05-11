@@ -15,6 +15,10 @@ import sauvegarde
 
 def lancer(screen, font, save_data=None, equipe_cles=None):
     pygame.init()
+    pygame.mixer.init()
+    pygame.mixer.music.load("assets/sounds/music_abel_goat.mp3") # lance la musique d'abel en boucle
+    pygame.mixer.music.set_volume(0.05)
+    pygame.mixer.music.play(-1) # boucle infinie
     width = 1080
     height = 720
     speed = 10
@@ -24,17 +28,17 @@ def lancer(screen, font, save_data=None, equipe_cles=None):
 
     
     map_manager = Map_Manager()
-    map_manager.load_map("assets/map3.tmx")
-    list_object = map_manager.list_object
+    map_manager.load_map("assets/map3.tmx") # première map
+    list_object = map_manager.list_object # récupère les objet de la map
     vases = map_manager.objets_interactifs
 
-    player = Player(map_manager.spawnpoint_joueur.x, map_manager.spawnpoint_joueur.y)
+    player = Player(map_manager.spawnpoint_joueur.x, map_manager.spawnpoint_joueur.y) # initialise le player
     cam = Camera(player)
     follow = Follow(cam, player)
     border = Border(cam, player)
     auto = Auto(cam, player)
     cam.setmethod(follow)
-
+    # classes avec les noms des ennemies et tt les attributs
     CLASSES_ENNEMIS = {
     "slime": slime,
     "araignee": araignee,
