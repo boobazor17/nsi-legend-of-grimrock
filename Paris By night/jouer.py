@@ -17,7 +17,7 @@ def lancer(screen, font, save_data=None, equipe_cles=None):
     pygame.init()
     pygame.mixer.init()
     pygame.mixer.music.load("assets/sounds/music_abel_goat.mp3") # lance la musique d'abel en boucle
-    pygame.mixer.music.set_volume(0.05)
+    pygame.mixer.music.set_volume(0.03)
     pygame.mixer.music.play(-1) # boucle infinie
     width = 1080
     height = 720
