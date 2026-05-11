@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="8">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="15">
  <tileset firstgid="1" source="Plateforme.tsx"/>
  <layer id="1" name="Calque de Tuiles 1" width="50" height="50">
   <data encoding="csv">
@@ -143,6 +143,55 @@
    <point/>
   </object>
   <object id="7" x="519.299" y="680.367">
+   <properties>
+    <property name="nom" value="bat"/>
+    <property name="obj_type" value="bat"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="9" x="602.841" y="124.31">
+   <properties>
+    <property name="nom" value="bat"/>
+    <property name="obj_type" value="bat"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="14" x="100.92" y="713.784">
+   <properties>
+    <property name="nom" value="bat"/>
+    <property name="obj_type" value="bat"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="13" x="747.202" y="580.785">
+   <properties>
+    <property name="nom" value="bat"/>
+    <property name="obj_type" value="bat"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="10" x="314.788" y="78.8632">
+   <properties>
+    <property name="nom" value="bat"/>
+    <property name="obj_type" value="bat"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="12" x="469.174" y="54.8031">
+   <properties>
+    <property name="nom" value="bat"/>
+    <property name="obj_type" value="bat"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="11" x="88.2213" y="115.622">
+   <properties>
+    <property name="nom" value="bat"/>
+    <property name="obj_type" value="bat"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="8" x="215.205" y="628.905">
    <properties>
     <property name="nom" value="bat"/>
     <property name="obj_type" value="bat"/>
