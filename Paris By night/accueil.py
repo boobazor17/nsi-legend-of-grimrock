@@ -44,13 +44,13 @@ while running == True:
     if etat == "menu":
                     # bouton
                     bouton_jouer = pygame.Rect(100,150,260,130)
-                    screen.blit(bouton_img, bouton_jouer)
+                    screen.blit(bouton, bouton_jouer)
                 
                     bouton_sauvegarde = pygame.Rect(100,325,260,130)
-                    screen.blit(bouton_img, bouton_sauvegarde)
+                    screen.blit(bouton, bouton_sauvegarde)
                 
                     bouton_credits = pygame.Rect(100,500,260,130)
-                    screen.blit(bouton_img, bouton_credits)
+                    screen.blit(bouton, bouton_credits)
                 
                     texte1 = font.render("NOUVELLE", True, ('Black'))
                     texte5 = font.render("PARTIE", True, ('Black'))
@@ -94,7 +94,7 @@ while running == True:
         if event.type == pygame.QUIT:
                 etat = "menu"
 
-    bouton_img = bouton_img.convert_alpha()
+    bouton = bouton.convert_alpha()
             
     # mettre à jour l'écran
     pygame.display.update()

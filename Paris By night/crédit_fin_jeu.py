@@ -5,8 +5,9 @@ import os
 pygame.init()
 
 # ajout de la musique
-pygame.mixer.music.load
-os.path.join(os.path.dirname("assets/fin.mp3"))
+pygame.mixer.music.load(
+    os.path.join("assets", "fin.mp3")
+)
 pygame.mixer.music.set_volume(0.5)
 pygame.mixer.music.play(-1)
 
@@ -100,9 +101,10 @@ class Particule:
         )
 
 compteur_images = 0
-programme_actif = True
 
-while programme_actif:
+running = True
+
+while running :
 
     # fond noir
     ecran.fill(NOIR)
@@ -111,7 +113,7 @@ while programme_actif:
     for evenement in pygame.event.get():
 
         if evenement.type == pygame.QUIT:
-            programme_actif = False
+            running = False
 
     # place l'image à gauche
     if compteur_images > 120:
