@@ -760,6 +760,11 @@ class slime(grand_slime):
                 self.son_slime.play()
                 self.son_dernier_temps = t
         
+                
+             
+            if self.proj.proj_actif :
+                screen.blit(self.spritesheet_attaque, follow.appliquer(self.proj.position_proj))
+        
         
             
         
