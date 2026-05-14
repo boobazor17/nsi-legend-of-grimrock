@@ -52,7 +52,7 @@ class Vase(Object): # tout ce qui est physique
         super().__init__(x, y, 50, 50, (255, 0, 0),"assets/vase.png")
         self.image_originale = self.image
         self.position = pygame.math.Vector2(x,y)
-        self.distance = 200
+        self.distance = 100
         self.ouvert = False
         self.contenu = contenu if contenu is not None else []
 
