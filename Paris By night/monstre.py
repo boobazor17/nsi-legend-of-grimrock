@@ -614,7 +614,7 @@ class grand_slime(monstre_rodeur):
         frame_width = 16
         frame_height = 16
         self.son_grand_slime = pygame.mixer.Sound("assets/sounds/gros_slime.mp3")
-        self.son_grand_slime.set_volume(0.1)
+        self.son_grand_slime.set_volume(0.4)
         
         self.son_dernier_temps = -1000
 
@@ -723,7 +723,7 @@ class slime(grand_slime):
         self.spritesheet_attaque = pygame.transform.scale(self.spritesheet_attaque, (16, 16))
         self.speed = 6
         self.son_slime = pygame.mixer.Sound("assets/sounds/petit_slime.mp3")
-        self.son_slime.set_volume(0.1)
+        self.son_slime.set_volume(0.4)
         self.son_dernier_temps = -1000
         nb_colonnes_par_ligne = [3, 3, 1]  # ligne 0: 3, ligne 1: 3, ligne 2: 1 seule case valide
         for ligne in range(3):
