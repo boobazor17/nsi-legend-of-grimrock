@@ -65,7 +65,7 @@ def dessiner_scene(screen, map_manager, follow, player, vases, mon_coffre,
                    liste_portes, liste_items_au_sol, list_ennemi,
                    rayon_vision, paused, inventory, liste_equipe):
 
-    screen.fill((201, 158, 89))
+    screen.fill((0, 0, 0))
     map_manager.draw(screen, follow)
 
     for vase in vases:
