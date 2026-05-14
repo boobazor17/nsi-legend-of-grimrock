@@ -2,192 +2,122 @@ import pygame
 import random
 import os
 
-pygame.init()
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+WIDTH, HEIGHT = 1080, 720
 
-# ajout de la musique
-pygame.mixer.music.load(
-    os.path.join("assets", "fin.mp3")
-)
-pygame.mixer.music.set_volume(0.5)
-pygame.mixer.music.play(-1)
-
-# Taille de la fenêtre
-LARGEUR, HAUTEUR = 1000, 700
-
-ecran = pygame.display.set_mode((LARGEUR, HAUTEUR))
-pygame.display.set_caption("Fin du jeu - Paris By Night")
-
-horloge = pygame.time.Clock()
-
-# Couleurs du générique
-NOIR = (0, 0, 0)
-BLANC = (255, 255, 255)
-
-# Police du texte
-police = pygame.font.SysFont("arial", 40)
-
-# Liste du générique de fin
-texte = [
-    "Paris By Night",
-    "",
-    "Un jeu de :",
-    "",
-    "Ian BEAUGRAND",
-    "Léoti CHARLES-LANDIER",
-    "Lola MOULIUS-MAZI",
-    "Roxane MOINE-ANCIAN",
-    "",
-    "Merci d'avoir joué !"
-]
-
-# Position du texte au début
-position_texte_y = HAUTEUR
-
-# Chargement des images
-image1 = pygame.image.load("assets/photo.png")
-image2 = pygame.image.load("assets/photoo.png")
-image3 = pygame.image.load("assets/photooo.png")
-
-# Dimensions des images
-image1 = pygame.transform.scale(image1, (200, 150))
-image2 = pygame.transform.scale(image2, (200, 150))
-image3 = pygame.transform.scale(image3, (300, 200))
-
-# Création des particules
-particules = []
-
-class Particule:
-
+class Particle:
     def __init__(self, x, y):
-
         self.x = x
         self.y = y
-
-        # direction aléatoire des particules
-        self.vitesse_x = random.uniform(-5, 5)
-        self.vitesse_y = random.uniform(-5, 5)
-
-        # durée de vie des particules
-        self.vie = random.randint(40, 80)
-
-        # taille des particules
-        self.taille = random.randint(4, 8)
-
-        # couleur des particules
-        self.couleur = (
+        self.dx = random.uniform(-5, 5)
+        self.dy = random.uniform(-5, 5)
+        self.life = random.randint(40, 80)
+        self.size = random.randint(4, 8)
+        self.color = (
             random.randint(150, 255),
             random.randint(100, 255),
             random.randint(0, 100)
         )
 
-    def mise_a_jour(self):
+    def update(self):
+        self.x += self.dx
+        self.y += self.dy
+        self.dy += 0.05
+        self.life -= 1
 
-        self.x += self.vitesse_x
-        self.y += self.vitesse_y
-
-        # effet de gravité
-        self.vitesse_y += 0.05
-
-        # diminution de la durée de vie
-        self.vie -= 1
-
-    def afficher(self):
-
+    def draw(self, screen):
         pygame.draw.circle(
-            ecran,
-            self.couleur,
+            screen,
+            self.color,
             (int(self.x), int(self.y)),
-            self.taille
+            self.size
         )
 
-compteur_images = 0
+def lancer_fin():
+    pygame.init()
 
-running = True
+    pygame.mixer.music.load(os.path.join(os.path.dirname(__file__), "assets/sounds/fin.mp3"))
+    pygame.mixer.music.set_volume(0.4)
+    pygame.mixer.music.play(-1)
 
-while running :
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    pygame.display.set_caption("Fin du jeu - Paris By Night")
+    clock = pygame.time.Clock()
 
-    # fond noir
-    ecran.fill(NOIR)
+    font = pygame.font.SysFont("arial", 40)
 
-    # fermeture de la fenêtre
-    for evenement in pygame.event.get():
+    text = [
+        "Paris By Night",
+        "",
+        "Un jeu de :",
+        "",
+        "Ian BEAUGRAND",
+        "Léoti CHARLES-LANDIER",
+        "Lola MOULIUS-MAZI",
+        "Roxane MOINE-ANCIAN",
+        "",
+        "Merci d'avoir joué !"
+    ]
 
-        if evenement.type == pygame.QUIT:
-            running = False
+    text_y = float(HEIGHT)
 
-    # place l'image à gauche
-    if compteur_images > 120:
-        ecran.blit(image3, (20, 20))
+    image1 = pygame.image.load(os.path.join(os.path.dirname(__file__), "assets/photo.png"))
+    image2 = pygame.image.load(os.path.join(os.path.dirname(__file__), "assets/photoo.png"))
+    image3 = pygame.image.load(os.path.join(os.path.dirname(__file__), "assets/photooo.png"))
 
-    # feu d'artifice
-    if compteur_images == 121:
+    image1 = pygame.transform.scale(image1, (200, 150))
+    image2 = pygame.transform.scale(image2, (200, 150))
+    image3 = pygame.transform.scale(image3, (300, 200))
 
-        for _ in range(150):
-            particules.append(
-                Particule(170, 120)
-            )
+    particles = []
+    frame_count = 0
+    running = True
 
-    # fait défiler le texte
-    for numero_ligne, ligne in enumerate(texte):
+    while running:
+        screen.fill(BLACK)
 
-        texte_affiche = police.render(
-            ligne,
-            True,
-            BLANC
-        )
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
 
-        ecran.blit(
-            texte_affiche,
-            (
-                LARGEUR // 2 - texte_affiche.get_width() // 2,
-                position_texte_y + numero_ligne * 50
-            )
-        )
+        if frame_count > 120:
+            screen.blit(image3, (20, 20))
 
-    # vitesse du défilement
-    position_texte_y -= 0.5
+        if frame_count == 121:
+            for _ in range(150):
+                particles.append(Particle(170, 120))
 
-    # image 1 + feu d'artifice
-    if compteur_images == 220:
+        for i, line in enumerate(text):
+            render_text = font.render(line, True, WHITE)
+            screen.blit(render_text, (
+                WIDTH // 2 - render_text.get_width() // 2,
+                int(text_y) + i * 50
+            ))
 
-        for _ in range(150):
-            particules.append(
-                Particule(LARGEUR - 140, 300)
-            )
+        text_y -= 0.5
 
-    if compteur_images > 260:
-        ecran.blit(image1, (LARGEUR - 240, 220))
+        if frame_count == 220:
+            for _ in range(150):
+                particles.append(Particle(WIDTH - 140, 300))
 
-    # place l'image en bas
-    if compteur_images > 320:
+        if frame_count > 260:
+            screen.blit(image1, (WIDTH - 240, 220))
 
-        ecran.blit(image2, (20, HAUTEUR - 190))
+        if frame_count > 320:
+            screen.blit(image2, (20, HEIGHT - 190))
+            if frame_count == 321:
+                for _ in range(120):
+                    particles.append(Particle(120, HEIGHT - 120))
 
-        # feu d'artifice
-        if compteur_images == 321:
+        for p in particles[:]:
+            p.update()
+            p.draw(screen)
+            if p.life <= 0:
+                particles.remove(p)
 
-            for _ in range(120):
-                particules.append(
-                    Particule(120, HAUTEUR - 120)
-                )
+        pygame.display.flip()
+        clock.tick(60)
+        frame_count += 1
 
-    # affichage des particules
-    for particule in particules[:]:
-
-        particule.mise_a_jour()
-        particule.afficher()
-
-        # supprime les particules mortes
-        if particule.vie <= 0:
-            particules.remove(particule)
-
-    # mise à jour de l'écran
-    pygame.display.flip()
-
-    # limite à 60 FPS
-    horloge.tick(60)
-
-    compteur_images += 1
-
-# fermeture de pygame
-pygame.quit()
+    pygame.quit()
